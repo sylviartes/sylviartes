@@ -16,11 +16,24 @@
  * =============================================================================
  */
 
+// --- Load .env if present (idempotent — runs once per process) ---
+(static function () {
+    static $loaded = false;
+    if ($loaded) return;
+    $loaded = true;
+    $envFile = __DIR__ . '/.env';
+    if (file_exists($envFile)) {
+        foreach (parse_ini_file($envFile) as $k => $v) {
+            putenv("$k=$v");
+        }
+    }
+})();
+
 // --- Credenciais da base de dados ---
-$host   = 'localhost';     // servidor MySQL (XAMPP corre em localhost)
-$dbname = 'sylviartes';    // nome da BD criada no phpMyAdmin
-$user   = 'root';          // utilizador por defeito do MySQL no XAMPP
-$pass   = '';              // password vazia por defeito (XAMPP)
+$host   = getenv('DB_HOST') ?: 'localhost';   // servidor MySQL (XAMPP corre em localhost)
+$dbname = getenv('DB_NAME') ?: 'sylviartes';  // nome da BD criada no phpMyAdmin
+$user   = getenv('DB_USER') ?: 'root';        // utilizador por defeito do MySQL no XAMPP
+$pass   = getenv('DB_PASS') !== false ? getenv('DB_PASS') : ''; // password (vazia por defeito no XAMPP)
 
 try {
     // Cria a ligação PDO usando UTF-8 multibyte para suportar acentos e emojis

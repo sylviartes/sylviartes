@@ -11,13 +11,26 @@
  *    Copiar o whsec_... mostrado pela CLI para STRIPE_WEBHOOK_SECRET.
  */
 
-if (!defined('STRIPE_PUBLISHABLE_KEY')) define('STRIPE_PUBLISHABLE_KEY', 'pk_test_SUBSTITUI_AQUI');
-if (!defined('STRIPE_SECRET_KEY'))      define('STRIPE_SECRET_KEY',      'sk_test_SUBSTITUI_AQUI');
-if (!defined('STRIPE_WEBHOOK_SECRET'))  define('STRIPE_WEBHOOK_SECRET',  'whsec_SUBSTITUI_AQUI');
-if (!defined('STRIPE_CURRENCY'))        define('STRIPE_CURRENCY',        'eur');
+// --- Load .env if present (idempotent — runs once per process) ---
+(static function () {
+    static $loaded = false;
+    if ($loaded) return;
+    $loaded = true;
+    $envFile = __DIR__ . '/.env';
+    if (file_exists($envFile)) {
+        foreach (parse_ini_file($envFile) as $k => $v) {
+            putenv("$k=$v");
+        }
+    }
+})();
+
+if (!defined('STRIPE_PUBLISHABLE_KEY')) define('STRIPE_PUBLISHABLE_KEY', getenv('STRIPE_PUBLISHABLE_KEY') ?: 'pk_test_SUBSTITUI_AQUI');
+if (!defined('STRIPE_SECRET_KEY'))      define('STRIPE_SECRET_KEY',      getenv('STRIPE_SECRET_KEY')      ?: 'sk_test_SUBSTITUI_AQUI');
+if (!defined('STRIPE_WEBHOOK_SECRET'))  define('STRIPE_WEBHOOK_SECRET',  getenv('STRIPE_WEBHOOK_SECRET')  ?: 'whsec_SUBSTITUI_AQUI');
+if (!defined('STRIPE_CURRENCY'))        define('STRIPE_CURRENCY',        getenv('STRIPE_CURRENCY')        ?: 'eur');
 
 // URL base do site (ajusta se mudares de porta/domínio)
-if (!defined('SITE_BASE_URL')) define('SITE_BASE_URL', 'http://localhost:8080');
+if (!defined('SITE_BASE_URL')) define('SITE_BASE_URL', getenv('SITE_BASE_URL') ?: 'http://localhost:8080');
 
 $autoload = __DIR__ . '/../vendor/autoload.php';
 if (file_exists($autoload)) {

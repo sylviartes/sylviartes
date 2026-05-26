@@ -20,26 +20,38 @@
  */
 
 // =============================================================================
-// CONFIGURAÇÕES — preencher AQUI para ativar envio real
+// CONFIGURAÇÕES — valores lidos de config/.env (nunca hardcoded aqui)
 // =============================================================================
 
+// --- Load .env if present (idempotent — runs once per process) ---
+(static function () {
+    static $loaded = false;
+    if ($loaded) return;
+    $loaded = true;
+    $envFile = __DIR__ . '/../config/.env';
+    if (file_exists($envFile)) {
+        foreach (parse_ini_file($envFile) as $k => $v) {
+            putenv("$k=$v");
+        }
+    }
+})();
+
 // === RESEND (Recomendado — mais simples) ===
-// 1. Cria conta em https://resend.com (login com GitHub)
-// 2. Menu lateral → API Keys → Create API Key
-// 3. Cola a chave (re_AbC...) na constante abaixo
-if (!defined('RESEND_API_KEY')) define('RESEND_API_KEY', '***REMOVED***');
+// Chave lida de config/.env — nunca colocar a chave real diretamente aqui.
+// Para configurar: copia config/.env.example para config/.env e preenche RESEND_API_KEY.
+if (!defined('RESEND_API_KEY')) define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: '');
 // Sender padrão de teste — funciona logo, sem precisar de verificar domínio.
 // Quando comprares domínio próprio, adiciona-o em https://resend.com/domains
-// e altera para algo como 'SylviArtes <pedidos@sylviartes.pt>'.
-if (!defined('RESEND_FROM'))    define('RESEND_FROM',    'SylviArtes <onboarding@resend.dev>');
+// e altera RESEND_FROM em .env para algo como 'SylviArtes <pedidos@sylviartes.pt>'.
+if (!defined('RESEND_FROM'))    define('RESEND_FROM',    getenv('RESEND_FROM')    ?: 'SylviArtes <onboarding@resend.dev>');
 
 // === SMTP (alternativa, se preferires Gmail/Brevo/etc.) ===
-if (!defined('SMTP_HOST'))      define('SMTP_HOST',      '');
-if (!defined('SMTP_PORT'))      define('SMTP_PORT',      587);
-if (!defined('SMTP_USER'))      define('SMTP_USER',      '');
-if (!defined('SMTP_PASS'))      define('SMTP_PASS',      '');
-if (!defined('SMTP_FROM'))      define('SMTP_FROM',      'noreply@sylviartes.pt');
-if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', 'SylviArtes');
+if (!defined('SMTP_HOST'))      define('SMTP_HOST',      getenv('SMTP_HOST')      ?: '');
+if (!defined('SMTP_PORT'))      define('SMTP_PORT',      getenv('SMTP_PORT')      ?: 587);
+if (!defined('SMTP_USER'))      define('SMTP_USER',      getenv('SMTP_USER')      ?: '');
+if (!defined('SMTP_PASS'))      define('SMTP_PASS',      getenv('SMTP_PASS')      ?: '');
+if (!defined('SMTP_FROM'))      define('SMTP_FROM',      getenv('SMTP_FROM')      ?: 'noreply@sylviartes.pt');
+if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME') ?: 'SylviArtes');
 
 /**
  * Envia um email. Usa Resend → SMTP → Outbox local automaticamente.
