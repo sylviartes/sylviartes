@@ -1,0 +1,4 @@
+# Bloquear acesso web à pasta src (código PHP interno)
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>

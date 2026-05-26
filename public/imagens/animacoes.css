@@ -1,0 +1,193 @@
+/*
+ * =============================================================================
+ *  ANIMAÇÕES E LOADING STATES — SylviArtes
+ * =============================================================================
+ *  CSS global aplicado em todas as páginas. Inclui:
+ *    - fade-in suave ao carregar a página
+ *    - hover transitions consistentes em botões e links
+ *    - spinner de loading
+ *    - shake em forms com erro
+ *    - estados de loading em botões com classe .loading
+ * =============================================================================
+ */
+
+/* Fade-in geral ao carregar a página */
+@keyframes sylvi-fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+main, .container, .checkout-wrapper, .cli-wrapper, .auth-container, .produto-detalhe, .avaliacoes-secao {
+    animation: sylvi-fadeIn 0.5s ease-out;
+}
+
+/* Hover em links */
+a {
+    transition: color 0.2s, opacity 0.2s;
+}
+
+/* Botões — efeito ripple/elevate consistente */
+button, .btn-primary, .btn-cart, .checkout-btn, .auth-btn, .cli-btn, .produto-btn {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+button:active, .btn-primary:active, .btn-cart:active, .checkout-btn:active, .auth-btn:active, .cli-btn:active, .produto-btn:active {
+    transform: scale(0.98);
+}
+
+/* === Spinner global === */
+@keyframes sylvi-spin {
+    to { transform: rotate(360deg); }
+}
+.sylvi-spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: sylvi-spin 0.7s linear infinite;
+    vertical-align: middle;
+}
+.sylvi-spinner.dark {
+    border-color: rgba(214, 109, 127, 0.2);
+    border-top-color: #d66d7f;
+}
+
+/* Botão em estado loading: mostra spinner e desativa */
+button.loading, .loading {
+    pointer-events: none;
+    opacity: 0.7;
+    position: relative;
+}
+button.loading::after {
+    content: '';
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: sylvi-spin 0.7s linear infinite;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* Shake quando o form tem erros */
+@keyframes sylvi-shake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+}
+.shake {
+    animation: sylvi-shake 0.4s ease;
+}
+
+/* Mini-loading suave para placeholders (skeleton) */
+@keyframes sylvi-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.5; }
+}
+.skeleton {
+    background: linear-gradient(90deg, #f0e9ec, #f8f1f3, #f0e9ec);
+    background-size: 200% 100%;
+    animation: sylvi-pulse 1.4s infinite ease-in-out;
+    border-radius: 8px;
+}
+
+/* Estados de hover suaves nos cards */
+.produto-card, .cli-card, .card-destaque {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Inputs com focus elegante */
+input, textarea, select {
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Mensagens flash entram de cima com fade */
+@keyframes sylvi-slideIn {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.alert, .auth-erro, .auth-sucesso, .alert-box {
+    animation: sylvi-slideIn 0.35s ease-out;
+}
+
+/* Scroll suave em links âncora */
+html { scroll-behavior: smooth; }
+
+/* Reduzir animações para utilizadores que preferem menos movimento (acessibilidade) */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================================
+   RESPONSIVIDADE GLOBAL — todas as páginas públicas
+   ============================================================ */
+
+/* Imagens nunca transbordam */
+img { max-width: 100%; height: auto; }
+
+/* Tabelas dentro de containers — scroll horizontal subtil */
+table { max-width: 100%; }
+
+/* Tablet (≤ 992px) */
+@media (max-width: 992px) {
+    /* Hero da homepage e similares */
+    h1 { font-size: 36px !important; }
+    h2 { font-size: 28px !important; }
+}
+
+/* Mobile (≤ 768px) */
+@media (max-width: 768px) {
+    /* Containers públicos com menos padding */
+    .container, .container-fluid {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    /* Botões CTA full-width em mobile (para legibilidade do toque) */
+    .btn-rosa, .btn-ghost, .btn-branco {
+        width: 100%;
+        justify-content: center;
+    }
+    .home-hero-ctas { flex-direction: column; align-items: stretch; }
+
+    /* Catálogo / portfólio — menos padding lateral */
+    .catalogo-container { padding: 12px !important; }
+    .catalogo-layout { gap: 16px !important; }
+
+    /* Formulários auth do cliente — caixas mais largas em mobile */
+    .auth-container { padding: 16px !important; }
+    .auth-box { padding: 30px 22px !important; }
+
+    /* Carrinho de orçamento */
+    .orc-wrapper { padding: 24px 18px !important; margin: 14px !important; }
+
+    /* Produto detalhe */
+    .produto-detalhe {
+        grid-template-columns: 1fr !important;
+        padding: 12px !important;
+        gap: 18px !important;
+    }
+    .produto-detalhe-img { height: auto !important; max-height: 360px !important; }
+
+    /* Headers de páginas — texto mais legível */
+    h1 { font-size: 28px !important; }
+    h2 { font-size: 24px !important; }
+    h3 { font-size: 18px !important; }
+
+    /* Footer ajusta padding */
+    footer { padding: 30px 16px !important; }
+}
+
+/* Mobile pequeno (≤ 480px) */
+@media (max-width: 480px) {
+    h1 { font-size: 24px !important; }
+    h2 { font-size: 20px !important; }
+
+    /* Cards do portfólio — maiores para serem legíveis */
+    .produto-card .produto-img-box { height: 200px !important; }
+}

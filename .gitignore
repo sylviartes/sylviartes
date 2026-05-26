@@ -1,0 +1,25 @@
+# Dependencies
+/vendor/
+composer.phar
+
+# Secrets
+.env
+config/local.php
+
+# Uploads (keep directory, not files)
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Email outbox (contains customer data)
+/docs/outbox/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

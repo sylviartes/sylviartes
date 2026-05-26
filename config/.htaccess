@@ -1,0 +1,4 @@
+# Bloquear acesso web à pasta config (contém dados sensíveis)
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>

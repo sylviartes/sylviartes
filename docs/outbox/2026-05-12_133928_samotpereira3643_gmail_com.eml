@@ -1,0 +1,24 @@
+Para: samotpereira3643@gmail.com
+De: SylviArtes <noreply@sylviartes.pt>
+Assunto: Recuperação de password — SylviArtes
+Data: Tue, 12 May 2026 13:39:28 +0000
+Content-Type: text/html; charset=UTF-8
+
+
+                <div style='font-family:Arial,sans-serif; max-width:600px; margin:0 auto; padding:30px; background:#fff;'>
+                    <h2 style='color:#d66d7f;'>SylviArtes — Recuperação de Password</h2>
+                    <p>Olá, Tomas Pereira,</p>
+                    <p>Recebemos um pedido para redefinir a password da sua conta.</p>
+                    <p>Clique no botão abaixo para criar uma nova password (válido durante 1 hora):</p>
+                    <p style='text-align:center; margin:30px 0;'>
+                        <a href='http://localhost:8080/public/cliente/nova_password.php?token=f7b65a47bbbfaf2a6fd8a33a6b26fe768b30565297bc3a8d7f9b9b8beba81a39'
+                           style='background:#d66d7f; color:#fff; padding:14px 30px; border-radius:999px;
+                                  text-decoration:none; font-weight:bold;'>
+                            Criar nova password
+                        </a>
+                    </p>
+                    <p style='color:#666; font-size:13px;'>Se não foi você, pode ignorar este email — a password não será alterada.</p>
+                    <hr style='border:none; border-top:1px solid #eee; margin:30px 0;'>
+                    <p style='color:#999; font-size:12px;'>SylviArtes • Costura Criativa</p>
+                </div>
+            
