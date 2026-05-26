@@ -29,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apagar_pedido'])) {
             $conn->commit();
         } catch (PDOException $e) {
             $conn->rollBack();
-            die("Erro ao apagar encomenda: " . $e->getMessage());
+            error_log("Admin: erro ao apagar encomenda: " . $e->getMessage());
+            die('<p style="font-family:sans-serif;text-align:center;margin-top:80px;color:#555;">Ocorreu um erro ao apagar a encomenda. <a href="index.php">Voltar</a></p>');
         }
     }
 }

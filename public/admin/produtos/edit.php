@@ -231,6 +231,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && !isset($_POST['remover_imagem_id'])
                     continue;
                 }
 
+                $imageInfo = @getimagesize($_FILES['fotos']['tmp_name'][$i]);
+                if ($imageInfo === false) {
+                    $errosUpload[] = "$nomeOrig: o ficheiro não é uma imagem válida.";
+                    continue;
+                }
+
                 $ordem_atual++;
                 $nome_foto = uniqid('prod_' . $id . '_', true) . '.' . $ext;
                 $caminho = $pasta_produtos . '/' . $nome_foto;

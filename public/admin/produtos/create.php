@@ -37,6 +37,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $ext = strtolower(pathinfo($_FILES['fotos']['name'][$i], PATHINFO_EXTENSION));
                 if (!in_array($ext, $permitidas, true)) continue;
 
+                $imageInfo = @getimagesize($_FILES['fotos']['tmp_name'][$i]);
+                if ($imageInfo === false) continue; // Not a valid image
+
                 $nome_foto = uniqid('prod_', true) . '.' . $ext;
                 $caminho = $pasta_produtos . '/' . $nome_foto;
 
@@ -50,10 +53,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $ext = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
             if (in_array($ext, $permitidas, true)) {
                 if (!is_dir($pasta_produtos)) mkdir($pasta_produtos, 0755, true);
-                $nome_foto = uniqid('prod_', true) . '.' . $ext;
-                $caminho = $pasta_produtos . '/' . $nome_foto;
-                if (move_uploaded_file($_FILES['foto']['tmp_name'], $caminho)) {
-                    $imagensCarregadas[] = $nome_foto;
+                $imageInfo = @getimagesize($_FILES['foto']['tmp_name']);
+                if ($imageInfo === false) {
+                    $mensagem = "O ficheiro enviado não é uma imagem válida.";
+                    $tipo_msg = "erro";
+                } else {
+                    $nome_foto = uniqid('prod_', true) . '.' . $ext;
+                    $caminho = $pasta_produtos . '/' . $nome_foto;
+                    if (move_uploaded_file($_FILES['foto']['tmp_name'], $caminho)) {
+                        $imagensCarregadas[] = $nome_foto;
+                    }
                 }
             }
         }
@@ -107,7 +116,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($conn->inTransaction()) {
                     $conn->rollBack();
                 }
-                $mensagem = "Erro ao inserir: " . $e->getMessage();
+                error_log("Admin: erro ao criar produto: " . $e->getMessage());
+                $mensagem = "Ocorreu um erro ao guardar o produto. Tente novamente.";
                 $tipo_msg = "erro";
             }
         }

@@ -28,7 +28,8 @@ try {
     $produtos = $stmt_prod->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
-    die("Erro: " . $e->getMessage());
+    error_log("Admin: erro ao carregar categoria: " . $e->getMessage());
+    die('<p style="font-family:sans-serif;text-align:center;margin-top:80px;color:#555;">Ocorreu um erro interno. <a href="index.php">Voltar</a></p>');
 }
 ?>
 

@@ -81,7 +81,8 @@ if ($tokenValido && $_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } catch (Exception $e) {
             $conn->rollBack();
-            $mensagem = "Erro ao gravar a nova password: " . $e->getMessage();
+            error_log("Cliente: erro ao gravar password: " . $e->getMessage());
+            $mensagem = "Ocorreu um erro ao gravar a nova password. Por favor tente mais tarde.";
             $tipo = "erro";
         }
     }

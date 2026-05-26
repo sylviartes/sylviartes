@@ -54,7 +54,8 @@ if ($id > 0) {
         if ((int)$e->getCode() === 23000) {
             // ignore FK constraint
         } else {
-            die("Erro ao apagar produto: " . $e->getMessage());
+            error_log("Admin: erro ao apagar produto: " . $e->getMessage());
+            die('<p style="font-family:sans-serif;text-align:center;margin-top:80px;color:#555;">Ocorreu um erro ao apagar o produto. <a href="index.php">Voltar</a></p>');
         }
     }
 }

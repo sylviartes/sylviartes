@@ -83,5 +83,6 @@ try {
     header("Location: " . $session->url);
     exit;
 } catch (Exception $e) {
-    die("Erro ao iniciar pagamento Stripe: " . htmlspecialchars($e->getMessage()));
+    error_log("Stripe: erro ao iniciar pagamento: " . $e->getMessage());
+    die('<p style="font-family:sans-serif;text-align:center;margin-top:80px;color:#555;">Ocorreu um erro ao processar o pagamento. Por favor tente mais tarde ou contacte-nos.</p>');
 }

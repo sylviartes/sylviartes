@@ -160,7 +160,8 @@ try {
 
 } catch (Exception $e) {
     // Em caso de erro Stripe, redireciona com mensagem
-    $erro = urlencode(substr($e->getMessage(), 0, 200));
+    error_log("Admin: erro ao enviar link Stripe: " . $e->getMessage());
+    $erro = urlencode("Ocorreu um erro ao gerar o link de pagamento.");
     header("Location: view.php?id=$pedidoId&erro_stripe=$erro");
     exit;
 }

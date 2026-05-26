@@ -85,7 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             } catch (Exception $e) {
                 $conn->rollBack();
-                $mensagem = "Erro ao cancelar: " . $e->getMessage();
+                error_log("Cliente: erro ao cancelar encomenda: " . $e->getMessage());
+                $mensagem = "Ocorreu um erro ao cancelar a encomenda. Por favor tente mais tarde.";
                 $tipoMsg = "erro";
             }
         } else {

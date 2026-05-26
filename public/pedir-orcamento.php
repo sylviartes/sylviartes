@@ -225,11 +225,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($conn->inTransaction()) $conn->rollBack();
             } catch (Exception $eRoll) { /* ignora */ }
 
-            $mensagem = "Erro ao registar pedido. ";
+            error_log("Orçamento: erro ao registar pedido: " . $e->getMessage());
             if (str_contains($e->getMessage(), 'gone away') || str_contains($e->getMessage(), 'too large')) {
-                $mensagem .= "As fotos enviadas são demasiado grandes — tente com fotos mais pequenas (máx 1MB cada).";
+                $mensagem = "Erro ao registar pedido. As fotos enviadas são demasiado grandes — tente com fotos mais pequenas (máx 1MB cada).";
             } else {
-                $mensagem .= "Detalhes: " . $e->getMessage();
+                $mensagem = "Ocorreu um erro ao registar o pedido. Por favor tente novamente ou contacte-nos directamente.";
             }
             $tipo_mensagem = "danger";
         }
