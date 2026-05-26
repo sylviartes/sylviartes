@@ -18,6 +18,7 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../src/avaliacoes.php';
 require_once __DIR__ . '/../src/breadcrumbs.php';
+require_once __DIR__ . '/../config/csrf.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -32,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     && isset($_POST['accao']) && $_POST['accao'] === 'avaliar'
     && isset($_SESSION['cliente_id'])
 ) {
+    csrf_validate();
     $clienteId = (int)$_SESSION['cliente_id'];
     $estrelas = (int)($_POST['estrelas'] ?? 0);
     $comentario = trim($_POST['comentario'] ?? '');
@@ -362,6 +364,7 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
             <h4 style="margin:0 0 6px; color:#d66d7f;">Deixe a sua avaliação</h4>
             <p style="color:#636e72; font-size:14px; margin:0 0 12px;">A sua opinião ajuda outros clientes!</p>
             <form method="POST">
+                <?= csrf_input() ?>
                 <input type="hidden" name="accao" value="avaliar">
                 <input type="hidden" name="estrelas" id="aval-estrelas-input" value="0">
 

@@ -1,7 +1,8 @@
 <?php
 // 1. Inclusão da Base de Dados e Autenticação
-require_once __DIR__ . '/../../../config/db.php'; 
-require_once __DIR__ . '/../auth.php';           
+require_once __DIR__ . '/../../../config/db.php';
+require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 
 // --- CONFIGURAÇÕES ---
 $estadosValidos = ['aguarda_orcamento', 'em_analise', 'aguarda_pagamento', 'em_producao', 'concluido', 'entregue', 'cancelado'];
@@ -18,6 +19,7 @@ $estadosLabels = [
 
 // --- LÓGICA DE ATUALIZAÇÃO ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atualizar_estado'])) {
+    csrf_validate();
     $novo_estado = trim($_POST['estado'] ?? '');
     $pedido_id = (int)($_POST['pedido_id'] ?? 0);
 
@@ -277,6 +279,7 @@ $totalEncomendas = array_sum($contagens);
                             <td>
                                 <!-- Select que parece badge: muda de cor conforme valor seleccionado e auto-submete -->
                                 <form method="POST" action="" style="display:inline;">
+                                    <?= csrf_input() ?>
                                     <input type="hidden" name="pedido_id" value="<?= $row['id'] ?>">
                                     <input type="hidden" name="atualizar_estado" value="1">
                                     <select name="estado"

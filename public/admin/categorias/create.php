@@ -1,11 +1,13 @@
 <?php
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 
 $mensagem = '';
 $tipo_msg = '';
 
 if (isset($_POST['nova_categoria'])) {
+    csrf_validate();
     $nome = trim($_POST['nome_cat'] ?? '');
     $desc = trim($_POST['desc_cat'] ?? '');
 
@@ -66,6 +68,7 @@ if (isset($_POST['nova_categoria'])) {
 
     <div class="card" style="max-width: 500px;">
         <form method="POST">
+            <?= csrf_input() ?>
             <div class="form-group">
                 <label><i class="fas fa-tag"></i> Nome da Categoria:</label>
                 <input type="text" name="nome_cat" placeholder="Ex: Toalhas" required>

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 
 $id = (int)($_GET['id'] ?? 0);
 if ($id <= 0) {
@@ -22,6 +23,7 @@ if (!$cat) {
 }
 
 if ($_POST && isset($_POST['guardar'])) {
+    csrf_validate();
     $nome = trim($_POST['nome_cat'] ?? '');
     $desc = trim($_POST['desc_cat'] ?? '');
 
@@ -85,6 +87,7 @@ if ($_POST && isset($_POST['guardar'])) {
 
     <div class="card" style="max-width: 500px;">
         <form method="POST">
+            <?= csrf_input() ?>
             <div class="form-group">
                 <label><i class="fas fa-tag"></i> Nome da Categoria:</label>
                 <input type="text" name="nome_cat" value="<?php echo htmlspecialchars($cat['nome']); ?>" required>

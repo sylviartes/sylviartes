@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id <= 0) {
@@ -105,6 +106,10 @@ if (!$produto) {
 }
 
 // Processar remoção de imagem
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_validate();
+}
+
 if (isset($_POST['remover_imagem_id']) && (int)$_POST['remover_imagem_id'] > 0) {
     $img_id = (int)$_POST['remover_imagem_id'];
 
@@ -338,6 +343,7 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="card">
         <form method="POST" enctype="multipart/form-data">
+            <?= csrf_input() ?>
             <div class="row">
                 <div class="col">
                     <div class="form-group">

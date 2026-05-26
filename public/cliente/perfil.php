@@ -17,6 +17,7 @@
 
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../config/csrf.php';
 
 $clienteId = $_SESSION['cliente_id'];
 
@@ -30,6 +31,7 @@ $erros = [];
 $sucesso = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_validate();
     // O campo oculto "accao" diz-nos qual dos forms foi submetido
     $accao = $_POST['accao'] ?? 'dados';
 
@@ -119,6 +121,7 @@ $c = $stmt->fetch(PDO::FETCH_ASSOC);
         <div class="cli-section">
             <h2>Os meus dados</h2>
             <form method="POST" novalidate>
+                <?= csrf_input() ?>
                 <input type="hidden" name="accao" value="dados">
                 <div class="form-grid">
                     <div class="full">
@@ -153,6 +156,7 @@ $c = $stmt->fetch(PDO::FETCH_ASSOC);
         <div class="cli-section">
             <h2>Alterar password</h2>
             <form method="POST" novalidate>
+                <?= csrf_input() ?>
                 <input type="hidden" name="accao" value="password">
                 <div class="form-grid">
                     <div class="full">

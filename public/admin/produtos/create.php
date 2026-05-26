@@ -1,10 +1,12 @@
 <?php
-require_once __DIR__ . '/../../../config/db.php'; 
-require_once __DIR__ . '/../auth.php';  
+require_once __DIR__ . '/../../../config/db.php';
+require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 $mensagem = '';
 $tipo_msg = '';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    csrf_validate();
     $nome = trim($_POST['nome'] ?? '');
     $descricao = trim($_POST['descricao'] ?? '');
     $preco = str_replace(',', '.', ($_POST['preco'] ?? ''));
@@ -164,6 +166,7 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="card">
         <form method="POST" enctype="multipart/form-data">
+            <?= csrf_input() ?>
             <div class="form-grid">
                 <div class="form-group">
                     <label><i class="fas fa-tag"></i> Nome do Produto:</label>
