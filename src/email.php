@@ -23,18 +23,7 @@
 // CONFIGURAÇÕES — valores lidos de config/.env (nunca hardcoded aqui)
 // =============================================================================
 
-// --- Load .env if present (idempotent — runs once per process) ---
-(static function () {
-    static $loaded = false;
-    if ($loaded) return;
-    $loaded = true;
-    $envFile = __DIR__ . '/../config/.env';
-    if (file_exists($envFile)) {
-        foreach (parse_ini_file($envFile) as $k => $v) {
-            putenv("$k=$v");
-        }
-    }
-})();
+require_once __DIR__ . '/../config/env.php';
 
 // === RESEND (Recomendado — mais simples) ===
 // Chave lida de config/.env — nunca colocar a chave real diretamente aqui.
@@ -47,7 +36,7 @@ if (!defined('RESEND_FROM'))    define('RESEND_FROM',    getenv('RESEND_FROM')  
 
 // === SMTP (alternativa, se preferires Gmail/Brevo/etc.) ===
 if (!defined('SMTP_HOST'))      define('SMTP_HOST',      getenv('SMTP_HOST')      ?: '');
-if (!defined('SMTP_PORT'))      define('SMTP_PORT',      getenv('SMTP_PORT')      ?: 587);
+if (!defined('SMTP_PORT'))      define('SMTP_PORT',      getenv('SMTP_PORT') ? (int)getenv('SMTP_PORT') : 587);
 if (!defined('SMTP_USER'))      define('SMTP_USER',      getenv('SMTP_USER')      ?: '');
 if (!defined('SMTP_PASS'))      define('SMTP_PASS',      getenv('SMTP_PASS')      ?: '');
 if (!defined('SMTP_FROM'))      define('SMTP_FROM',      getenv('SMTP_FROM')      ?: 'noreply@sylviartes.pt');

@@ -11,18 +11,7 @@
  *    Copiar o whsec_... mostrado pela CLI para STRIPE_WEBHOOK_SECRET.
  */
 
-// --- Load .env if present (idempotent — runs once per process) ---
-(static function () {
-    static $loaded = false;
-    if ($loaded) return;
-    $loaded = true;
-    $envFile = __DIR__ . '/.env';
-    if (file_exists($envFile)) {
-        foreach (parse_ini_file($envFile) as $k => $v) {
-            putenv("$k=$v");
-        }
-    }
-})();
+require_once __DIR__ . '/env.php';
 
 if (!defined('STRIPE_PUBLISHABLE_KEY')) define('STRIPE_PUBLISHABLE_KEY', getenv('STRIPE_PUBLISHABLE_KEY') ?: 'pk_test_SUBSTITUI_AQUI');
 if (!defined('STRIPE_SECRET_KEY'))      define('STRIPE_SECRET_KEY',      getenv('STRIPE_SECRET_KEY')      ?: 'sk_test_SUBSTITUI_AQUI');
