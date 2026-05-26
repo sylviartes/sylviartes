@@ -45,24 +45,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            // Tenta verificar com hash bcrypt (forma segura)
+            // Verifica com hash bcrypt (única forma aceite)
             if (password_verify($password, $row['password'])) {
+                session_regenerate_id(true);
                 $_SESSION['admin_id'] = $row['id'];
                 $_SESSION['admin_nome'] = $row['nome'];
                 header("Location: index.php");
                 exit;
             } else {
-                // Fallback: comparar texto plano (para contas antigas em que a
-                // password ainda não foi convertida para hash). NÃO usar em
-                // novos utilizadores — só compatibilidade.
-                if ($password === $row['password']) {
-                    $_SESSION['admin_id'] = $row['id'];
-                    $_SESSION['admin_nome'] = $row['nome'];
-                    header("Location: index.php");
-                    exit;
-                } else {
-                    $erro = "Password incorreta.";
-                }
+                $erro = "Password incorreta.";
             }
         } else {
             // Mensagem deliberadamente vaga: não dizemos se foi o email ou a

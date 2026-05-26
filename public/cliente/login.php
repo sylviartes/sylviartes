@@ -45,16 +45,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            // password_verify() compara a password digitada com o HASH guardado.
-            // O fallback de texto plano serve para utilizadores antigos cuja
-            // password ainda não foi convertida para hash (raros — geralmente
-            // os "fantasmas" criados pelo checkout têm password aleatória que
-            // ninguém sabe).
-            $passwordOk = password_verify($password, $row['password'])
-                || $password === $row['password'];
-
-            if ($passwordOk) {
-                // ✓ Login bem-sucedido — grava na sessão
+            // Verifica com hash bcrypt (única forma aceite)
+            if (password_verify($password, $row['password'])) {
+                // ✓ Login bem-sucedido — regenera sessão e grava na sessão
+                session_regenerate_id(true);
                 $_SESSION['cliente_id'] = $row['id'];
                 $_SESSION['cliente_nome'] = $row['nome'];
 
@@ -62,18 +56,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $redirect = $_GET['redirect'] ?? 'index.php';
 
                 // SEGURANÇA: só aceita caminhos relativos.
-                // Se alguém tentar ?redirect=https://site-malicioso.com,
-                // ignora e manda para o dashboard.
-                if (!preg_match('/^[a-zA-Z0-9_\-\.\/\?\=\&]+$/', $redirect)) {
+                // Rejeita URLs absolutas e caminhos começados por // (open redirect).
+                if (!preg_match('/^[a-zA-Z0-9_\-\.\/\?\=\&]+$/', $redirect)
+                    || str_starts_with($redirect, '//')
+                    || str_contains($redirect, '://')) {
                     $redirect = 'index.php';
                 }
                 header("Location: " . $redirect);
                 exit;
             } else {
-                $erro = "Password incorreta.";
+                $erro = "Email ou password incorretos.";
             }
         } else {
-            $erro = "Email não encontrado.";
+            $erro = "Email ou password incorretos.";
         }
     } else {
         $erro = "Preencha o email e a password.";
