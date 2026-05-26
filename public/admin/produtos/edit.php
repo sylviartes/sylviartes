@@ -23,7 +23,7 @@ if (isset($_GET['sucesso']) && $_GET['sucesso'] == '1') {
 // Apanha erros de upload guardados em sessão
 $errosUploadFlash = [];
 if (isset($_GET['err']) && $_GET['err'] == '1') {
-    if (session_status() === PHP_SESSION_NONE) session_start();
+    require_once __DIR__ . '/../../../config/session.php';
     if (!empty($_SESSION['upload_erros'])) {
         $errosUploadFlash = $_SESSION['upload_erros'];
         unset($_SESSION['upload_erros']);
@@ -253,7 +253,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && !isset($_POST['remover_imagem_id'])
             if ($totalCarregadas > 0) $params['imgs'] = $totalCarregadas;
             if (!empty($errosUpload)) {
                 // Guarda os erros em sessão para mostrar após redirect
-                if (session_status() === PHP_SESSION_NONE) session_start();
+                require_once __DIR__ . '/../../../config/session.php';
                 $_SESSION['upload_erros'] = $errosUpload;
                 $params['err'] = 1;
             }

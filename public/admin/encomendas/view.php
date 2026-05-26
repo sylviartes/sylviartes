@@ -376,6 +376,7 @@ $estadosLabels = [
             <?php endif; ?>
 
             <form method="POST" action="enviar_link.php" onsubmit="return confirm('Gerar/atualizar link de pagamento e enviar email à cliente?');">
+                <?= csrf_input() ?>
                 <input type="hidden" name="pedido_id" value="<?php echo (int)$pedido_id; ?>">
                 <button type="submit" style="background:#d66d7f; color:#fff; border:none; padding:14px 28px; border-radius:999px; font-weight:600; font-size:15px; cursor:pointer;">
                     <i class="fas fa-paper-plane"></i>

@@ -11,7 +11,7 @@
  * =============================================================================
  */
 
-session_start();
+require_once __DIR__ . '/../../config/session.php';
 
 // Remove apenas as variáveis de identificação do cliente
 unset($_SESSION['cliente_id'], $_SESSION['cliente_nome']);

@@ -19,6 +19,7 @@
 
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../../../config/stripe.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 require_once __DIR__ . '/../../../src/email.php';
 require_once __DIR__ . '/../auth.php';
 
@@ -27,6 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: index.php");
     exit;
 }
+
+csrf_validate();
 
 $pedidoId = (int)($_POST['pedido_id'] ?? 0);
 if ($pedidoId <= 0) {

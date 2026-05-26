@@ -19,7 +19,7 @@
  * =============================================================================
  */
 
-session_start();
+require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../../config/db.php';
 
 // Já logado → não faz sentido mostrar form de registo

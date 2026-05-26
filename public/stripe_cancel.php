@@ -15,7 +15,7 @@
  * =============================================================================
  */
 
-session_start();
+require_once __DIR__ . '/../config/session.php';
 $pedidoId = (int)($_GET['pedido_id'] ?? 0);  // ID do pedido afetado
 require_once __DIR__ . '/header.php';
 ?>
