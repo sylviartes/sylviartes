@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hashAtual = $stmt->fetchColumn();
 
         // Aceita hash bcrypt (normal) ou texto plano (fallback para contas antigas)
-        $okAtual = password_verify($atual, $hashAtual) || $atual === $hashAtual;
+        $okAtual = password_verify($atual, $hashAtual);
         if (!$okAtual) $erros[] = "Password atual incorreta.";
         if (strlen($nova) < 6) $erros[] = "Nova password tem de ter pelo menos 6 caracteres.";
         if ($nova !== $conf) $erros[] = "A confirmação não coincide.";

@@ -53,12 +53,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 header("Location: index.php");
                 exit;
             } else {
-                $erro = "Password incorreta.";
+                $erro = "Email ou password incorretos.";
             }
         } else {
             // Mensagem deliberadamente vaga: não dizemos se foi o email ou a
             // password que está errado — protege contra enumeração de emails.
-            $erro = "Email não encontrado ou sem permissão.";
+            $erro = "Email ou password incorretos.";
         }
     } else {
         $erro = "Preencha o email e a password.";
