@@ -18,8 +18,9 @@
  * =============================================================================
  */
 
-session_start();
+require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/csrf.php';
 
 // === REGEX (mesmas do projeto, fornecidas pelo professor) ===
 $regexPostal   = "/^[1-9]\d{3}(-\d{3})?$/";
@@ -62,6 +63,7 @@ $todasCategorias = $conn->query("SELECT id, nome FROM categoria ORDER BY nome")-
 // PROCESSAR FORM
 // =============================================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_validate();
     $nome          = trim($_POST['nome'] ?? '');
     $email         = trim($_POST['email'] ?? '');
     $telefone      = preg_replace('/\s+/', '', trim($_POST['telefone'] ?? ''));
@@ -363,6 +365,7 @@ $val = function ($campo) use ($clienteLogado) {
         <?php endif; ?>
 
         <form method="POST" enctype="multipart/form-data" novalidate>
+            <?= csrf_input() ?>
             <input type="hidden" name="portfolio_inspiracao_id" value="<?= $inspiracaoId ?>">
 
             <!-- DADOS PESSOAIS -->

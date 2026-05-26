@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 
 $mensagem = '';
 $tipo_msg = '';
@@ -235,11 +236,13 @@ $produtos = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
                         <a href="edit.php?id=<?= (int)$row['id'] ?>" class="btn-editar">
                             <i class="fas fa-edit"></i> Editar
                         </a>
-                        <a href="delete.php?id=<?= (int)$row['id'] ?>"
-                           class="btn-apagar"
-                           onclick="return confirm('Apagar este item do portfólio?');">
-                            <i class="fas fa-trash"></i>
-                        </a>
+                        <form method="POST" action="delete.php" style="display:inline;" onsubmit="return confirm('Apagar este produto?');">
+                            <?= csrf_input() ?>
+                            <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
+                            <button type="submit" class="btn-apagar">
+                                <i class="fas fa-trash"></i> Apagar
+                            </button>
+                        </form>
                     </div>
                 </div>
             <?php endforeach; ?>

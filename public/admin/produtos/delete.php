@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../../config/session.php';
 
 if (empty($_SESSION['admin_id'])) {
     header("Location: ../login.php");
@@ -9,8 +9,16 @@ if (empty($_SESSION['admin_id'])) {
 // CORREÇÃO 1: Adicionado mais um "../" para recuar 3 pastas até à raiz do site
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: index.php");
+    exit;
+}
+
+csrf_validate();
+
+$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 
 if ($id > 0) {
     try {

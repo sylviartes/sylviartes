@@ -18,9 +18,7 @@
  */
 
 // Inicia sessão se ainda não iniciada (necessário para ler $_SESSION abaixo)
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../config/session.php';
 ?>
 <!DOCTYPE html>
 <html lang="pt-PT">

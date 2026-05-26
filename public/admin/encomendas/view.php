@@ -18,6 +18,7 @@
 
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../auth.php';   // Exige login admin
+require_once __DIR__ . '/../../../config/csrf.php';
 
 // Sem ID → volta à lista
 if (!isset($_GET['id'])) {
@@ -31,6 +32,7 @@ $pedido_id = (int)$_GET['id'];
 // AÇÃO: Admin atualiza o valor_total do pedido (orçamento finalizado)
 // =========================================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accao_orcamento']) && $_POST['accao_orcamento'] === 'atualizar_preco') {
+    csrf_validate();
     $novoValor = (float)str_replace(',', '.', $_POST['valor_total'] ?? 0);
     if ($novoValor > 0 && $novoValor < 100000) {
         $stmt = $conn->prepare("UPDATE pedido SET valor_total = ? WHERE id = ?");
@@ -51,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accao_orcamento']) &&
 // AÇÃO: Admin valida/recusa o pagamento
 // =========================================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accao_pagamento'])) {
+    csrf_validate();
     // Operador ternário: 'validar' → 'validado', qualquer outro → 'recusado'
     $novoEstado = $_POST['accao_pagamento'] === 'validar' ? 'validado' : 'recusado';
 
@@ -323,6 +326,7 @@ $estadosLabels = [
 
             <!-- Form: editar valor_total -->
             <form method="POST" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:18px;">
+                <?= csrf_input() ?>
                 <input type="hidden" name="accao_orcamento" value="atualizar_preco">
                 <label style="font-weight:600; color:#555;">Valor do orçamento (€):</label>
                 <input type="number" step="0.01" min="0.01" max="99999" name="valor_total"
@@ -414,12 +418,14 @@ $estadosLabels = [
 
             <?php if ($pedido['estado_pagamento'] !== 'validado'): ?>
                 <form method="POST" style="display:inline-block; margin-right:10px;">
+                    <?= csrf_input() ?>
                     <input type="hidden" name="accao_pagamento" value="validar">
                     <button type="submit" style="padding:10px 18px; background:#28a745; color:#fff; border:none; border-radius:8px; font-weight:600; cursor:pointer;">
                         <i class="fas fa-check"></i> Validar pagamento
                     </button>
                 </form>
                 <form method="POST" style="display:inline-block;" onsubmit="return confirm('Recusar este pagamento?');">
+                    <?= csrf_input() ?>
                     <input type="hidden" name="accao_pagamento" value="recusar">
                     <button type="submit" style="padding:10px 18px; background:#dc3545; color:#fff; border:none; border-radius:8px; font-weight:600; cursor:pointer;">
                         <i class="fas fa-times"></i> Recusar

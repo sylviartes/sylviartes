@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 
 $mensagem = '';
 
@@ -164,11 +165,13 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <a href="edit.php?id=<?= (int)$row['id'] ?>" class="btn-cat-edit">
                                 <i class="fas fa-edit"></i> Editar
                             </a>
-                            <a href="delete.php?id=<?= (int)$row['id'] ?>"
-                               onclick="return confirm('Apagar a categoria \'<?= htmlspecialchars(addslashes($row['nome'])) ?>\'? Itens associados ficam sem categoria.');"
-                               class="btn-cat-del">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                            <form method="POST" action="delete.php" style="display:inline;" onsubmit="return confirm('Apagar a categoria \'<?= htmlspecialchars(addslashes($row['nome'])) ?>\'? Itens associados ficam sem categoria.');">
+                                <?= csrf_input() ?>
+                                <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
+                                <button type="submit" class="btn-cat-del">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 <?php endforeach; ?>

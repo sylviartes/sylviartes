@@ -1,8 +1,16 @@
 <?php
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 
-$id = (int) ($_GET['id'] ?? 0);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: index.php");
+    exit;
+}
+
+csrf_validate();
+
+$id = (int) ($_POST['id'] ?? 0);
 
 if ($id > 0) {
     try {

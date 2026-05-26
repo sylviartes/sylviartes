@@ -1,8 +1,10 @@
 <?php
 require_once __DIR__ . '/../../../config/db.php';
-require_once __DIR__ . '/../auth.php';   
+require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apagar_pedido'])) {
+    csrf_validate();
     $id_apagar = (int)($_POST['id_apagar'] ?? 0);
 
     if ($id_apagar > 0) {

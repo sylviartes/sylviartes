@@ -16,9 +16,7 @@
 
 // Inicia a sessão se ainda não estiver iniciada
 // (algumas páginas já chamam session_start() noutro sítio — por isso verificamos)
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../config/session.php';
 
 // Se não há cliente logado, manda para o login
 if (!isset($_SESSION['cliente_id'])) {

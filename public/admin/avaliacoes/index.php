@@ -15,6 +15,7 @@
 
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../../../config/csrf.php';
 
 // Verifica se a SQL alter_avaliacoes.sql foi aplicada (precisa da coluna produto_id)
 $temColunaProduto = false;
@@ -70,6 +71,7 @@ ALTER TABLE avaliacao
 
 // === AÇÕES (aprovar / rejeitar) ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_validate();
     $accao = $_POST['accao'] ?? '';
     $avalId = (int)($_POST['id'] ?? 0);
 
@@ -202,6 +204,7 @@ function estrelas_html(int $n): string
                                 <td><?= date('d/m/Y H:i', strtotime($a['data'])) ?></td>
                                 <td>
                                     <form method="POST" style="display:inline;">
+                                        <?= csrf_input() ?>
                                         <input type="hidden" name="id" value="<?= (int)$a['id'] ?>">
                                         <input type="hidden" name="accao" value="aprovar">
                                         <button type="submit" class="btn-aprovar">
@@ -209,6 +212,7 @@ function estrelas_html(int $n): string
                                         </button>
                                     </form>
                                     <form method="POST" style="display:inline;" onsubmit="return confirm('Rejeitar esta avaliação? (será eliminada)');">
+                                        <?= csrf_input() ?>
                                         <input type="hidden" name="id" value="<?= (int)$a['id'] ?>">
                                         <input type="hidden" name="accao" value="rejeitar">
                                         <button type="submit" class="btn-rejeitar">
@@ -263,6 +267,7 @@ function estrelas_html(int $n): string
                                 <td><?= date('d/m/Y', strtotime($a['data'])) ?></td>
                                 <td>
                                     <form method="POST" style="display:inline;" onsubmit="return confirm('Esconder esta avaliação?');">
+                                        <?= csrf_input() ?>
                                         <input type="hidden" name="id" value="<?= (int)$a['id'] ?>">
                                         <input type="hidden" name="accao" value="desaprovar">
                                         <button type="submit" class="btn-desaprovar">

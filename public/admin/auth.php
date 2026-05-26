@@ -14,9 +14,7 @@
  */
 
 // Inicia sessão se ainda não iniciada
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../config/session.php';
 
 // Sem credenciais admin → fora!
 if (!isset($_SESSION['admin_id'])) {
