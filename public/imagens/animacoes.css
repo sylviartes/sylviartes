@@ -114,6 +114,37 @@ input, textarea, select {
 /* Scroll suave em links âncora */
 html { scroll-behavior: smooth; }
 
+/* ==========================================================================
+   ACESSIBILIDADE — Anel de foco visível
+   ==========================================================================
+   :focus-visible só aparece quando o utilizador navega com o TECLADO (Tab).
+   Não aparece ao clicar com o rato, o que mantém o design limpo mas garante
+   que quem usa teclado (ou leitor de ecrã) sabe onde está na página.
+   ========================================================================== */
+:focus-visible {
+    /* Contorno rosa consistente com a paleta do site */
+    outline: 3px solid #d66d7f;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* Botões e links com :focus-visible */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid #d66d7f;
+    outline-offset: 3px;
+}
+
+/* Texto muted com contraste mínimo AA (4.5:1) */
+/* #888 em fundo branco é apenas ~2.8:1 — #5b6470 é ~5.6:1 */
+.text-muted,
+small {
+    color: #5b6470 !important;
+}
+
 /* Reduzir animações para utilizadores que preferem menos movimento (acessibilidade) */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

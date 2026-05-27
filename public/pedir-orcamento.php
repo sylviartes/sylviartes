@@ -374,17 +374,29 @@ $val = function ($campo) use ($clienteLogado) {
             <!-- DADOS PESSOAIS -->
             <div class="orc-section">Dados Pessoais</div>
             <div class="orc-grid">
+                <!-- Cada campo tem um <label> com for= ligado ao id= do input.
+                     Isto é obrigatório para acessibilidade (WCAG 1.3.1):
+                     leitores de ecrã anunciam o label ao utilizador. -->
                 <div class="orc-group full">
-                    <input type="text" name="nome" placeholder="Nome Completo *"
+                    <label for="orc_nome" style="display:block; margin-bottom:4px; font-weight:600; color:#555; font-size:14px;">
+                        Nome Completo <span style="color:#d66d7f;">*</span>
+                    </label>
+                    <input type="text" id="orc_nome" name="nome" placeholder="Ex: Maria Silva"
                            value="<?= htmlspecialchars($val('nome')) ?>" required>
                 </div>
                 <div class="orc-group">
-                    <input type="email" name="email" placeholder="Email *"
+                    <label for="orc_email" style="display:block; margin-bottom:4px; font-weight:600; color:#555; font-size:14px;">
+                        Email <span style="color:#d66d7f;">*</span>
+                    </label>
+                    <input type="email" id="orc_email" name="email" placeholder="Ex: maria@email.com"
                            value="<?= htmlspecialchars($val('email')) ?>"
                            <?= $clienteLogado ? 'readonly' : '' ?> required>
                 </div>
                 <div class="orc-group">
-                    <input type="text" name="telefone" placeholder="Telemóvel *"
+                    <label for="orc_telefone" style="display:block; margin-bottom:4px; font-weight:600; color:#555; font-size:14px;">
+                        Telemóvel <span style="color:#d66d7f;">*</span>
+                    </label>
+                    <input type="text" id="orc_telefone" name="telefone" placeholder="Ex: 912 345 678"
                            value="<?= htmlspecialchars($val('telefone')) ?>" required>
                 </div>
             </div>
@@ -393,8 +405,11 @@ $val = function ($campo) use ($clienteLogado) {
             <div class="orc-section">O Que Pretende</div>
             <div class="orc-grid">
                 <div class="orc-group full">
-                    <select name="categoria_id">
-                        <option value="0">Tipo de peça (opcional)</option>
+                    <label for="orc_categoria" style="display:block; margin-bottom:4px; font-weight:600; color:#555; font-size:14px;">
+                        Tipo de Peça
+                    </label>
+                    <select id="orc_categoria" name="categoria_id">
+                        <option value="0">Selecionar (opcional)</option>
                         <?php foreach ($todasCategorias as $c): ?>
                             <option value="<?= (int)$c['id'] ?>"
                                 <?= ($_POST['categoria_id'] ?? 0) == $c['id'] ? 'selected' : '' ?>>
@@ -404,7 +419,11 @@ $val = function ($campo) use ($clienteLogado) {
                     </select>
                 </div>
                 <div class="orc-group full">
-                    <textarea name="descricao" placeholder="Descreva com detalhe: nomes a bordar, cores preferidas, tamanho, ocasião (batizado, aniversário...), prazo desejado, etc. Quanto mais detalhes, mais preciso será o nosso orçamento. *" required><?= htmlspecialchars($_POST['descricao'] ?? '') ?></textarea>
+                    <label for="orc_descricao" style="display:block; margin-bottom:4px; font-weight:600; color:#555; font-size:14px;">
+                        Descrição do Pedido <span style="color:#d66d7f;">*</span>
+                    </label>
+                    <textarea id="orc_descricao" name="descricao" required
+                              placeholder="Descreva com detalhe: nomes a bordar, cores, tamanho, ocasião, prazo..."><?= htmlspecialchars($_POST['descricao'] ?? '') ?></textarea>
                 </div>
             </div>
 
@@ -429,7 +448,10 @@ $val = function ($campo) use ($clienteLogado) {
             <div class="orc-section">Entrega</div>
             <div class="orc-grid">
                 <div class="orc-group">
-                    <select name="tipo_entrega">
+                    <label for="orc_tipo_entrega" style="display:block; margin-bottom:4px; font-weight:600; color:#555; font-size:14px;">
+                        Forma de Entrega
+                    </label>
+                    <select id="orc_tipo_entrega" name="tipo_entrega">
                         <option value="domicilio" <?= ($_POST['tipo_entrega'] ?? 'domicilio') === 'domicilio' ? 'selected' : '' ?>>
                             Entrega ao Domicílio
                         </option>
@@ -439,21 +461,32 @@ $val = function ($campo) use ($clienteLogado) {
                     </select>
                 </div>
                 <div class="orc-group">
-                    <input type="date" name="prazo_entrega_desejado"
+                    <label for="orc_prazo" style="display:block; margin-bottom:4px; font-weight:600; color:#555; font-size:14px;">
+                        Prazo Desejado
+                    </label>
+                    <input type="date" id="orc_prazo" name="prazo_entrega_desejado"
                            value="<?= htmlspecialchars($_POST['prazo_entrega_desejado'] ?? date('Y-m-d', strtotime('+21 days'))) ?>"
-                           min="<?= date('Y-m-d', strtotime('+7 days')) ?>"
-                           placeholder="Prazo desejado">
+                           min="<?= date('Y-m-d', strtotime('+7 days')) ?>">
                 </div>
                 <div class="orc-group full">
-                    <input type="text" name="morada" placeholder="Morada (se entrega ao domicílio)"
+                    <label for="orc_morada" style="display:block; margin-bottom:4px; font-weight:600; color:#555; font-size:14px;">
+                        Morada
+                    </label>
+                    <input type="text" id="orc_morada" name="morada" placeholder="Rua, número, andar (se entrega ao domicílio)"
                            value="<?= htmlspecialchars($val('morada')) ?>">
                 </div>
                 <div class="orc-group">
-                    <input type="text" name="codigo_postal" placeholder="Código Postal (4000-123)"
+                    <label for="orc_cp" style="display:block; margin-bottom:4px; font-weight:600; color:#555; font-size:14px;">
+                        Código Postal
+                    </label>
+                    <input type="text" id="orc_cp" name="codigo_postal" placeholder="Ex: 8700-123"
                            value="<?= htmlspecialchars($val('codigo_postal')) ?>">
                 </div>
                 <div class="orc-group">
-                    <input type="text" name="localidade" placeholder="Localidade"
+                    <label for="orc_localidade" style="display:block; margin-bottom:4px; font-weight:600; color:#555; font-size:14px;">
+                        Localidade
+                    </label>
+                    <input type="text" id="orc_localidade" name="localidade" placeholder="Ex: Olhão"
                            value="<?= htmlspecialchars($val('localidade')) ?>">
                 </div>
             </div>

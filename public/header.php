@@ -518,7 +518,8 @@ require_once __DIR__ . '/../config/session.php';
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top py-2">
     <div class="container">
         <a href="index.php" class="navbar-brand d-flex align-items-center" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
-            <img src="imagens/logo_sylviartes.png" alt="Logo" class="me-2" style="height: 44px; border-radius: 10px;" onerror="this.style.display='none';">
+            <!-- Alt descritivo: explica o que é a imagem, não só "Logo" -->
+            <img src="imagens/logo_sylviartes.png" alt="SylviArtes — Costura Criativa" class="me-2" style="height: 44px; border-radius: 10px;" onerror="this.style.display='none';">
             <span class="fw-bold text-primary" style="font-size: 1.35rem; font-family: 'Playfair Display', serif; letter-spacing: 0.3px;">SylviArtes</span>
         </a>
 
