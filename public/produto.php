@@ -117,24 +117,20 @@ function obter_imagens_produto_loja($conn, $produto_id, $p) {
 
     while ($row = $stmt->fetch()) {
         if (!empty($row['imagem'])) {
-            // 1. Tentar ficheiro em /imagens/produtos/
+            // Imagens estão guardadas como nome de ficheiro em /imagens/produtos/
             $caminho = __DIR__ . '/imagens/produtos/' . $row['imagem'];
             if (file_exists($caminho)) {
                 $imagens[] = 'imagens/produtos/' . $row['imagem'];
-            } else {
-                // 2. Fallback: tratar como BLOB
-                $imagens[] = 'data:image/jpeg;base64,' . base64_encode($row['imagem']);
             }
+            // O ramo de fallback BLOB foi removido — imagens são sempre nomes de ficheiro.
         }
     }
 
-    // Fallback para imagem da própria tabela produto
+    // Fallback para campo legado "imagem" na tabela produto
     if (empty($imagens) && !empty($p['imagem'])) {
         $caminho = __DIR__ . '/imagens/produtos/' . $p['imagem'];
         if (file_exists($caminho)) {
             $imagens[] = 'imagens/produtos/' . $p['imagem'];
-        } else {
-            $imagens[] = 'data:image/jpeg;base64,' . base64_encode($p['imagem']);
         }
     }
 

@@ -99,7 +99,7 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
         }
     }
 
-    // fallback para imagem principal da tabela produto
+    // Fallback para imagem principal da tabela produto (campo legado)
     if (empty($imgs)) {
         if (isset($prod['imagem']) && !empty($prod['imagem'])) {
             $caminho = 'imagens/produtos/' . $prod['imagem'];
@@ -107,11 +107,8 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
                 $imgs[] = $caminho;
             }
         }
-
-        if (empty($imgs) && !empty($prod['imagem']) && $prod['imagem'] !== "NULL") {
-            $mime = ($temMime && !empty($prod['imagem_mime'])) ? $prod['imagem_mime'] : 'image/jpeg';
-            $imgs[] = 'data:' . $mime . ';base64,' . base64_encode($prod['imagem']);
-        }
+        // Nota: o ramo de fallback para BLOB (base64) foi removido — as imagens
+        // são guardadas como nome de ficheiro desde a migração para produto_imagem.
     }
 
     if (empty($imgs)) {

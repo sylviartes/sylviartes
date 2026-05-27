@@ -580,14 +580,14 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
     </div>
     <div class="destaques-grid">
         <?php foreach ($produtosDestaque as $pd):
-            $imgSrc = 'imagens/logo_sylviartes.png';
+            // Imagem principal do produto (nome de ficheiro guardado na BD)
+            $imgSrc = 'imagens/logo_sylviartes.png'; // fallback se não houver imagem
             if (!empty($pd['imagem'])) {
                 $caminhoLocal = __DIR__ . '/imagens/produtos/' . $pd['imagem'];
                 if (file_exists($caminhoLocal)) {
                     $imgSrc = 'imagens/produtos/' . $pd['imagem'];
-                } else {
-                    $imgSrc = 'data:image/jpeg;base64,' . base64_encode($pd['imagem']);
                 }
+                // Ramo BLOB removido — imagens são sempre nomes de ficheiro.
             }
             $estatsP = calcular_media_estrelas($conn, (int)$pd['id']);
         ?>
