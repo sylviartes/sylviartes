@@ -85,7 +85,7 @@ $produtos = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
         .pagina-header .total { color: #888; font-size: 14px; margin-top: 4px; }
 
         .btn-add {
-            background: linear-gradient(135deg, #c95f7a, #d6788b);
+            background: linear-gradient(135deg, #d66d7f, #bf5b6d);
             color: #fff; padding: 11px 22px; border-radius: 999px;
             text-decoration: none; font-weight: 600; font-size: 14px;
             display: inline-flex; align-items: center; gap: 8px;

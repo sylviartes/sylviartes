@@ -48,7 +48,7 @@ try {
         .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         .prod-card { background: white; border-radius: 15px; padding: 15px; text-align: center; border: 1px solid #eee; display: flex; flex-direction: column; justify-content: space-between; min-height: 320px; }
         .prod-img { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; background: #fdf2f4; }
-        .btn-edit-cat { background: linear-gradient(135deg, #e07a8b 0%, #d66d7f 100%); color: white !important; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-weight: 600; font-size: 14px; }
+        .btn-edit-cat { background: linear-gradient(135deg, #d66d7f 0%, #bf5b6d 100%); color: white !important; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-weight: 600; font-size: 14px; }
     </style>
 </head>
 <body class="admin-body">

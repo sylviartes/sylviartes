@@ -196,7 +196,7 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
 .produto-btn {
     display: inline-block; margin-top: 24px;
     padding: 14px 32px;
-    background: linear-gradient(135deg, #c95f7a, #d6788b);
+    background: linear-gradient(135deg, #d66d7f, #bf5b6d);
     color: #fff; border: none; border-radius: 999px;
     font-weight: 600; font-size: 16px; text-decoration: none;
     cursor: pointer; transition: 0.25s;
@@ -247,7 +247,7 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
 }
 .aval-form button {
     margin-top: 12px; padding: 10px 24px;
-    background: linear-gradient(135deg, #c95f7a, #d6788b); color: #fff;
+    background: linear-gradient(135deg, #d66d7f, #bf5b6d); color: #fff;
     border: none; border-radius: 999px; font-weight: 600; cursor: pointer;
 }
 

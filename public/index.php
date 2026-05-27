@@ -68,10 +68,11 @@ $totalCategorias = (int)$conn->query("SELECT COUNT(*) FROM categoria")->fetchCol
 
 <style>
 :root {
-    --rosa: #c25d72;
-    --rosa-soft: #d6788b;
-    --rosa-tinte: rgba(194,93,114,0.08);
-    --rosa-borda: rgba(194,93,114,0.18);
+    /* Paleta rosa — mesmos valores usados em header.php e admin_style.css */
+    --rosa: #d66d7f;
+    --rosa-soft: #bf5b6d;
+    --rosa-tinte: rgba(214,109,127,0.08);
+    --rosa-borda: rgba(214,109,127,0.18);
     --neutro-fundo: #fafaf8;
     --neutro-card: #ffffff;
     --neutro-borda: #ececea;

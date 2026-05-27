@@ -397,10 +397,10 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
                         <?php if (!empty($imagens_produto)): ?>
                         <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
                             <?php foreach ($imagens_produto as $index => $img): ?>
-                            <div style="position: relative; width: 100px; height: 100px; border: 2px solid #eee; border-radius: 8px; overflow: hidden; <?php echo $index === 0 ? 'border-color: #e07a8b;' : ''; ?>">
+                            <div style="position: relative; width: 100px; height: 100px; border: 2px solid #eee; border-radius: 8px; overflow: hidden; <?php echo $index === 0 ? 'border-color: #d66d7f;' : ''; ?>">
                                 <img src="<?php echo htmlspecialchars($img['src']); ?>" alt="Imagem <?php echo $index + 1; ?>" style="width: 100%; height: 100%; object-fit: cover;">
                                 <?php if ($index === 0): ?>
-                                <span style="position: absolute; bottom: 0; left: 0; right: 0; background: #e07a8b; color: white; font-size: 10px; text-align: center; padding: 2px;">Principal</span>
+                                <span style="position: absolute; bottom: 0; left: 0; right: 0; background: #d66d7f; color: white; font-size: 10px; text-align: center; padding: 2px;">Principal</span>
                                 <?php endif; ?>
                                 
                                 <button type="submit" name="remover_imagem_id" value="<?php echo (int)$img['id']; ?>" formnovalidate onclick="return confirm('Remover esta imagem?');" style="position: absolute; top: 2px; right: 2px; margin: 0; background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;">

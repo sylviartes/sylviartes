@@ -436,19 +436,19 @@ require_once __DIR__ . '/../config/session.php';
             left: 14px; right: 14px; bottom: 4px;
             height: 2px;
             border-radius: 2px;
-            background: #c25d72;
+            background: #bf5b6d;
             transform: scaleX(0);
             transform-origin: center;
             transition: transform 0.25s ease;
         }
         .navbar-nav .nav-link:hover {
-            color: #c25d72 !important;
+            color: #bf5b6d !important;
         }
         .navbar-nav .nav-link:hover::after {
             transform: scaleX(1);
         }
         .navbar-nav .nav-link.active {
-            color: #c25d72 !important;
+            color: #bf5b6d !important;
             font-weight: 600;
         }
         .navbar-nav .nav-link.active::after {
@@ -471,7 +471,7 @@ require_once __DIR__ . '/../config/session.php';
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: #c25d72;
+            background: #bf5b6d;
             color: #fff !important;
             padding: 10px 22px;
             border-radius: 999px;
@@ -479,7 +479,7 @@ require_once __DIR__ . '/../config/session.php';
             font-weight: 600;
             text-decoration: none;
             transition: all 0.25s;
-            border: 1px solid #c25d72;
+            border: 1px solid #bf5b6d;
             line-height: 1.2;
             box-shadow: 0 4px 14px rgba(194, 93, 114, 0.25);
             white-space: nowrap;
@@ -509,7 +509,7 @@ require_once __DIR__ . '/../config/session.php';
         }
         .navbar-nav .dropdown-item:hover {
             background: #fff8fa;
-            color: #c25d72;
+            color: #bf5b6d;
         }
     </style>
 </head>

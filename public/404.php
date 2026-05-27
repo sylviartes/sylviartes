@@ -33,7 +33,7 @@ require_once __DIR__ . '/header.php';
     color: #d66d7f;
     line-height: 1;
     margin: 0;
-    background: linear-gradient(135deg, #c95f7a, #e8a4b0);
+    background: linear-gradient(135deg, #d66d7f, #e8a4b0);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -57,7 +57,7 @@ require_once __DIR__ . '/header.php';
 .erro-404 .btn-rosa {
     display: inline-block;
     padding: 12px 28px;
-    background: linear-gradient(135deg, #c95f7a, #d6788b);
+    background: linear-gradient(135deg, #d66d7f, #bf5b6d);
     color: #fff;
     text-decoration: none;
     border-radius: 999px;

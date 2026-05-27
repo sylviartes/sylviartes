@@ -114,15 +114,15 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
 .catalogo-layout { display: flex; gap: 30px; margin-top: 40px; align-items: flex-start; }
 .catalogo-filtros { flex: 0 0 280px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); position: sticky; top: 20px; }
 .catalogo-filtros input, .catalogo-filtros select { width: 100%; padding: 12px; margin: 10px 0 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-.btn-filtrar { width: 100%; padding: 14px; background: #e07a8b; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-.btn-filtrar:hover { background: #d4697a; }
+.btn-filtrar { width: 100%; padding: 14px; background: #d66d7f; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+.btn-filtrar:hover { background: #bf5b6d; }
 
 .catalogo-conteudo { flex: 1; }
-.categoria-titulo { font-size: 24px; margin: 30px 0 20px; padding-left: 15px; border-left: 4px solid #e07a8b; color: #333; }
+.categoria-titulo { font-size: 24px; margin: 30px 0 20px; padding-left: 15px; border-left: 4px solid #d66d7f; color: #333; }
 .produtos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-bottom: 50px; }
 
 .produto-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: 0.3s; border: 1px solid #f0f0f0; display: flex; flex-direction: column; height: 100%; }
-.produto-card:hover { transform: translateY(-8px); border-color: #e07a8b; }
+.produto-card:hover { transform: translateY(-8px); border-color: #d66d7f; }
 
 .produto-img-box { height: 250px; background: #f9f9f9; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .produto-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
@@ -130,7 +130,7 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
 
 .produto-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
 .produto-nome { font-size: 17px; font-weight: 700; color: #333; text-decoration: none; margin-bottom: 8px; transition: color 0.3s; }
-.produto-nome:hover { color: #e07a8b; }
+.produto-nome:hover { color: #d66d7f; }
 
 .produto-desc {
     font-size: 14px;
@@ -146,15 +146,15 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
 }
 
 .produto-footer { margin-top: auto; border-top: 1px solid #f5f5f5; padding-top: 15px; }
-.produto-preco { font-size: 22px; font-weight: 700; color: #e07a8b; text-align: center; margin-bottom: 15px; display: block; }
-.btn-carrinho { background: #e07a8b; color: white; border: none; padding: 12px; border-radius: 25px; width: 100%; cursor: pointer; font-weight: bold; transition: 0.3s; }
-.btn-carrinho:hover { background: #d4697a; transform: scale(1.02); }
+.produto-preco { font-size: 22px; font-weight: 700; color: #d66d7f; text-align: center; margin-bottom: 15px; display: block; }
+.btn-carrinho { background: #d66d7f; color: white; border: none; padding: 12px; border-radius: 25px; width: 100%; cursor: pointer; font-weight: bold; transition: 0.3s; }
+.btn-carrinho:hover { background: #bf5b6d; transform: scale(1.02); }
 
 .modal-zoom { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
 .modal-conteudo { max-width: 90%; max-height: 85vh; object-fit: contain; }
 .modal-fechar { position: absolute; top: 20px; right: 30px; color: white; font-size: 45px; cursor: pointer; }
 .modal-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); color: white; border: none; padding: 20px; cursor: pointer; font-size: 30px; border-radius: 50%; transition: 0.3s; }
-.modal-nav:hover { background: #e07a8b; }
+.modal-nav:hover { background: #d66d7f; }
 .modal-prev { left: 20px; }
 .modal-next { right: 20px; }
 .modal-contador { position: absolute; bottom: 30px; color: white; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; }
@@ -176,7 +176,7 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
             Veja alguns dos bordados que já fizemos. Cada peça é única e feita à mão.
             Encontrou algo que gosta? Clique em "Quero algo parecido" e fazemos uma personalização para si.
         </p>
-        <a href="pedir-orcamento.php" style="display:inline-block; background:linear-gradient(135deg,#c95f7a,#d6788b); color:#fff; padding:14px 32px; border-radius:999px; text-decoration:none; font-weight:600; box-shadow:0 8px 20px rgba(201,95,122,0.20);">
+        <a href="pedir-orcamento.php" style="display:inline-block; background:linear-gradient(135deg,#d66d7f,#bf5b6d); color:#fff; padding:14px 32px; border-radius:999px; text-decoration:none; font-weight:600; box-shadow:0 8px 20px rgba(201,95,122,0.20);">
             ✨ Pedir Orçamento Personalizado
         </a>
     </div>

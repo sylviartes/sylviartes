@@ -290,7 +290,7 @@ $val = function ($campo) use ($clienteLogado) {
 .orc-btn {
     width: 100%; border: none; border-radius: 999px; padding: 18px 20px; font-size: 17px;
     font-weight: 700; color: #fff;
-    background: linear-gradient(135deg, #c95f7a, #d6788b);
+    background: linear-gradient(135deg, #d66d7f, #bf5b6d);
     cursor: pointer; transition: 0.2s;
 }
 .orc-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(201,95,122,0.25); }
