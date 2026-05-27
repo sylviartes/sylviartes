@@ -50,6 +50,8 @@ if ($sessionId !== '' && stripe_disponivel()) {
 // Esvazia o carrinho — a compra foi feita
 clear_cart();
 
+// Título simples para a página de confirmação de pagamento
+$pageTitle = 'Pagamento Confirmado';
 require_once __DIR__ . '/header.php';
 ?>
 <div class="checkout-wrapper" style="text-align:center;">

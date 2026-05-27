@@ -18,6 +18,9 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../src/avaliacoes.php';   // funções de estrelas/média
 require_once __DIR__ . '/../src/breadcrumbs.php';
+// Título e descrição para esta página
+$pageTitle       = 'Portfólio de Bordados';
+$pageDescription = 'Veja os bordados e trabalhos de costura artesanal da SylviArtes. Inspire-se e peça o seu personalizado.';
 require_once __DIR__ . '/header.php';
 
 // === FILTROS ===

@@ -15,6 +15,7 @@
  * =============================================================================
  */
 http_response_code(404);
+$pageTitle = 'Página Não Encontrada';
 require_once __DIR__ . '/header.php';
 ?>
 

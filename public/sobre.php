@@ -1,4 +1,9 @@
-<?php require_once __DIR__ . '/header.php'; ?>
+<?php
+// Título e descrição para esta página
+$pageTitle       = 'Sobre Nós';
+$pageDescription = 'Conheça a história da SylviArtes — bordados artesanais feitos com amor desde 2020.';
+require_once __DIR__ . '/header.php';
+?>
 <div class="container">
     <div class="section-header">
         <h2 class="section-title">Sobre a SylviArtes</h2>

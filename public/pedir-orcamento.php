@@ -239,6 +239,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Título e descrição para esta página
+$pageTitle       = 'Pedir Orçamento';
+$pageDescription = 'Peça um orçamento gratuito para o seu bordado personalizado — resposta em 24h.';
 require_once __DIR__ . '/header.php';
 
 // Helper para auto-fill

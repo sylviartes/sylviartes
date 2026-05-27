@@ -1,4 +1,9 @@
-<?php require_once __DIR__ . '/header.php'; ?>
+<?php
+// Título e descrição para esta página
+$pageTitle       = 'Contacto';
+$pageDescription = 'Entre em contacto com a SylviArtes — bordados personalizados para todas as ocasiões.';
+require_once __DIR__ . '/header.php';
+?>
 <div class="container">
     <div class="section-header text-center">
         <h2 class="section-title">Contacto</h2>

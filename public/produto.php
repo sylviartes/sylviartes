@@ -64,13 +64,17 @@ if (isset($_GET['aval_ok'])) {
 }
 
 // =============================================================================
-// CARREGAR PRODUTO
+// CARREGAR PRODUTO (antes do header para poder definir o título da página)
 // =============================================================================
-require_once __DIR__ . '/header.php';
-
 $stmt = $conn->prepare("SELECT * FROM produto WHERE id = ? AND visivel_catalogo = 1");
 $stmt->execute([$id]);
 $p = $stmt->fetch();
+
+// Define o título da aba do browser com o nome do produto
+$pageTitle       = $p ? htmlspecialchars($p['nome']) : 'Produto';
+$pageDescription = $p ? 'Bordado artesanal ' . htmlspecialchars($p['nome']) . ' — encomende o seu em SylviArtes.' : '';
+
+require_once __DIR__ . '/header.php';
 
 // Produto inexistente / oculto → mostra erro amigável
 if (!$p) {

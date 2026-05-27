@@ -25,7 +25,17 @@ require_once __DIR__ . '/../config/session.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SylviArtes - Costura Criativa</title>
+    <!-- Título da página: cada página define $pageTitle antes de incluir este ficheiro.
+         Se não definir, usa o título padrão. -->
+    <title><?php echo isset($pageTitle) ? htmlspecialchars($pageTitle) . ' — SylviArtes' : 'SylviArtes - Costura Criativa'; ?></title>
+
+    <!-- Meta description: aparece no resultado do Google por baixo do título.
+         Cada página pode definir $pageDescription para personalizar. -->
+    <?php if (!empty($pageDescription)): ?>
+    <meta name="description" content="<?php echo htmlspecialchars($pageDescription); ?>">
+    <?php else: ?>
+    <meta name="description" content="SylviArtes — Costura criativa e bordados personalizados feitos à mão em Portugal.">
+    <?php endif; ?>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

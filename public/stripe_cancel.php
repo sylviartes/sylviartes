@@ -17,6 +17,7 @@
 
 require_once __DIR__ . '/../config/session.php';
 $pedidoId = (int)($_GET['pedido_id'] ?? 0);  // ID do pedido afetado
+$pageTitle = 'Pagamento Cancelado';
 require_once __DIR__ . '/header.php';
 ?>
 <div class="checkout-wrapper" style="text-align:center;">

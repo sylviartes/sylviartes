@@ -18,6 +18,9 @@
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../src/avaliacoes.php';
+// Título e descrição para esta página (usados no <head> do header.php)
+$pageTitle       = 'Costura Criativa & Bordados Personalizados';
+$pageDescription = 'Bordados artesanais feitos à mão em Portugal. Encomendar é fácil — peça o seu orçamento grátis.';
 require_once __DIR__ . '/header.php';
 
 // === Produtos em destaque: 4 produtos visíveis ===
