@@ -50,6 +50,19 @@ $colsCategoria = $temPrecoRef ? "id, nome, preco_referencia" : "id, nome";
 $stmt = $conn->query("SELECT $colsCategoria FROM categoria ORDER BY nome");
 $todasCategorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Conta quantos produtos visíveis existem em cada categoria
+// (para mostrar "(N)" ao lado do nome da categoria no filtro lateral)
+$stmtContagem = $conn->query("
+    SELECT categoria_id, COUNT(*) AS total
+    FROM produto
+    WHERE visivel_catalogo = 1
+    GROUP BY categoria_id
+");
+$contagemPorCategoria = [];
+foreach ($stmtContagem->fetchAll(PDO::FETCH_ASSOC) as $row) {
+    $contagemPorCategoria[(int)$row['categoria_id']] = (int)$row['total'];
+}
+
 // Detetar estrutura da base de dados
 $temMime = false;
 $temFicheiroNaGaleria = false;
@@ -190,9 +203,12 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
                 <label>Categoria</label>
                 <select name="categoria">
                     <option value="0">Todas as Categorias</option>
-                    <?php foreach ($todasCategorias as $c): ?>
+                    <?php foreach ($todasCategorias as $c):
+                        // Mostra o número de produtos entre parênteses (ex: "Toalhas (5)")
+                        $count = $contagemPorCategoria[(int)$c['id']] ?? 0;
+                    ?>
                         <option value="<?= (int)$c['id'] ?>" <?= $categoriaFiltro == $c['id'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($c['nome']) ?>
+                            <?= htmlspecialchars($c['nome']) ?> (<?= $count ?>)
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -209,6 +225,37 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
         </aside>
 
         <div class="catalogo-conteudo">
+            <?php
+            // ---- Indicador de filtros activos ----
+            // Mostra um "pill" rosa quando há pesquisa ou categoria selecionada,
+            // com link para limpar os filtros.
+            $filtrosAtivos = ($q !== '') || ($categoriaFiltro > 0);
+            if ($filtrosAtivos):
+                $descFiltro = [];
+                if ($q !== '') $descFiltro[] = 'Pesquisa: <strong>' . htmlspecialchars($q) . '</strong>';
+                if ($categoriaFiltro > 0) {
+                    // Encontra o nome da categoria selecionada
+                    foreach ($todasCategorias as $c) {
+                        if ((int)$c['id'] === $categoriaFiltro) {
+                            $descFiltro[] = 'Categoria: <strong>' . htmlspecialchars($c['nome']) . '</strong>';
+                            break;
+                        }
+                    }
+                }
+            ?>
+            <div style="background:#fff0f3; border:1px solid #f0c0cc; border-radius:10px;
+                        padding:10px 16px; margin-bottom:18px; display:flex;
+                        justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <span style="color:#d66d7f; font-size:14px;">
+                    <i class="fas fa-filter"></i> A filtrar por: <?= implode(' &bull; ', $descFiltro) ?>
+                </span>
+                <a href="catalogo.php" style="color:#d66d7f; font-size:13px; font-weight:600;
+                   text-decoration:none; white-space:nowrap;">
+                    <i class="fas fa-times"></i> Limpar filtros
+                </a>
+            </div>
+            <?php endif; ?>
+
             <?php
             $algoEncontrado = false;
 
@@ -286,9 +333,32 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
                 endif;
             endforeach;
 
-            if (!$algoEncontrado) {
-                echo "<div style='text-align:center; padding:50px;'><h3>Nenhum produto encontrado.</h3></div>";
-            }
+            if (!$algoEncontrado):
+                // Estado vazio — aparece quando nenhum produto corresponde ao filtro
+            ?>
+            <div style="text-align:center; padding:60px 20px;">
+                <div style="font-size:3rem; color:#e8a4b0; margin-bottom:16px;">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 style="color:#444; margin-bottom:8px;">Nenhum resultado encontrado</h3>
+                <p style="color:#888; margin-bottom:24px; max-width:360px; margin-left:auto; margin-right:auto;">
+                    Não encontrámos produtos com esses critérios. Tente limpar os filtros ou
+                    peça-nos algo feito à medida.
+                </p>
+                <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+                    <a href="catalogo.php"
+                       style="background:#f5f5f5; color:#555; padding:12px 24px;
+                              border-radius:999px; text-decoration:none; font-weight:600;">
+                        <i class="fas fa-times"></i> Limpar filtros
+                    </a>
+                    <a href="pedir-orcamento.php"
+                       style="background:linear-gradient(135deg, #d66d7f, #bf5b6d); color:white;
+                              padding:12px 24px; border-radius:999px; text-decoration:none; font-weight:600;">
+                        <i class="fas fa-paint-brush"></i> Pedir personalizado
+                    </a>
+                </div>
+            </div>
+            <?php endif; ?>
             ?>
         </div>
     </div>
