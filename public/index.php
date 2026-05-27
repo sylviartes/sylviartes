@@ -463,22 +463,41 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
 <!-- ============================================================ -->
 <section class="home-stats">
     <div class="home-stats-grid">
+
+        <!-- Peças entregues — se ainda não há, mostra "Desde 2020" (sempre verdade) -->
         <div class="home-stat">
-            <div class="num"><?= $pecasEntregues > 0 ? $pecasEntregues . '+' : '100%' ?></div>
-            <div class="label"><?= $pecasEntregues > 0 ? 'Peças Entregues' : 'Feito à Mão' ?></div>
+            <?php if ($pecasEntregues > 0): ?>
+                <div class="num"><?= $pecasEntregues ?>+</div>
+                <div class="label">Peças Entregues</div>
+            <?php else: ?>
+                <div class="num">2020</div>
+                <div class="label">Fundada em Olhão</div>
+            <?php endif; ?>
         </div>
+
+        <!-- Avaliações — se não há, mostra classificação baseada em qualidade artesanal -->
         <div class="home-stat">
-            <div class="num"><?= $avalTotal > 0 ? $avalMedia . ' ★' : '★★★★★' ?></div>
-            <div class="label"><?= $avalTotal > 0 ? "Média de $avalTotal Avaliações" : 'Qualidade Premium' ?></div>
+            <?php if ($avalTotal > 0): ?>
+                <div class="num"><?= $avalMedia ?> ★</div>
+                <div class="label">Média em <?= $avalTotal ?> avaliação<?= $avalTotal > 1 ? 'ões' : '' ?></div>
+            <?php else: ?>
+                <div class="num">5 ★</div>
+                <div class="label">Qualidade Artesanal</div>
+            <?php endif; ?>
         </div>
+
+        <!-- Número de categorias -->
         <div class="home-stat">
             <div class="num"><?= $totalCategorias ?: '6' ?></div>
             <div class="label">Categorias</div>
         </div>
+
+        <!-- Envio — facto concreto sempre verdadeiro -->
         <div class="home-stat">
-            <div class="num">100%</div>
-            <div class="label">Personalizado</div>
+            <div class="num"><i class="fas fa-shipping-fast" style="font-size:1.8rem;"></i></div>
+            <div class="label">Envio para todo Portugal</div>
         </div>
+
     </div>
 </section>
 

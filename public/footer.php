@@ -11,6 +11,10 @@
         <a href="https://www.instagram.com/sylvi.artes/" target="_blank" rel="noopener noreferrer" title="Siga-nos no Instagram" aria-label="Instagram" style="color: #e4405f; font-size: 1.8rem; transition: var(--transicao-suave); padding: 10px; border-radius: 50%;">
             <i class="fab fa-instagram"></i>
         </a>
+        <!-- WhatsApp — muito usado em Portugal para contacto rápido com artesãos -->
+        <a href="https://wa.me/351912058129" target="_blank" rel="noopener noreferrer" title="Fale connosco no WhatsApp" aria-label="WhatsApp" style="color: #25D366; font-size: 1.8rem; transition: var(--transicao-suave); padding: 10px; border-radius: 50%;">
+            <i class="fab fa-whatsapp"></i>
+        </a>
     </div>
     <div style="margin-top: 20px; font-size: 12px; opacity: 0.7;">
         <p>Feito com <i class="fas fa-heart" style="color: var(--cor-primaria);"></i> em Portugal</p>
