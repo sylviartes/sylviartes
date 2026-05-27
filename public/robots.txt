@@ -1,0 +1,10 @@
+# robots.txt — diz aos motores de busca (Google, Bing...) o que podem ou não indexar.
+# "User-agent: *" aplica-se a todos os robots de pesquisa.
+User-agent: *
+
+# Bloqueia páginas de administração e área privada do cliente
+Disallow: /admin/
+Disallow: /cliente/
+
+# Aponta para o sitemap para o Google descobrir todas as páginas do site
+Sitemap: https://sylviartes.pt/sitemap.php
