@@ -90,11 +90,19 @@ exit;
 }
 
 // === Categoria do produto ===
+// Busca nome e preco_referencia (preço indicativo para mostrar "A partir de €X")
 $catNome = '';
-$stmt = $conn->prepare("SELECT nome FROM categoria WHERE id = ?");
+$catPrecoRef = null;
+$stmt = $conn->prepare("SELECT nome, preco_referencia FROM categoria WHERE id = ? LIMIT 1");
 $stmt->execute([$p['categoria_id']]);
 $cat = $stmt->fetch();
-if ($cat) $catNome = $cat['nome'];
+if ($cat) {
+    $catNome     = $cat['nome'];
+    // preco_referencia pode não existir se a coluna ainda não foi criada — verificamos
+    $catPrecoRef = isset($cat['preco_referencia']) && $cat['preco_referencia'] > 0
+                   ? (float)$cat['preco_referencia']
+                   : null;
+}
 
 /**
  * Helper local: obtém todas as imagens do produto.
@@ -303,12 +311,38 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
 
         <p class="produto-desc"><?= nl2br(htmlspecialchars($p['descricao'])) ?></p>
 
-        <div style="background:#fff8fa; border:1px solid #f4cdd5; padding:14px 18px; border-radius:14px; margin: 16px 0;">
-            <strong style="color:#d66d7f;">Item do nosso portfólio</strong>
-            <p style="margin:6px 0 0; color:#666; font-size:14px;">
-                Cada peça é única — pedimos orçamento personalizado conforme o trabalho a fazer
-                (nomes, cores, tamanho, tecidos).
-            </p>
+        <!-- Bloco de características rápidas do produto -->
+        <div style="background:#fff8fa; border:1px solid #f4cdd5; border-radius:14px;
+                    padding:16px 18px; margin: 16px 0;">
+
+            <!-- Preço de referência — só aparece se a categoria tiver este campo preenchido -->
+            <?php if ($catPrecoRef): ?>
+            <div style="margin-bottom:10px;">
+                <span style="font-size:0.8rem; color:#999; text-transform:uppercase; letter-spacing:0.5px;">
+                    A partir de
+                </span><br>
+                <span style="font-size:1.6rem; font-weight:700; color:#d66d7f;">
+                    <?= number_format($catPrecoRef, 2, ',', '.') ?> €
+                </span>
+                <span style="font-size:0.85rem; color:#888;"> (preço indicativo — orçamento gratuito)</span>
+            </div>
+            <?php endif; ?>
+
+            <!-- Características fixas desta categoria de produto -->
+            <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px;">
+                <li style="color:#555; font-size:14px;">
+                    <i class="fas fa-hand-holding-heart" style="color:#d66d7f; width:18px;"></i>
+                    Feito completamente à mão
+                </li>
+                <li style="color:#555; font-size:14px;">
+                    <i class="fas fa-palette" style="color:#d66d7f; width:18px;"></i>
+                    Personalizável: nomes, cores, tamanho e tecido
+                </li>
+                <li style="color:#555; font-size:14px;">
+                    <i class="fas fa-shipping-fast" style="color:#d66d7f; width:18px;"></i>
+                    Envio para todo Portugal
+                </li>
+            </ul>
         </div>
 
         <a href="pedir-orcamento.php?inspiracao=<?= $id ?>" class="produto-btn" style="text-decoration:none; display:inline-block;">
