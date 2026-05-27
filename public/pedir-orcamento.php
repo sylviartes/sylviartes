@@ -305,9 +305,12 @@ $val = function ($campo) use ($clienteLogado) {
     background: #fff8fa; border-left: 4px solid #d66d7f; padding: 14px 18px;
     border-radius: 8px; margin-bottom: 22px; display: flex; gap: 14px; align-items: center;
 }
+/* Em tablets (800-991px) a grelha de 2 colunas ficava apertada — passa para 1 coluna */
+@media (max-width: 991px) {
+    .orc-grid { grid-template-columns: 1fr; }
+}
 @media (max-width: 768px) {
     .orc-wrapper { padding: 24px; margin: 16px; }
-    .orc-grid { grid-template-columns: 1fr; }
     .orc-uploads { grid-template-columns: 1fr; }
 }
 </style>

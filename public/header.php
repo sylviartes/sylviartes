@@ -64,11 +64,13 @@ require_once __DIR__ . '/../config/session.php';
             --gradiente-rosa: linear-gradient(135deg, #d66d7f 0%, #e8a4b0 50%, #d66d7f 100%);
             --gradiente-rosa-hover: linear-gradient(135deg, #bf5b6d 0%, #d66d7f 100%);
             --transicao-suave: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            --transicao-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            /* Transição suave sem overshooting — mais confortável para utilizadores
+               sensíveis a movimento (vestibular sensitivity) */
+            --transicao-bounce: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+        /* scroll-behavior: smooth — definido em animacoes.css para não duplicar */
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -269,7 +271,7 @@ require_once __DIR__ . '/../config/session.php';
         }
         .card-form:hover { 
             box-shadow: var(--sombra-hover); 
-            transform: translateY(-8px); 
+            transform: translateY(-4px);
         }
         .card-form label { 
             display: block; 

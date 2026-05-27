@@ -158,7 +158,7 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
 .produto-footer { margin-top: auto; border-top: 1px solid #f5f5f5; padding-top: 15px; }
 .produto-preco { font-size: 22px; font-weight: 700; color: #d66d7f; text-align: center; margin-bottom: 15px; display: block; }
 .btn-carrinho { background: #d66d7f; color: white; border: none; padding: 12px; border-radius: 25px; width: 100%; cursor: pointer; font-weight: bold; transition: 0.3s; }
-.btn-carrinho:hover { background: #bf5b6d; transform: scale(1.02); }
+.btn-carrinho:hover { background: #bf5b6d; }
 
 .modal-zoom { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
 .modal-conteudo { max-width: 90%; max-height: 85vh; object-fit: contain; }
