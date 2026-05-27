@@ -448,7 +448,10 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
             </div>
         </div>
         <div class="home-hero-img">
+            <!-- fetchpriority="high": esta é a imagem mais importante da página (hero),
+                 o browser deve carregá-la primeiro para melhorar o LCP (tempo até ao primeiro conteúdo visível) -->
             <img src="imagens/toalha/toalha01.jpg" alt="Bordado SylviArtes"
+                 fetchpriority="high" decoding="async"
                  onerror="this.src='imagens/1.jpg'; this.onerror=null;">
         </div>
     </div>
@@ -570,7 +573,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
         ?>
             <a href="produto.php?id=<?= (int)$pd['id'] ?>" class="destaque-card">
                 <div class="img">
-                    <img src="<?= htmlspecialchars($imgSrc) ?>" alt="<?= htmlspecialchars($pd['nome']) ?>">
+                    <img src="<?= htmlspecialchars($imgSrc) ?>" alt="<?= htmlspecialchars($pd['nome']) ?>" loading="lazy" decoding="async">
                 </div>
                 <div class="info">
                     <h5><?= htmlspecialchars($pd['nome']) ?></h5>

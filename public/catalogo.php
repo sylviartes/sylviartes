@@ -248,7 +248,8 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
             ?>
                         <div class="produto-card">
                             <div class="produto-img-box" onclick='abrirZoom(<?= $jsonImagens ?>, 0)'>
-                                <img src="<?= htmlspecialchars($listaImagens[0]) ?>" class="produto-img" alt="<?= htmlspecialchars($p['nome']) ?>">
+                                <!-- loading="lazy": o browser só carrega a imagem quando ela aparece no ecrã -->
+                                <img src="<?= htmlspecialchars($listaImagens[0]) ?>" class="produto-img" alt="<?= htmlspecialchars($p['nome']) ?>" loading="lazy" decoding="async">
                             </div>
 
                             <div class="produto-info">

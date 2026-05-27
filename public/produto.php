@@ -270,7 +270,7 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
 <div class="produto-detalhe">
     <div class="produto-galeria">
         <div class="galeria-principal" onclick="abrirZoomModal()">
-            <img src="<?= htmlspecialchars($imagem_principal) ?>" id="imgPrincipal" class="produto-detalhe-img" alt="<?= htmlspecialchars($p['nome']) ?>">
+            <img src="<?= htmlspecialchars($imagem_principal) ?>" id="imgPrincipal" class="produto-detalhe-img" alt="<?= htmlspecialchars($p['nome']) ?>" decoding="async">
         </div>
 
         <?php if (count($imagens_produto) > 1): ?>
@@ -278,7 +278,7 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
             <?php foreach ($imagens_produto as $index => $img): ?>
                 <div class="galeria-thumb <?= $index === 0 ? 'active' : '' ?>"
                      onclick="trocarImagem('<?= htmlspecialchars($img) ?>', this)">
-                    <img src="<?= htmlspecialchars($img) ?>" alt="">
+                    <img src="<?= htmlspecialchars($img) ?>" alt="" loading="lazy" decoding="async">
                 </div>
             <?php endforeach; ?>
         </div>
