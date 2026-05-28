@@ -249,8 +249,13 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
     border: 1px dashed #e8a4b0; margin-top: 24px;
 }
 .aval-estrelas {
-    display: inline-flex; gap: 6px; font-size: 28px; cursor: pointer;
+    display: inline-flex; gap: 6px; font-size: 28px;
     margin: 8px 0 16px; color: #ddd;
+}
+/* Botões-estrela sem aspeto de botão (parecem ícones, mas são acessíveis) */
+.aval-estrelas .aval-estrela {
+    background: none; border: none; padding: 2px; margin: 0;
+    cursor: pointer; color: inherit; font-size: inherit; line-height: 1;
 }
 .aval-estrelas i { transition: color 0.15s; }
 .aval-estrelas i.ativa { color: #f5b301; }
@@ -291,7 +296,7 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
             <?php foreach ($imagens_produto as $index => $img): ?>
                 <div class="galeria-thumb <?= $index === 0 ? 'active' : '' ?>"
                      onclick="trocarImagem('<?= htmlspecialchars($img) ?>', this)">
-                    <img src="<?= htmlspecialchars($img) ?>" alt="" loading="lazy" decoding="async">
+                    <img src="<?= htmlspecialchars($img) ?>" alt="Foto <?= $index + 1 ?> de <?= htmlspecialchars($p['nome']) ?>" loading="lazy" decoding="async">
                 </div>
             <?php endforeach; ?>
         </div>
@@ -411,10 +416,15 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
                 <input type="hidden" name="accao" value="avaliar">
                 <input type="hidden" name="estrelas" id="aval-estrelas-input" value="0">
 
-                <label>Estrelas:</label>
-                <div class="aval-estrelas" id="aval-estrelas">
+                <label id="aval-estrelas-label">Estrelas:</label>
+                <!-- Botões em vez de <i> para serem acessíveis por teclado (Tab + Enter) -->
+                <div class="aval-estrelas" id="aval-estrelas" role="radiogroup" aria-labelledby="aval-estrelas-label">
                     <?php for ($i = 1; $i <= 5; $i++): ?>
-                        <i class="far fa-star" data-valor="<?= $i ?>" onclick="selecionarEstrelas(<?= $i ?>)"></i>
+                        <button type="button" class="aval-estrela" data-valor="<?= $i ?>"
+                                onclick="selecionarEstrelas(<?= $i ?>)"
+                                aria-label="<?= $i ?> estrela<?= $i > 1 ? 's' : '' ?>">
+                            <i class="far fa-star"></i>
+                        </button>
                     <?php endfor; ?>
                 </div>
 
@@ -470,7 +480,7 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
-// Selecionar estrelas no form de avaliação
+// Selecionar estrelas no form de avaliação (funciona com rato e teclado)
 function selecionarEstrelas(valor) {
     document.getElementById('aval-estrelas-input').value = valor;
     document.querySelectorAll('#aval-estrelas i').forEach((el, idx) => {
@@ -481,6 +491,10 @@ function selecionarEstrelas(valor) {
             el.classList.remove('fas', 'ativa');
             el.classList.add('far');
         }
+    });
+    // Indica ao leitor de ecrã qual o botão selecionado
+    document.querySelectorAll('#aval-estrelas .aval-estrela').forEach((b) => {
+        b.setAttribute('aria-checked', (parseInt(b.dataset.valor, 10) === valor) ? 'true' : 'false');
     });
 }
 </script>
