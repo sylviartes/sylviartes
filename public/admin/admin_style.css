@@ -333,8 +333,8 @@ h1::after {
     background: var(--gradiente-rosa);
 }
 
-.card:hover { 
-    transform: translateY(-8px);
+.card:hover {
+    transform: translateY(-4px);
     box-shadow: var(--sombra-hover);
 }
 

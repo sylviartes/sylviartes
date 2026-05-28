@@ -358,9 +358,13 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
                         $jsonImagens = htmlspecialchars(json_encode($listaImagens), ENT_QUOTES, 'UTF-8');
             ?>
                         <div class="produto-card">
-                            <div class="produto-img-box" onclick='abrirZoom(<?= $jsonImagens ?>, 0)'>
+                            <!-- A classe "skeleton" mostra um efeito de carregamento (pulse)
+                                 até a imagem terminar de carregar (onload remove-a). -->
+                            <div class="produto-img-box skeleton" onclick='abrirZoom(<?= $jsonImagens ?>, 0)'>
                                 <!-- loading="lazy": o browser só carrega a imagem quando ela aparece no ecrã -->
-                                <img src="<?= htmlspecialchars($listaImagens[0]) ?>" class="produto-img" alt="<?= htmlspecialchars($p['nome']) ?>" loading="lazy" decoding="async">
+                                <img src="<?= htmlspecialchars($listaImagens[0]) ?>" class="produto-img" alt="<?= htmlspecialchars($p['nome']) ?>" loading="lazy" decoding="async"
+                                     onload="this.parentElement.classList.remove('skeleton')"
+                                     onerror="this.parentElement.classList.remove('skeleton')">
                             </div>
 
                             <div class="produto-info">
