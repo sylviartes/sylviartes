@@ -10,12 +10,16 @@ if (isset($_POST['nova_categoria'])) {
     csrf_validate();
     $nome = trim($_POST['nome_cat'] ?? '');
     $desc = trim($_POST['desc_cat'] ?? '');
+    // Preço indicativo (opcional) — vazio fica NULL
+    $precoRefRaw = trim(str_replace(',', '.', $_POST['preco_ref'] ?? ''));
+    $precoRef = ($precoRefRaw !== '' && is_numeric($precoRefRaw)) ? (float)$precoRefRaw : null;
 
     if (!empty($nome)) {
-        $stmt = $conn->prepare("INSERT INTO categoria (nome, descricao) VALUES (:nome, :descricao)");
+        $stmt = $conn->prepare("INSERT INTO categoria (nome, descricao, preco_referencia) VALUES (:nome, :descricao, :preco)");
         $stmt->execute([
             ':nome' => $nome,
-            ':descricao' => $desc
+            ':descricao' => $desc,
+            ':preco' => $precoRef
         ]);
 
         header("Location: index.php");
@@ -79,6 +83,11 @@ if (isset($_POST['nova_categoria'])) {
             <div class="form-group">
                 <label><i class="fas fa-align-left"></i> Descrição (opcional):</label>
                 <textarea name="desc_cat" placeholder="Descrição da categoria..." rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-euro-sign"></i> Preço indicativo (opcional):</label>
+                <input type="text" name="preco_ref" placeholder="Ex: 25.00">
+                <small style="color:#888;">Mostrado como "A partir de €X" na página do produto. Deixe vazio se não quiser mostrar.</small>
             </div>
             <button type="submit" name="nova_categoria" class="btn-action" style="width:100%;">
                 <i class="fas fa-save"></i> Criar Categoria

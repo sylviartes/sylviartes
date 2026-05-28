@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS `sylviartes`.`categoria` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(50) NOT NULL,
   `descricao` TEXT NULL DEFAULT NULL,
+  `preco_referencia` DECIMAL(10,2) NULL,        -- preço indicativo "A partir de €X" mostrado no produto
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 5

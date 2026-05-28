@@ -26,12 +26,16 @@ if ($_POST && isset($_POST['guardar'])) {
     csrf_validate();
     $nome = trim($_POST['nome_cat'] ?? '');
     $desc = trim($_POST['desc_cat'] ?? '');
+    // Preço indicativo (opcional) — vazio fica NULL
+    $precoRefRaw = trim(str_replace(',', '.', $_POST['preco_ref'] ?? ''));
+    $precoRef = ($precoRefRaw !== '' && is_numeric($precoRefRaw)) ? (float)$precoRefRaw : null;
 
     if (!empty($nome)) {
-        $stmt = $conn->prepare('UPDATE categoria SET nome = :nome, descricao = :descricao WHERE id = :id');
+        $stmt = $conn->prepare('UPDATE categoria SET nome = :nome, descricao = :descricao, preco_referencia = :preco WHERE id = :id');
         $ok = $stmt->execute([
             ':nome' => $nome,
             ':descricao' => $desc,
+            ':preco' => $precoRef,
             ':id' => $id
         ]);
 
@@ -98,6 +102,11 @@ if ($_POST && isset($_POST['guardar'])) {
             <div class="form-group">
                 <label><i class="fas fa-align-left"></i> Descrição (opcional):</label>
                 <textarea name="desc_cat" rows="3"><?php echo htmlspecialchars($cat['descricao'] ?? ''); ?></textarea>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-euro-sign"></i> Preço indicativo (opcional):</label>
+                <input type="text" name="preco_ref" value="<?php echo isset($cat['preco_referencia']) && $cat['preco_referencia'] !== null ? htmlspecialchars(number_format((float)$cat['preco_referencia'], 2, '.', '')) : ''; ?>" placeholder="Ex: 25.00">
+                <small style="color:#888;">Mostrado como "A partir de €X" na página do produto. Deixe vazio se não quiser mostrar.</small>
             </div>
             <button type="submit" name="guardar" class="btn-action" style="width:100%;">
                 <i class="fas fa-save"></i> Guardar Alterações
