@@ -118,45 +118,112 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
 ?>
 
 <style>
-.catalogo-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-.catalogo-layout { display: flex; gap: 30px; margin-top: 40px; align-items: flex-start; }
-.catalogo-filtros { flex: 0 0 280px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); position: sticky; top: 20px; }
-.catalogo-filtros input, .catalogo-filtros select { width: 100%; padding: 12px; margin: 10px 0 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-.btn-filtrar { width: 100%; padding: 14px; background: #d66d7f; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-.btn-filtrar:hover { background: #bf5b6d; }
+.catalogo-container { max-width: 1280px; margin: 0 auto; padding: 20px; }
+.catalogo-layout { display: flex; gap: 28px; margin-top: 36px; align-items: flex-start; }
 
-.catalogo-conteudo { flex: 1; }
-.categoria-titulo { font-size: 24px; margin: 30px 0 20px; padding-left: 15px; border-left: 4px solid #d66d7f; color: #333; }
-.produtos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-bottom: 50px; }
+/* ----- Barra lateral de filtros ----- */
+.catalogo-filtros {
+    flex: 0 0 270px; background: #fff; padding: 24px;
+    border-radius: 16px; border: 1px solid #f0e3e7;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    position: sticky; top: 20px;
+}
+.catalogo-filtros h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px; color: #2d3436; margin: 0 0 18px;
+    display: flex; align-items: center; gap: 8px;
+}
+.catalogo-filtros h3 i { color: #d66d7f; font-size: 16px; }
+.catalogo-filtros label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: #8a6070; text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+.catalogo-filtros input, .catalogo-filtros select {
+    width: 100%; padding: 12px 14px; margin: 0 0 18px;
+    border: 1px solid #e8e8e8; border-radius: 10px;
+    box-sizing: border-box; font-family: inherit; font-size: 14px;
+    background: #fff; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.catalogo-filtros input:focus, .catalogo-filtros select:focus {
+    border-color: #d66d7f; outline: none;
+    box-shadow: 0 0 0 3px rgba(214,109,127,0.12);
+}
+.btn-filtrar {
+    width: 100%; padding: 13px; border: none; border-radius: 999px;
+    background: linear-gradient(135deg, #d66d7f, #bf5b6d); color: #fff;
+    font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.btn-filtrar:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(201,95,122,0.28); }
 
-.produto-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: 0.3s; border: 1px solid #f0f0f0; display: flex; flex-direction: column; height: 100%; }
-.produto-card:hover { transform: translateY(-8px); border-color: #d66d7f; }
+.catalogo-conteudo { flex: 1; min-width: 0; }
 
-.produto-img-box { height: 250px; background: #f9f9f9; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.produto-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-.produto-card:hover .produto-img { transform: scale(1.1); }
+/* ----- Cabeçalho de cada secção de categoria ----- */
+.categoria-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; margin: 32px 0 20px; color: #2d3436;
+    display: flex; align-items: center; gap: 12px;
+}
+.categoria-titulo::before {
+    content: ''; width: 4px; height: 26px; border-radius: 4px;
+    background: #d66d7f; flex-shrink: 0;
+}
+.categoria-titulo .conta {
+    font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600;
+    color: #d66d7f; background: #fff0f3; padding: 3px 12px; border-radius: 999px;
+}
+.produtos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 22px; margin-bottom: 48px; }
 
-.produto-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-.produto-nome { font-size: 17px; font-weight: 700; color: #333; text-decoration: none; margin-bottom: 8px; transition: color 0.3s; }
+/* ----- Cartão de trabalho ----- */
+.produto-card {
+    background: #fff; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    border: 1px solid #f0e3e7;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    display: flex; flex-direction: column; height: 100%;
+}
+.produto-card:hover { transform: translateY(-4px); border-color: #e8a4b0; box-shadow: 0 12px 26px rgba(214,109,127,0.12); }
+
+.produto-img-box { height: 240px; background: #fdf6f8; position: relative; cursor: zoom-in; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.produto-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.produto-card:hover .produto-img { transform: scale(1.04); }
+.produto-img-box::after {
+    content: '\f00e'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+    position: absolute; top: 12px; right: 12px;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(255,255,255,0.9); color: #d66d7f;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; opacity: 0; transition: opacity 0.2s;
+}
+.produto-card:hover .produto-img-box::after { opacity: 1; }
+
+.produto-info { padding: 18px 20px; flex-grow: 1; display: flex; flex-direction: column; }
+.produto-nome { font-size: 16px; font-weight: 600; color: #2d3436; text-decoration: none; margin-bottom: 8px; transition: color 0.2s; }
 .produto-nome:hover { color: #d66d7f; }
 
 .produto-desc {
-    font-size: 14px;
+    font-size: 13.5px;
     color: #777;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
     line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    height: 42px;
+    min-height: 40px;
 }
 
-.produto-footer { margin-top: auto; border-top: 1px solid #f5f5f5; padding-top: 15px; }
-.produto-preco { font-size: 22px; font-weight: 700; color: #d66d7f; text-align: center; margin-bottom: 15px; display: block; }
-.btn-carrinho { background: #d66d7f; color: white; border: none; padding: 12px; border-radius: 25px; width: 100%; cursor: pointer; font-weight: bold; transition: 0.3s; }
-.btn-carrinho:hover { background: #bf5b6d; }
+.produto-footer { margin-top: auto; }
+.btn-orcamento {
+    display: block; text-align: center; text-decoration: none;
+    background: #fff8fa; color: #d66d7f; border: 1px solid #f0c8d2;
+    padding: 12px; border-radius: 999px; width: 100%;
+    font-weight: 600; font-size: 14px; cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.btn-orcamento:hover { background: #d66d7f; color: #fff; border-color: #d66d7f; }
 
 .modal-zoom { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
 .modal-conteudo { max-width: 90%; max-height: 85vh; object-fit: contain; }
@@ -281,7 +348,9 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
 
                 if (!empty($produtos)):
                     $algoEncontrado = true;
-                    echo "<h2 class='categoria-titulo'>" . htmlspecialchars($cat['nome']) . "</h2>";
+                    $nItens = count($produtos);
+                    echo "<h2 class='categoria-titulo'>" . htmlspecialchars($cat['nome'])
+                       . " <span class='conta'>" . $nItens . ($nItens === 1 ? ' peça' : ' peças') . "</span></h2>";
                     echo "<div class='produtos-grid'>";
 
                     foreach ($produtos as $p):
@@ -315,7 +384,7 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
                                 </div>
 
                                 <div class="produto-footer">
-                                    <a href="pedir-orcamento.php?inspiracao=<?= (int)$p['id'] ?>" class="btn-carrinho" style="display:block; text-align:center; text-decoration:none;">
+                                    <a href="pedir-orcamento.php?inspiracao=<?= (int)$p['id'] ?>" class="btn-orcamento">
                                         ✨ Quero algo parecido
                                     </a>
                                 </div>

@@ -54,7 +54,10 @@ if ($_POST && isset($_POST['guardar'])) {
     <title>Editar Categoria - SylviArtes</title>
     <link rel="stylesheet" href="../admin_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        body { font-family: 'Poppins', sans-serif; }
+        h1 { font-family: 'Playfair Display', serif; font-size: 26px; color: #2d3436; font-weight: 600; }
         .msg-box { padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
         .msg-sucesso { background: rgba(40, 167, 69, 0.15); color: #28a745; }
         .msg-erro { background: rgba(220, 53, 69, 0.15); color: #dc3545; }

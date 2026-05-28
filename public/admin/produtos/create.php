@@ -136,7 +136,10 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
     <title>Criar Produto - SylviArtes</title>
     <link rel="stylesheet" href="../admin_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        body { font-family: 'Poppins', sans-serif; }
+        h1 { font-family: 'Playfair Display', serif; font-size: 26px; color: #2d3436; font-weight: 600; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .full-width { grid-column: span 2; }
         .msg-box { padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
