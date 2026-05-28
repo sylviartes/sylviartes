@@ -57,8 +57,11 @@ try {
 // =============================================================================
 // PEDIDOS POR TRATAR (destaque principal)
 // =============================================================================
+// TIMESTAMPDIFF calcula os minutos decorridos DENTRO do MySQL (NOW() e p.data
+// usam o mesmo relógio), evitando desalinhamentos de fuso entre PHP e a BD.
 $stmtPorTratar = $conn->prepare("
-    SELECT p.id, p.data, p.observacoes, u.nome, u.email
+    SELECT p.id, p.data, p.observacoes, u.nome, u.email,
+           TIMESTAMPDIFF(MINUTE, p.data, NOW()) AS minutos_atras
     FROM pedido p
     JOIN utilizador u ON u.id = p.utilizador_id
     WHERE p.estado = ?
@@ -167,6 +170,20 @@ $primeiroNome = explode(' ', $_SESSION['admin_nome'] ?? 'Admin')[0];
 $diasSemana = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
 $meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 $dataPT = $diasSemana[(int)date('w')] . ', ' . (int)date('j') . ' de ' . $meses[(int)date('n') - 1] . ' de ' . date('Y');
+
+/**
+ * Converte um nº de minutos decorridos num texto amigável em português.
+ * Nunca mostra valores negativos (se a data for "futura" por algum acerto
+ * de relógio, mostra "agora mesmo").
+ */
+function tempo_decorrido(int $minutos): string {
+    if ($minutos < 1)  return 'agora mesmo';
+    if ($minutos < 60) return "há {$minutos} min";
+    $horas = intdiv($minutos, 60);
+    if ($horas < 24)   return "há {$horas} " . ($horas === 1 ? 'hora' : 'horas');
+    $dias = intdiv($horas, 24);
+    return "há {$dias} " . ($dias === 1 ? 'dia' : 'dias');
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -361,7 +378,7 @@ $dataPT = $diasSemana[(int)date('w')] . ', ' . (int)date('j') . ' de ' . $meses[
                         </a>
                         <div class="meta">
                             <?= date('d/m/Y H:i', strtotime($pt['data'])) ?>
-                            · há <?= floor((time() - strtotime($pt['data'])) / 3600) ?>h
+                            · <?= tempo_decorrido((int)$pt['minutos_atras']) ?>
                         </div>
                         <?php if (!empty($pt['observacoes'])): ?>
                             <div class="desc">"<?= htmlspecialchars(mb_strimwidth($pt['observacoes'], 0, 90, '…')) ?>"</div>

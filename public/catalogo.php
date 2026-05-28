@@ -354,7 +354,6 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
                 </div>
             </div>
             <?php endif; ?>
-            ?>
         </div>
     </div>
 </div>

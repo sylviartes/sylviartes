@@ -18,6 +18,11 @@
 
 require_once __DIR__ . '/env.php';
 
+// Define o fuso horário de Portugal para TODAS as datas do PHP.
+// Sem isto, o PHP usa o fuso do servidor (ex: Europe/Berlin) e as datas
+// ficam desalinhadas das guardadas pelo MySQL — dava "há -1h" no dashboard.
+date_default_timezone_set('Europe/Lisbon');
+
 // --- Credenciais da base de dados ---
 $host   = getenv('DB_HOST') ?: 'localhost';   // servidor MySQL (XAMPP corre em localhost)
 $dbname = getenv('DB_NAME') ?: 'sylviartes';  // nome da BD criada no phpMyAdmin
