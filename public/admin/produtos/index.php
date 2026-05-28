@@ -152,12 +152,16 @@ $produtos = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
         }
         .item-acoes {
             padding: 12px 18px; border-top: 1px solid #f0e3e7;
-            display: flex; gap: 8px;
+            display: flex; gap: 8px; align-items: stretch;
         }
-        .item-acoes a {
-            flex: 1; text-align: center; padding: 8px 12px;
+        /* O form do botão apagar passa a ser um item flex igual ao link editar */
+        .item-acoes form { flex: 1; display: flex; margin: 0; }
+        .item-acoes a, .item-acoes button {
+            flex: 1; padding: 9px 12px;
             border-radius: 8px; text-decoration: none; font-weight: 600;
-            font-size: 13px; transition: all 0.15s;
+            font-size: 13px; transition: all 0.15s; cursor: pointer;
+            font-family: inherit;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         }
         .btn-editar { background: #fff8fa; color: #d66d7f; border: 1px solid #f0c8d2; }
         .btn-editar:hover { background: #d66d7f; color: #fff; }
