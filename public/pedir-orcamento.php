@@ -128,19 +128,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $temColPortfolio = (bool)$check->fetch();
             } catch (Exception $e) { /* ignora */ }
 
-            // === 3. Inserir pedido (estado: aguarda_orcamento, valor 0 — mãe define depois) ===
+            // === 3. Inserir pedido (estado: em_analise — aparece imediatamente no painel admin) ===
             if ($temColPortfolio) {
                 $stmt = $conn->prepare("
                     INSERT INTO pedido (utilizador_id, prazo_entrega_desejado, estado, valor_total, observacoes,
                                         tipo_entrega, morada_entrega, custo_envio, portfolio_inspiracao_id)
-                    VALUES (?, ?, 'aguarda_orcamento', 0, ?, ?, ?, 0, ?)
+                    VALUES (?, ?, 'em_analise', 0, ?, ?, ?, 0, ?)
                 ");
                 $stmt->execute([$utilizadorId, $prazoEntrega, $descricao, $tipoEntrega, $moradaEntrega, $portfolioRef ?: null]);
             } else {
                 $stmt = $conn->prepare("
                     INSERT INTO pedido (utilizador_id, prazo_entrega_desejado, estado, valor_total, observacoes,
                                         tipo_entrega, morada_entrega, custo_envio)
-                    VALUES (?, ?, 'aguarda_orcamento', 0, ?, ?, ?, 0)
+                    VALUES (?, ?, 'em_analise', 0, ?, ?, ?, 0)
                 ");
                 $stmt->execute([$utilizadorId, $prazoEntrega, $descricao, $tipoEntrega, $moradaEntrega]);
             }

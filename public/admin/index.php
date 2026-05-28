@@ -20,23 +20,11 @@ require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/auth.php';
 
 // =============================================================================
-// VERIFICAÇÕES DE COMPATIBILIDADE COM SCHEMA
+// ESTADO "POR TRATAR" — pedidos novos que precisam de orçamento
 // =============================================================================
-// Verifica se o estado novo 'aguarda_orcamento' existe no ENUM (SQL aplicada?)
-$temEstadoOrcamento = false;
-try {
-    $stmt = $conn->query("SHOW COLUMNS FROM pedido LIKE 'estado'");
-    $col = $stmt->fetch(PDO::FETCH_ASSOC);
-    $temEstadoOrcamento = $col && stripos($col['Type'] ?? '', 'aguarda_orcamento') !== false;
-} catch (Exception $e) { /* ignora */ }
-$estadoOrcamento = $temEstadoOrcamento ? 'aguarda_orcamento' : 'em_analise';
-
-// Verifica se a tabela avaliacao tem produto_id
-$temAvaliacoesProduto = false;
-try {
-    $stmt = $conn->query("SHOW COLUMNS FROM avaliacao LIKE 'produto_id'");
-    $temAvaliacoesProduto = (bool)$stmt->fetch();
-} catch (Exception $e) { /* ignora */ }
+// Novos pedidos são criados com estado 'em_analise'.
+// O dashboard mostra quantos estão neste estado para o admin tratar.
+$estadoOrcamento = 'em_analise';
 
 // =============================================================================
 // FILTRO DE PERÍODO (para a faturação)
