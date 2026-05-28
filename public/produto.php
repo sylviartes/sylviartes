@@ -275,6 +275,33 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
 }
 </style>
 
+<?php
+// === Dados estruturados Product (SEO) ===
+// Permite que a Google mostre estrelas/rich snippet nos resultados.
+$baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http')
+         . '://' . ($_SERVER['HTTP_HOST'] ?? 'sylviartes.pt');
+$jsonLd = [
+    '@context'    => 'https://schema.org',
+    '@type'       => 'Product',
+    'name'        => $p['nome'],
+    'image'       => $baseUrl . '/public/' . $imagem_principal,
+    'description' => mb_substr(strip_tags($p['descricao'] ?? ''), 0, 300),
+    'brand'       => ['@type' => 'Brand', 'name' => 'SylviArtes'],
+];
+if ($catNome) { $jsonLd['category'] = $catNome; }
+// Só inclui rating se houver avaliações reais (a Google penaliza ratings falsos)
+if (!empty($mediaEstrelas['total']) && $mediaEstrelas['total'] > 0) {
+    $jsonLd['aggregateRating'] = [
+        '@type'       => 'AggregateRating',
+        'ratingValue' => $mediaEstrelas['media'],
+        'reviewCount' => $mediaEstrelas['total'],
+    ];
+}
+?>
+<script type="application/ld+json">
+<?= json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
+</script>
+
 <div style="max-width:1200px; margin:0 auto; padding:0 20px;">
     <?= render_breadcrumbs([
         ['nome' => 'Catálogo', 'url' => 'catalogo.php'],

@@ -21,6 +21,30 @@
     </div>
 </footer>
 
+<?php
+// === Dados estruturados (SEO) ===
+// JSON-LD diz ao Google quem somos. Aparece em todas as páginas públicas.
+// Construímos o URL base a partir do servidor (funciona em localhost e em produção).
+$baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http')
+         . '://' . ($_SERVER['HTTP_HOST'] ?? 'sylviartes.pt');
+?>
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "SylviArtes",
+    "description": "Costura criativa e bordados personalizados feitos à mão em Portugal.",
+    "url": "<?= htmlspecialchars($baseUrl) ?>",
+    "logo": "<?= htmlspecialchars($baseUrl) ?>/public/imagens/logo_sylviartes.png",
+    "telephone": "+351912058129",
+    "areaServed": "PT",
+    "sameAs": [
+        "https://www.facebook.com/people/SylviArtes/61565302160232/",
+        "https://www.instagram.com/sylvi.artes/"
+    ]
+}
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
