@@ -42,14 +42,17 @@ require_once __DIR__ . '/header.php';
                     materiais de qualidade e um acabamento impecável.
                 </p>
             </div>
-            <!-- Logo / imagem -->
+            <!-- Foto da artesã no atelier -->
+            <!-- Para colocar a foto real: guardar a imagem como
+                 public/imagens/sylvia_atelier.jpg — aparece automaticamente.
+                 Enquanto não existir, mostra o logo (onerror). -->
             <div class="col-lg-5 text-center">
-                <img src="imagens/logo_sylviartes.png"
-                     alt="Logo SylviArtes"
+                <img src="imagens/sylvia_atelier.jpg"
+                     alt="Sylvia, fundadora da SylviArtes, no seu atelier em Olhão"
                      loading="lazy"
-                     style="max-width: 260px; width: 100%; border-radius: 16px;
-                            box-shadow: 0 10px 40px rgba(214,109,127,0.15);"
-                     onerror="this.src='imagens/1.jpg';">
+                     style="max-width: 320px; width: 100%; border-radius: 16px;
+                            box-shadow: 0 10px 40px rgba(214,109,127,0.15); object-fit: cover;"
+                     onerror="this.onerror=null; this.src='imagens/logo_sylviartes.png'; this.alt='Logo SylviArtes';">
             </div>
         </div>
 

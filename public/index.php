@@ -640,6 +640,29 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
         </div>
     </div>
 </section>
+<?php else: ?>
+<!-- Fallback: enquanto não há avaliações, mostra prova social via redes sociais -->
+<section class="home-depoimentos">
+    <div class="home-section" style="text-align:center;">
+        <div class="home-titulo">
+            <span class="eyebrow">Acompanhe-nos</span>
+            <h2>Veja os nossos trabalhos nas redes</h2>
+            <p>Estamos a recolher as primeiras avaliações. Entretanto, siga a SylviArtes para ver peças reais e novidades.</p>
+        </div>
+        <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:10px;">
+            <a href="https://www.instagram.com/sylvi.artes/" target="_blank" rel="noopener noreferrer"
+               style="display:inline-flex; align-items:center; gap:10px; padding:14px 26px; border-radius:999px;
+                      background:linear-gradient(135deg,#d66d7f,#bf5b6d); color:#fff; text-decoration:none; font-weight:600;">
+                <i class="fab fa-instagram" style="font-size:20px;"></i> Ver no Instagram
+            </a>
+            <a href="https://www.facebook.com/people/SylviArtes/61565302160232/" target="_blank" rel="noopener noreferrer"
+               style="display:inline-flex; align-items:center; gap:10px; padding:14px 26px; border-radius:999px;
+                      background:#fff; color:#d66d7f; border:1.5px solid #f0c8d2; text-decoration:none; font-weight:600;">
+                <i class="fab fa-facebook" style="font-size:20px;"></i> Ver no Facebook
+            </a>
+        </div>
+    </div>
+</section>
 <?php endif; ?>
 
 <!-- ============================================================ -->
