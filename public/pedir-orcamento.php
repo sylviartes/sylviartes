@@ -225,9 +225,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($conn->inTransaction()) $conn->rollBack();
             } catch (Exception $eRoll) { /* ignora */ }
 
-            error_log("Orçamento: erro ao registar pedido: " . $e->getMessage());
+            // Regista o erro completo no log do servidor (não visível ao utilizador)
+            error_log("Orçamento: erro ao registar pedido para email={$email}: "
+                . $e->getMessage() . " em " . $e->getFile() . ":" . $e->getLine());
+
             if (str_contains($e->getMessage(), 'gone away') || str_contains($e->getMessage(), 'too large')) {
                 $mensagem = "Erro ao registar pedido. As fotos enviadas são demasiado grandes — tente com fotos mais pequenas (máx 1MB cada).";
+            } elseif (str_contains($e->getMessage(), 'Data truncated') || str_contains($e->getMessage(), 'ENUM')) {
+                // Este erro acontece se a migração SQL setup_completo.sql não foi aplicada
+                $mensagem = "Erro de configuração na base de dados. Contacte a administração.";
             } else {
                 $mensagem = "Ocorreu um erro ao registar o pedido. Por favor tente novamente ou contacte-nos directamente.";
             }
@@ -317,16 +323,74 @@ $val = function ($campo) use ($clienteLogado) {
 
 <div class="orc-wrapper">
     <?php if ($pedidoConcluido): ?>
+        <!-- Cartão de confirmação exibido após submissão bem-sucedida -->
         <div class="orc-success">
-            <h2>✓ Pedido recebido!</h2>
-            <p style="font-size:16px; color:#555;"><?= htmlspecialchars($mensagem) ?></p>
-            <p style="color:#888; margin-top:14px;">
-                Pode acompanhar o estado do pedido na sua
-                <a href="cliente/encomendas.php" style="color:#d66d7f; font-weight:600;">área de cliente</a>.
+            <!-- Ícone de confirmação -->
+            <div style="width:72px; height:72px; background:#d1fae5; border-radius:50%;
+                        display:flex; align-items:center; justify-content:center;
+                        margin: 0 auto 20px;">
+                <i class="fas fa-check" style="color:#065f46; font-size:28px;"></i>
+            </div>
+
+            <h2 style="font-family:'Playfair Display',serif; font-size:26px; color:#2d3436; margin-bottom:8px;">
+                Pedido recebido!
+            </h2>
+            <p style="color:#d66d7f; font-weight:600; font-size:17px; margin-bottom:20px;">
+                #<?= $pedidoId ?>
             </p>
-            <a href="portfolio.php" class="orc-btn" style="display:inline-block; width:auto; padding:14px 30px; margin-top:18px; text-decoration:none;">
-                Voltar ao Portfólio
-            </a>
+
+            <!-- O que acontece a seguir -->
+            <div style="background:#fdf6f8; border-radius:14px; padding:20px; margin-bottom:24px; text-align:left;">
+                <p style="font-weight:700; color:#2d3436; font-size:13px; letter-spacing:1px;
+                           text-transform:uppercase; margin-bottom:14px;">O que acontece a seguir</p>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <div style="display:flex; gap:12px; align-items:flex-start;">
+                        <div style="width:26px; height:26px; background:#d66d7f; color:#fff; border-radius:50%;
+                                    display:flex; align-items:center; justify-content:center;
+                                    font-size:12px; font-weight:700; flex-shrink:0;">1</div>
+                        <div style="font-size:14px; color:#444; line-height:1.5;">
+                            <strong>A Sylvia analisa o seu pedido</strong><br>
+                            <span style="color:#888;">Normalmente em menos de 24 horas.</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:12px; align-items:flex-start;">
+                        <div style="width:26px; height:26px; background:#d66d7f; color:#fff; border-radius:50%;
+                                    display:flex; align-items:center; justify-content:center;
+                                    font-size:12px; font-weight:700; flex-shrink:0;">2</div>
+                        <div style="font-size:14px; color:#444; line-height:1.5;">
+                            <strong>Recebe um contacto por telefone</strong><br>
+                            <span style="color:#888;">Para confirmar os detalhes e o valor final.</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:12px; align-items:flex-start;">
+                        <div style="width:26px; height:26px; background:#d66d7f; color:#fff; border-radius:50%;
+                                    display:flex; align-items:center; justify-content:center;
+                                    font-size:12px; font-weight:700; flex-shrink:0;">3</div>
+                        <div style="font-size:14px; color:#444; line-height:1.5;">
+                            <strong>Recebe o link de pagamento por email</strong><br>
+                            <span style="color:#888;">Pagamento seguro por cartão ou MB Way.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTAs -->
+            <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+                <a href="catalogo.php" class="orc-btn"
+                   style="display:inline-flex; align-items:center; gap:8px;
+                          width:auto; padding:13px 26px; text-decoration:none;">
+                    <i class="fas fa-images"></i> Ver o catálogo
+                </a>
+                <?php if (isset($_SESSION['cliente_id'])): ?>
+                <a href="cliente/encomendas.php"
+                   style="display:inline-flex; align-items:center; gap:8px;
+                          padding:13px 26px; text-decoration:none; font-weight:600;
+                          color:#d66d7f; background:#fff; border:2px solid #f0c8d2;
+                          border-radius:999px; font-size:15px; transition:0.2s;">
+                    <i class="fas fa-box"></i> As minhas encomendas
+                </a>
+                <?php endif; ?>
+            </div>
         </div>
     <?php else: ?>
 
