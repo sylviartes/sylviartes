@@ -299,7 +299,11 @@ if (!empty($mediaEstrelas['total']) && $mediaEstrelas['total'] > 0) {
 }
 ?>
 <script type="application/ld+json">
-<?= json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
+<?php
+// JSON_HEX_TAG escapa < e > (impede que um valor com "</script>" feche o
+// bloco e injete HTML). Sem JSON_UNESCAPED_SLASHES, para "/" virar "\/".
+echo json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_PRETTY_PRINT);
+?>
 </script>
 
 <div style="max-width:1200px; margin:0 auto; padding:0 20px;">
