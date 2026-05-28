@@ -443,6 +443,7 @@ function abrirZoom(imgs, idx) {
     imagensAtuais = imgs;
     indiceAtual = idx;
     document.getElementById("modalZoom").style.display = "flex";
+    document.body.style.overflow = "hidden"; // bloqueia o scroll do fundo
     atualizarModal();
 }
 
@@ -463,16 +464,35 @@ function mudarImagem(e, dir) {
 function fecharZoom(e) {
     if (e.target.id === "modalZoom" || e.target.className === "modal-fechar") {
         document.getElementById("modalZoom").style.display = "none";
+        document.body.style.overflow = ""; // repõe o scroll do fundo
     }
 }
 
 document.addEventListener('keydown', (e) => {
     if (document.getElementById("modalZoom").style.display === "flex") {
-        if (e.key === "Escape") document.getElementById("modalZoom").style.display = "none";
+        if (e.key === "Escape") { document.getElementById("modalZoom").style.display = "none"; document.body.style.overflow = ""; }
         if (e.key === "ArrowLeft") mudarImagem(e, -1);
         if (e.key === "ArrowRight") mudarImagem(e, 1);
     }
 });
+
+// === Swipe (deslizar) no telemóvel para mudar de imagem ===
+(function () {
+    var modal = document.getElementById("modalZoom");
+    if (!modal) return;
+    var xInicio = null;
+    modal.addEventListener('touchstart', function (e) {
+        xInicio = e.changedTouches[0].clientX;
+    }, { passive: true });
+    modal.addEventListener('touchend', function (e) {
+        if (xInicio === null || imagensAtuais.length < 2) return;
+        var dx = e.changedTouches[0].clientX - xInicio;
+        if (Math.abs(dx) > 50) {                 // só conta como swipe se mover > 50px
+            mudarImagem(e, dx < 0 ? 1 : -1);     // esquerda = próxima, direita = anterior
+        }
+        xInicio = null;
+    }, { passive: true });
+})();
 </script>
 
 <?php require_once __DIR__ . '/footer.php'; ?>

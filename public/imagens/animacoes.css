@@ -222,3 +222,32 @@ table { max-width: 100%; }
     /* Cards do portfólio — maiores para serem legíveis */
     .produto-card .produto-img-box { height: 200px !important; }
 }
+
+/* ============================================================
+   ALVOS DE TOQUE — telemóvel/tablet
+   ============================================================
+   Em ecrãs de toque, os botões e links de ação devem ter pelo
+   menos ~44px (recomendação de acessibilidade da Apple/Google),
+   para serem fáceis de tocar com o dedo. */
+@media (max-width: 992px) {
+    .btn-rosa, .btn-ghost, .btn-branco, .btn-orcamento, .btn-filtrar,
+    .cli-btn, .auth-btn, .orc-btn, .produto-btn, .btn-carrinho,
+    .modal-nav, .modal-fechar {
+        min-height: 44px;
+    }
+    /* Setas e botão fechar do lightbox — área de toque maior */
+    .modal-nav { min-width: 48px; padding: 16px !important; }
+    .modal-fechar { padding: 8px 16px; }
+}
+
+/* ============================================================
+   SEGURANÇA CONTRA SCROLL HORIZONTAL
+   ============================================================
+   Evita que qualquer elemento "empurre" a página para o lado no
+   telemóvel (causa típica de aspeto partido). Não usamos
+   overflow-x:hidden no body para não quebrar a navbar sticky. */
+@media (max-width: 768px) {
+    .produtos-grid, .cli-grid, .dashboard-grid, .form-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

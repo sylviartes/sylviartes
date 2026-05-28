@@ -429,7 +429,7 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
 </div>
 
 <!-- Modal de zoom da imagem principal -->
-<div id="zoomModal" class="zoom-modal" onclick="this.style.display='none'">
+<div id="zoomModal" class="zoom-modal" onclick="fecharZoomModal()">
     <img id="imgZoom" class="zoom-conteudo" alt="">
 </div>
 
@@ -445,7 +445,21 @@ function trocarImagem(src, el) {
 function abrirZoomModal() {
     document.getElementById('zoomModal').style.display = 'flex';
     document.getElementById('imgZoom').src = document.getElementById('imgPrincipal').src;
+    document.body.style.overflow = 'hidden'; // bloqueia scroll do fundo
 }
+
+// Fecha o modal e repõe o scroll
+function fecharZoomModal() {
+    document.getElementById('zoomModal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Fechar o zoom com a tecla Escape
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.getElementById('zoomModal').style.display === 'flex') {
+        fecharZoomModal();
+    }
+});
 
 // Selecionar estrelas no form de avaliação
 function selecionarEstrelas(valor) {
