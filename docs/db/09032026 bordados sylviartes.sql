@@ -47,12 +47,15 @@ DEFAULT CHARACTER SET = utf8mb4;
 CREATE TABLE IF NOT EXISTS `sylviartes`.`avaliacao` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `utilizador_id` INT NOT NULL,
+  `produto_id` INT NULL,                          -- produto avaliado (NULL = avaliação geral à loja)
   `estrelas` INT NOT NULL,
   `comentario` TEXT NULL DEFAULT NULL,
   `data` DATETIME NULL DEFAULT CURRENT_TIMESTAMP(),
   `aprovado` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   INDEX `utilizador_id` (`utilizador_id` ASC),
+  INDEX `idx_aval_produto` (`produto_id` ASC),                       -- pesquisa rápida por produto
+  UNIQUE INDEX `uniq_aval_user_produto` (`utilizador_id`, `produto_id`), -- 1 avaliação por cliente/produto
   CONSTRAINT `avaliacao_loja_ibfk_1`
     FOREIGN KEY (`utilizador_id`)
     REFERENCES `sylviartes`.`utilizador` (`id`))
@@ -81,12 +84,13 @@ CREATE TABLE IF NOT EXISTS `sylviartes`.`pedido` (
   `utilizador_id` INT NOT NULL,
   `data` DATETIME NULL DEFAULT CURRENT_TIMESTAMP(),
   `prazo_entrega_desejado` DATE NOT NULL,
-  `estado` ENUM('em_analise', 'aguarda_pagamento', 'em_producao', 'concluido', 'entregue', 'cancelado') NOT NULL DEFAULT 'em_analise',
+  `estado` ENUM('aguarda_orcamento', 'em_analise', 'aguarda_pagamento', 'em_producao', 'concluido', 'entregue', 'cancelado') NOT NULL DEFAULT 'em_analise',
   `valor_total` DECIMAL(10,2) NOT NULL,
   `observacoes` TEXT NULL DEFAULT NULL,
   `tipo_entrega` ENUM('levantamento_atelier', 'domicilio') NOT NULL,
   `morada_entrega` VARCHAR(100) NOT NULL,
   `custo_envio` DECIMAL(10,2) NOT NULL,
+  `portfolio_inspiracao_id` INT NULL,             -- produto do portfólio que inspirou o pedido (opcional)
   PRIMARY KEY (`id`),
   INDEX `utilizador_id` (`utilizador_id` ASC),
   CONSTRAINT `pedido_ibfk_1`
@@ -146,8 +150,8 @@ DEFAULT CHARACTER SET = utf8mb4;
 CREATE TABLE IF NOT EXISTS `sylviartes`.`log_alteracoes_pedido` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `pedido_id` INT NULL DEFAULT NULL,
-  `estado_anterior` ENUM('em_analise', 'aguarda_pagamento', 'em_producao', 'concluido', 'entregue', 'cancelado') NULL DEFAULT NULL,
-  `estado_novo` ENUM('em_analise', 'aguarda_pagamento', 'em_producao', 'concluido', 'entregue', 'cancelado') NULL DEFAULT NULL,
+  `estado_anterior` ENUM('aguarda_orcamento', 'em_analise', 'aguarda_pagamento', 'em_producao', 'concluido', 'entregue', 'cancelado') NULL DEFAULT NULL,
+  `estado_novo` ENUM('aguarda_orcamento', 'em_analise', 'aguarda_pagamento', 'em_producao', 'concluido', 'entregue', 'cancelado') NULL DEFAULT NULL,
   `alterado_por` VARCHAR(50) NULL DEFAULT NULL,
   `data` DATETIME NULL DEFAULT CURRENT_TIMESTAMP(),
   PRIMARY KEY (`id`),
@@ -189,6 +193,7 @@ CREATE TABLE IF NOT EXISTS `sylviartes`.`pagamento` (
   `valor` DECIMAL(10,2) NOT NULL,
   `comprovativo` LONGBLOB NULL,
   `estado_pagamento` ENUM('validado', 'recusado', 'analise_pagamento') NOT NULL DEFAULT 'analise_pagamento',
+  `stripe_payment_link_url` VARCHAR(500) NULL,    -- URL do link de pagamento Stripe (para reenviar à cliente)
   PRIMARY KEY (`id`),
   UNIQUE INDEX `pedido_id` (`pedido_id` ASC),
   CONSTRAINT `pagamento_ibfk_1`
@@ -214,6 +219,25 @@ CREATE TABLE IF NOT EXISTS `sylviartes`.`produto_imagem` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `sylviartes`.`pedido_inspiracao`
+-- Fotos de inspiração que a cliente envia ao pedir orçamento (até 3 por pedido)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sylviartes`.`pedido_inspiracao` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `pedido_id` INT NOT NULL,
+  `imagem` MEDIUMBLOB NOT NULL,                    -- foto em binário (até ~16MB)
+  `ordem` TINYINT NOT NULL DEFAULT 1,              -- ordem de apresentação (1, 2, 3)
+  PRIMARY KEY (`id`),
+  INDEX `fk_pi_pedido_idx` (`pedido_id` ASC),
+  CONSTRAINT `fk_pi_pedido`
+    FOREIGN KEY (`pedido_id`)
+    REFERENCES `sylviartes`.`pedido` (`id`)
+    ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
 
 USE `sylviartes` ;
 
