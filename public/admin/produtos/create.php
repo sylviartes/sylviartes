@@ -9,13 +9,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     csrf_validate();
     $nome = trim($_POST['nome'] ?? '');
     $descricao = trim($_POST['descricao'] ?? '');
-    $preco = str_replace(',', '.', ($_POST['preco'] ?? ''));
     $categoria_id = (int)($_POST['categoria'] ?? 0);
-    $stock_inicial = (int)($_POST['stock'] ?? 0);
     $visivel = isset($_POST['visivel']) ? 1 : 0;
 
-    if ($nome === '' || $preco === '' || $categoria_id === 0) {
-        $mensagem = "Preenche o nome, o preço, o stock e escolhe uma categoria.";
+    if ($nome === '' || $categoria_id === 0) {
+        $mensagem = "Preenche o nome e escolhe uma categoria.";
         $tipo_msg = "erro";
     } else {
         // === Upload de IMAGENS (suporta múltiplas) ===
@@ -74,20 +72,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             try {
                 $conn->beginTransaction();
 
+                // Site é portfólio (orçamento sob medida), por isso o produto
+                // não tem preço fixo nem stock: preco_base=0 e stock=NULL.
+                // A visibilidade é controlada apenas pelo "Mostrar no Catálogo".
                 $stmt = $conn->prepare("
                     INSERT INTO produto
                     (nome, descricao, preco_base, categoria_id, visivel_catalogo, stock)
                     VALUES
-                    (:nome, :descricao, :preco, :categoria_id, :visivel, :stock)
+                    (:nome, :descricao, 0, :categoria_id, :visivel, NULL)
                 ");
 
                 $ok = $stmt->execute([
                     ':nome' => $nome,
                     ':descricao' => $descricao,
-                    ':preco' => $preco,
                     ':categoria_id' => $categoria_id,
-                    ':visivel' => $visivel,
-                    ':stock' => $stock_inicial
+                    ':visivel' => $visivel
                 ]);
 
                 $produto_id = (int)$conn->lastInsertId();
@@ -183,10 +182,6 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
                     <input type="text" name="nome" required placeholder="Ex: Toalha Bordada">
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-euro-sign"></i> Preço (€):</label>
-                    <input type="text" name="preco" required placeholder="Ex: 15.50">
-                </div>
-                <div class="form-group">
                     <label><i class="fas fa-folder"></i> Categoria:</label>
                     <select name="categoria" required>
                         <option value="">-- Selecionar --</option>
@@ -196,10 +191,6 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
                             </option>
                         <?php endforeach; ?>
                     </select>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-boxes"></i> Stock:</label>
-                    <input type="number" name="stock" value="10" required>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-images"></i> Fotos do Produto (pode escolher várias):</label>

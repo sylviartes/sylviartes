@@ -157,22 +157,19 @@ if (isset($_POST['ordenar_imagens']) && is_array($_POST['ordem_img'])) {
 if ($_SERVER["REQUEST_METHOD"] === "POST" && !isset($_POST['remover_imagem_id']) && !isset($_POST['ordenar_imagens'])) {
     $nome = trim($_POST['nome'] ?? '');
     $descricao = trim($_POST['descricao'] ?? '');
-    $preco = str_replace(',', '.', ($_POST['preco'] ?? ''));
     $categoria_id = (int)($_POST['categoria'] ?? 0);
-    $stock = (int)($_POST['stock'] ?? 0);
     $visivel = isset($_POST['visivel']) ? 1 : 0;
 
-    if ($nome === '' || $preco === '' || $categoria_id === 0) {
-        $mensagem = "Preenche nome, preço e categoria.";
+    if ($nome === '' || $categoria_id === 0) {
+        $mensagem = "Preenche o nome e escolhe uma categoria.";
         $tipo_msg = "erro";
     } else {
+        // Site é portfólio: não mexemos em preco_base nem stock (não têm uso).
         $sql = "
             UPDATE produto
             SET nome = :nome,
                 descricao = :descricao,
-                preco_base = :preco,
                 categoria_id = :categoria_id,
-                stock = :stock,
                 visivel_catalogo = :visivel
             WHERE id = :id
         ";
@@ -181,9 +178,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && !isset($_POST['remover_imagem_id'])
         $ok = $stmt->execute([
             ':nome' => $nome,
             ':descricao' => $descricao,
-            ':preco' => $preco,
             ':categoria_id' => $categoria_id,
-            ':stock' => $stock,
             ':visivel' => $visivel,
             ':id' => $id
         ]);
@@ -358,11 +353,6 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
                     </div>
 
                     <div class="form-group">
-                        <label><i class="fas fa-euro-sign"></i> Preço (€)</label>
-                        <input type="text" name="preco" required value="<?php echo htmlspecialchars((string)$produto['preco_base']); ?>">
-                    </div>
-
-                    <div class="form-group">
                         <label><i class="fas fa-folder"></i> Categoria</label>
                         <select name="categoria" required>
                             <option value="">-- Selecionar --</option>
@@ -372,11 +362,6 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label><i class="fas fa-boxes"></i> Stock</label>
-                        <input type="number" name="stock" value="<?php echo (int)$produto['stock']; ?>" required>
                     </div>
 
                     <div class="form-group">

@@ -664,9 +664,11 @@ CREATE TRIGGER trg_validar_produto_antes_insert
 BEFORE INSERT ON produto
 FOR EACH ROW
 BEGIN
-    IF NEW.preco_base <= 0 THEN
+    -- Site é portfólio (orçamento sob medida): preco_base pode ser 0.
+    -- Só impedimos valores negativos.
+    IF NEW.preco_base < 0 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'O preço base deve ser maior que zero.';
+        SET MESSAGE_TEXT = 'O preço base não pode ser negativo.';
     END IF;
 
     IF NEW.stock IS NOT NULL AND NEW.stock < 0 THEN
@@ -680,9 +682,11 @@ CREATE TRIGGER trg_produto_antes_update
 BEFORE UPDATE ON produto
 FOR EACH ROW
 BEGIN
-    IF NEW.preco_base <= 0 THEN
+    -- Site é portfólio (orçamento sob medida): preco_base pode ser 0.
+    -- Só impedimos valores negativos.
+    IF NEW.preco_base < 0 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'O preço base deve ser maior que zero.';
+        SET MESSAGE_TEXT = 'O preço base não pode ser negativo.';
     END IF;
 
     IF NEW.stock IS NOT NULL AND NEW.stock < 0 THEN

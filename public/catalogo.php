@@ -32,8 +32,6 @@ $ordem = $_GET['ordem'] ?? 'padrao';
 // Usar lista branca evita SQL injection (não inserimos $_GET direto na query).
 $ordensValidas = [
     'padrao'      => 'p.nome ASC',
-    'preco_asc'   => 'p.preco_base ASC',
-    'preco_desc'  => 'p.preco_base DESC',
     'recente'     => 'p.id DESC',
 ];
 $orderBy = $ordensValidas[$ordem] ?? $ordensValidas['padrao'];
