@@ -6,116 +6,135 @@
  *
  *  Sistema com 3 níveis de fallback automático:
  *
- *    1. RESEND API — RECOMENDADO. Setup em 2 min: criar conta em resend.com
- *       (login com GitHub), gerar API key, colar em RESEND_API_KEY abaixo.
- *       Funciona logo (até com o sender de teste onboarding@resend.dev).
+ *    1. Gmail SMTP (método principal) — envia a partir de sylviartes.pt@gmail.com.
+ *       Requer SMTP_HOST, SMTP_USER e SMTP_PASS preenchidos em config/.env.
  *
- *    2. PHPMailer + SMTP — alternativa para Gmail/Brevo/etc.
+ *    2. RESEND API (fallback) — se o SMTP falhar, tenta via Resend.
+ *       Emails saem de onboarding@resend.dev (endereço de teste da Resend).
  *
- *    3. Outbox local — fallback final: emails ficam como ficheiros .eml
- *       em docs/outbox/ para teste local sem internet.
+ *    3. Outbox local (último recurso) — guarda como ficheiro .eml em
+ *       docs/outbox/ para poder ver os emails sem internet.
  *
  *  O sistema escolhe automaticamente o primeiro nível configurado.
  * =============================================================================
  */
 
-// =============================================================================
-// CONFIGURAÇÕES — valores lidos de config/.env (nunca hardcoded aqui)
-// =============================================================================
-
 require_once __DIR__ . '/../config/env.php';
 
-// === RESEND (Recomendado — mais simples) ===
-// Chave lida de config/.env — nunca colocar a chave real diretamente aqui.
-// Para configurar: copia config/.env.example para config/.env e preenche RESEND_API_KEY.
-if (!defined('RESEND_API_KEY')) define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: '');
-// Sender padrão de teste — funciona logo, sem precisar de verificar domínio.
-// Quando comprares domínio próprio, adiciona-o em https://resend.com/domains
-// e altera RESEND_FROM em .env para algo como 'SylviArtes <pedidos@sylviartes.pt>'.
-if (!defined('RESEND_FROM'))    define('RESEND_FROM',    getenv('RESEND_FROM')    ?: 'SylviArtes <onboarding@resend.dev>');
+// =============================================================================
+// CONSTANTES — lidas do config/.env (nunca hardcoded aqui)
+// =============================================================================
 
-// === SMTP (alternativa, se preferires Gmail/Brevo/etc.) ===
+// Gmail SMTP
 if (!defined('SMTP_HOST'))      define('SMTP_HOST',      getenv('SMTP_HOST')      ?: '');
 if (!defined('SMTP_PORT'))      define('SMTP_PORT',      getenv('SMTP_PORT') ? (int)getenv('SMTP_PORT') : 587);
 if (!defined('SMTP_USER'))      define('SMTP_USER',      getenv('SMTP_USER')      ?: '');
 if (!defined('SMTP_PASS'))      define('SMTP_PASS',      getenv('SMTP_PASS')      ?: '');
-if (!defined('SMTP_FROM'))      define('SMTP_FROM',      getenv('SMTP_FROM')      ?: 'noreply@sylviartes.pt');
+if (!defined('SMTP_FROM'))      define('SMTP_FROM',      getenv('SMTP_FROM')      ?: '');
 if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME') ?: 'SylviArtes');
 
+// Resend (fallback)
+if (!defined('RESEND_API_KEY')) define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: '');
+if (!defined('RESEND_FROM'))    define('RESEND_FROM',    getenv('RESEND_FROM')    ?: 'SylviArtes <onboarding@resend.dev>');
+
+// Email da administradora (para receber avisos de pedidos novos)
+if (!defined('ADMIN_EMAIL'))    define('ADMIN_EMAIL',    getenv('ADMIN_EMAIL')    ?: '');
+
+
 /**
- * Envia um email. Usa Resend → SMTP → Outbox local automaticamente.
+ * Envia um email. Ordem: Gmail SMTP → Resend → Outbox local.
  *
- * @return bool true se enviou/guardou com sucesso
+ * @param string $para      Email do destinatário
+ * @param string $assunto   Assunto do email
+ * @param string $htmlCorpo Corpo do email em HTML
+ * @param string $replyTo   (opcional) Email para onde as respostas devem ir.
+ *                          Ex: quando enviamos ao cliente, Reply-To = Gmail da Sylvia.
+ * @return bool true se enviou ou guardou com sucesso
  */
-function enviar_email(string $para, string $assunto, string $htmlCorpo): bool
+function enviar_email(string $para, string $assunto, string $htmlCorpo, string $replyTo = ''): bool
 {
     // ===========================================================================
-    // Tentativa 1: RESEND API (recomendado)
+    // Tentativa 1: Gmail SMTP (método principal — envia de sylviartes.pt@gmail.com)
+    // ===========================================================================
+    if (class_exists('\\PHPMailer\\PHPMailer\\PHPMailer') && SMTP_HOST !== '' && SMTP_USER !== '' && SMTP_PASS !== '') {
+        try {
+            $mail = new \PHPMailer\PHPMailer\PHPMailer(true); // true = lança exceções em caso de erro
+
+            // Configuração do servidor SMTP
+            $mail->isSMTP();
+            $mail->Host       = SMTP_HOST;         // smtp.gmail.com
+            $mail->SMTPAuth   = true;               // exige autenticação
+            $mail->Username   = SMTP_USER;          // sylviartes.pt@gmail.com
+            $mail->Password   = SMTP_PASS;          // password de aplicação do Google
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS; // TLS (Gmail usa porta 587)
+            $mail->Port       = SMTP_PORT;          // 587
+            $mail->CharSet    = 'UTF-8';            // suporte a acentos e carateres especiais
+
+            // Remetente e destinatário
+            $mail->setFrom(SMTP_FROM, SMTP_FROM_NAME);
+            $mail->addAddress($para);
+
+            // Reply-To: quando o destinatário clica "Responder", a mensagem vai para
+            // este email (e não para o endereço técnico do SMTP)
+            if ($replyTo !== '') {
+                $mail->addReplyTo($replyTo);
+            }
+
+            // Conteúdo
+            $mail->isHTML(true);
+            $mail->Subject = $assunto;
+            $mail->Body    = $htmlCorpo;
+            $mail->AltBody = strip_tags($htmlCorpo); // versão sem HTML para clientes de email antigos
+
+            $mail->send();
+            return true; // Email enviado via Gmail SMTP
+
+        } catch (Exception $e) {
+            // SMTP falhou → loga e cai para a tentativa seguinte
+            error_log("Falha SMTP Gmail: " . $e->getMessage());
+        }
+    }
+
+    // ===========================================================================
+    // Tentativa 2: Resend API (fallback — envia de onboarding@resend.dev)
     // ===========================================================================
     if (RESEND_API_KEY !== '' && function_exists('curl_init')) {
-        $payload = json_encode([
+        $payload = [
             'from'    => RESEND_FROM,
             'to'      => [$para],
             'subject' => $assunto,
             'html'    => $htmlCorpo,
-        ]);
+        ];
+        // Adiciona Reply-To se fornecido
+        if ($replyTo !== '') {
+            $payload['reply_to'] = [$replyTo];
+        }
 
         $ch = curl_init('https://api.resend.com/emails');
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => $payload,
+            CURLOPT_POSTFIELDS     => json_encode($payload),
             CURLOPT_HTTPHEADER     => [
                 'Authorization: Bearer ' . RESEND_API_KEY,
                 'Content-Type: application/json',
             ],
-            CURLOPT_TIMEOUT        => 10,
+            CURLOPT_TIMEOUT => 10,
         ]);
         $response = curl_exec($ch);
         $status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $erro     = curl_error($ch);
-        // curl_close() foi descontinuado no PHP >= 8.5 (não tem efeito desde PHP 8.0).
-        // O handle é libertado automaticamente ao fim da execução/escopo.
-
 
         if ($status >= 200 && $status < 300) {
-            return true;  // Email enviado pela Resend
+            return true; // Email enviado via Resend
         }
-        // Falhou → loga e cai para tentativa seguinte
         error_log("Resend falhou (HTTP $status): " . ($erro ?: $response));
     }
 
     // ===========================================================================
-    // Tentativa 2: PHPMailer + SMTP (se configurado)
+    // Tentativa 3: Outbox local (funciona sempre, mesmo sem internet)
+    // O email fica guardado em docs/outbox/ como ficheiro .eml
     // ===========================================================================
-    if (class_exists('\\PHPMailer\\PHPMailer\\PHPMailer') && SMTP_HOST !== '') {
-        try {
-            $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-            $mail->isSMTP();
-            $mail->Host       = SMTP_HOST;
-            $mail->SMTPAuth   = true;
-            $mail->Username   = SMTP_USER;
-            $mail->Password   = SMTP_PASS;
-            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = SMTP_PORT;
-            $mail->CharSet    = 'UTF-8';
-
-            $mail->setFrom(SMTP_FROM, SMTP_FROM_NAME);
-            $mail->addAddress($para);
-            $mail->isHTML(true);
-            $mail->Subject = $assunto;
-            $mail->Body    = $htmlCorpo;
-            $mail->AltBody = strip_tags($htmlCorpo);
-
-            $mail->send();
-            return true;
-        } catch (Exception $e) {
-            // Falha no SMTP → cai para fallback
-            error_log("Falha SMTP: " . $e->getMessage());
-        }
-    }
-
-    // === Fallback: guardar como ficheiro .eml na outbox ===
     $outboxDir = __DIR__ . '/../docs/outbox';
     if (!is_dir($outboxDir)) {
         @mkdir($outboxDir, 0755, true);
@@ -124,6 +143,9 @@ function enviar_email(string $para, string $assunto, string $htmlCorpo): bool
     $nomeFich = $outboxDir . '/' . date('Y-m-d_His') . '_' . preg_replace('/[^a-z0-9]+/i', '_', $para) . '.eml';
     $conteudo = "Para: $para\n";
     $conteudo .= "De: " . SMTP_FROM_NAME . " <" . SMTP_FROM . ">\n";
+    if ($replyTo !== '') {
+        $conteudo .= "Reply-To: $replyTo\n";
+    }
     $conteudo .= "Assunto: $assunto\n";
     $conteudo .= "Data: " . date('r') . "\n";
     $conteudo .= "Content-Type: text/html; charset=UTF-8\n\n";
@@ -132,18 +154,17 @@ function enviar_email(string $para, string $assunto, string $htmlCorpo): bool
     return (bool) file_put_contents($nomeFich, $conteudo);
 }
 
+
 /**
- * Envia o email à cliente com o orçamento finalizado pela admin
- * e o link Stripe para pagamento.
+ * Envia à cliente o email com o orçamento finalizado + link de pagamento Stripe.
+ * Chamado pelo admin em admin/encomendas/enviar_link.php.
  *
- * @param string $email          Email da cliente
- * @param string $nome           Nome (para personalizar saudação)
- * @param int    $pedidoId       ID do pedido
- * @param float  $valor          Valor final do orçamento (€)
- * @param string $linkPagamento  URL do Stripe Payment Link
- * @param string $descricao      Descrição do que foi pedido (opcional)
- *
- * @return bool true se enviou/guardou com sucesso
+ * @param string $email         Email da cliente
+ * @param string $nome          Nome da cliente (para personalizar a saudação)
+ * @param int    $pedidoId      ID do pedido
+ * @param float  $valor         Valor final do orçamento (€)
+ * @param string $linkPagamento URL do Stripe Payment Link
+ * @param string $descricao     Descrição resumida do que foi pedido
  */
 function enviar_email_orcamento(
     string $email,
@@ -154,7 +175,7 @@ function enviar_email_orcamento(
     string $descricao = ''
 ): bool {
     $valorFormatado = number_format($valor, 2, ',', '.') . ' €';
-    $primeiroNome = htmlspecialchars(explode(' ', $nome)[0] ?? 'Cliente');
+    $primeiroNome   = htmlspecialchars(explode(' ', $nome)[0] ?? 'Cliente');
 
     $corpo = '
     <div style="font-family:Arial,sans-serif; max-width:600px; margin:0 auto; padding:30px; background:#fff;">
@@ -214,5 +235,110 @@ function enviar_email_orcamento(
         </p>
     </div>';
 
-    return enviar_email($email, "Orçamento da sua encomenda — SylviArtes", $corpo);
+    // Reply-To = Gmail da Sylvia, para que o cliente possa responder directamente
+    $replyTo = ADMIN_EMAIL ?: '';
+
+    return enviar_email($email, "Orçamento da sua encomenda — SylviArtes", $corpo, $replyTo);
+}
+
+
+/**
+ * Envia à Sylvia (ADMIN_EMAIL) um aviso quando um novo pedido chega.
+ * Inclui dados do cliente e link directo para o admin.
+ *
+ * @param string $adminEmail  Email da administradora
+ * @param int    $pedidoId    ID do pedido recém-criado
+ * @param string $nomeCliente Nome completo do cliente
+ * @param string $emailCliente Email do cliente (para Reply-To)
+ * @param string $telefone    Telefone do cliente
+ * @param string $descricao   Descrição do pedido
+ */
+function enviar_email_nova_encomenda(
+    string $adminEmail,
+    int $pedidoId,
+    string $nomeCliente,
+    string $emailCliente,
+    string $telefone,
+    string $descricao
+): bool {
+    // Lê a URL base do site para o link do admin (funciona em localhost e em produção)
+    $baseUrl = getenv('SITE_BASE_URL') ?: 'http://localhost:8080';
+    $linkAdmin = $baseUrl . '/public/admin/encomendas/view.php?id=' . $pedidoId;
+
+    $corpo = '
+    <div style="font-family:Arial,sans-serif; max-width:600px; margin:0 auto; padding:30px; background:#fff;">
+        <div style="text-align:center; margin-bottom:24px;">
+            <h1 style="color:#d66d7f; font-family:Georgia,serif; margin:0;">SylviArtes</h1>
+            <p style="color:#888; font-size:13px; margin:4px 0 0;">Painel de Gestão</p>
+        </div>
+
+        <!-- Título do aviso -->
+        <div style="background:#fff8fa; border-left:4px solid #d66d7f; padding:16px 20px;
+                    border-radius:6px; margin-bottom:24px;">
+            <h2 style="margin:0; color:#d66d7f; font-size:20px;">
+                🔔 Novo pedido #' . $pedidoId . '
+            </h2>
+            <p style="margin:6px 0 0; color:#555; font-size:14px;">
+                Um novo pedido de orçamento foi submetido.
+            </p>
+        </div>
+
+        <!-- Dados do cliente -->
+        <table style="width:100%; border-collapse:collapse; font-size:14px; color:#444;">
+            <tr>
+                <td style="padding:10px 0; border-bottom:1px solid #f0e3e7; width:35%;
+                           color:#888; font-weight:600;">Cliente</td>
+                <td style="padding:10px 0; border-bottom:1px solid #f0e3e7;">
+                    ' . htmlspecialchars($nomeCliente) . '
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:10px 0; border-bottom:1px solid #f0e3e7;
+                           color:#888; font-weight:600;">Email</td>
+                <td style="padding:10px 0; border-bottom:1px solid #f0e3e7;">
+                    <a href="mailto:' . htmlspecialchars($emailCliente) . '"
+                       style="color:#d66d7f;">' . htmlspecialchars($emailCliente) . '</a>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:10px 0; border-bottom:1px solid #f0e3e7;
+                           color:#888; font-weight:600;">Telefone</td>
+                <td style="padding:10px 0; border-bottom:1px solid #f0e3e7;">
+                    <a href="tel:' . htmlspecialchars($telefone) . '"
+                       style="color:#d66d7f;">' . htmlspecialchars($telefone) . '</a>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Descrição do pedido -->
+        <div style="margin:24px 0;">
+            <div style="color:#888; font-size:12px; font-weight:600; text-transform:uppercase;
+                        letter-spacing:1px; margin-bottom:8px;">O que pediu</div>
+            <div style="background:#f8f9fa; padding:16px; border-radius:8px;
+                        font-size:14px; color:#444; line-height:1.6; font-style:italic;">
+                "' . htmlspecialchars(mb_strimwidth($descricao, 0, 400, '…')) . '"
+            </div>
+        </div>
+
+        <!-- Botão para o admin -->
+        <p style="text-align:center; margin:30px 0;">
+            <a href="' . htmlspecialchars($linkAdmin) . '"
+               style="background:#d66d7f; color:#fff; padding:14px 36px; border-radius:999px;
+                      text-decoration:none; font-weight:bold; font-size:15px; display:inline-block;">
+                Ver pedido no painel →
+            </a>
+        </p>
+
+        <p style="color:#999; font-size:12px; text-align:center;">
+            SylviArtes &middot; Este aviso foi gerado automaticamente
+        </p>
+    </div>';
+
+    // Reply-To = email do cliente, para poder responder directamente a ele
+    return enviar_email(
+        $adminEmail,
+        "🔔 Novo pedido #$pedidoId — " . $nomeCliente,
+        $corpo,
+        $emailCliente
+    );
 }

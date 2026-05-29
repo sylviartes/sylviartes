@@ -21,6 +21,7 @@
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/csrf.php';
+require_once __DIR__ . '/../src/email.php'; // para enviar aviso à Sylvia quando chega pedido novo
 
 // === REGEX (mesmas do projeto, fornecidas pelo professor) ===
 $regexPostal   = "/^[1-9]\d{3}(-\d{3})?$/";
@@ -212,6 +213,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $conn->commit();
+
+            // === Aviso automático à Sylvia quando chega um pedido novo ===
+            // Best-effort: se o email falhar, o pedido já foi gravado na BD (o importante).
+            // A Sylvia vê o pedido no painel admin mesmo que o email falhe.
+            if (defined('ADMIN_EMAIL') && ADMIN_EMAIL !== '') {
+                try {
+                    enviar_email_nova_encomenda(ADMIN_EMAIL, $pedidoId, $nome, $email, $telefone, $descricao);
+                } catch (Exception $eEmail) {
+                    // Regista no log do servidor mas não interrompe o fluxo do cliente
+                    error_log("Aviso admin: falha ao enviar notificação de pedido #$pedidoId: " . $eEmail->getMessage());
+                }
+            }
 
             $mensagem = "Pedido #{$pedidoId} recebido com sucesso! Vamos contactá-la(o) em breve para confirmar os detalhes e enviar o orçamento final.";
             $tipo_mensagem = "success";
