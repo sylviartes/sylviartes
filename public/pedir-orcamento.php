@@ -23,6 +23,22 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/csrf.php';
 require_once __DIR__ . '/../src/email.php'; // para enviar aviso à Sylvia quando chega pedido novo
 
+// =============================================================================
+// LOGIN OBRIGATÓRIO — só clientes com sessão iniciada podem pedir orçamento
+// =============================================================================
+// Se não estiver autenticado, envia para o login e volta a esta página depois
+// (preserva o ?inspiracao=ID, se vier de um item do portfólio).
+// Tem de ser ANTES de qualquer output (header.php) para o redirect funcionar.
+if (!isset($_SESSION['cliente_id'])) {
+    $voltar = 'pedir-orcamento.php';
+    if (isset($_GET['inspiracao'])) {
+        $voltar .= '?inspiracao=' . (int)$_GET['inspiracao'];
+    }
+    // O redirect é relativo a cliente/login.php — "../" volta à pasta public/
+    header('Location: cliente/login.php?redirect=' . urlencode('../' . $voltar));
+    exit;
+}
+
 // === REGEX (mesmas do projeto, fornecidas pelo professor) ===
 $regexPostal   = "/^[1-9]\d{3}(-\d{3})?$/";
 $regexTelefone = "/^(\+351)?(2\d{8}|9[1236]\d{7})$/";
