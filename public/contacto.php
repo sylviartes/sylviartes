@@ -182,10 +182,10 @@ main { padding: 0 !important; max-width: 100% !important; }
         </a>
 
         <!-- Email -->
-        <a href="mailto:info@sylviartes.pt" class="contacto-card">
+        <a href="mailto:sylviartes.pt@gmail.com" class="contacto-card">
             <span class="contacto-card-icone"><i class="fas fa-envelope"></i></span>
             <h5>Email</h5>
-            <p class="val-rosa">info@sylviartes.pt</p>
+            <p class="val-rosa">sylviartes.pt@gmail.com</p>
         </a>
 
         <!-- Localização — não é clicável, usa <div> em vez de <a> -->
