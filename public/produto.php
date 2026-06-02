@@ -90,27 +90,14 @@ exit;
 }
 
 // === Categoria do produto ===
-// Busca nome e preco_referencia (preço indicativo para mostrar "A partir de €X").
-// Verificamos primeiro se a coluna preco_referencia existe — se a SQL ainda não
-// foi aplicada, usamos só o nome (evita que a página rebente).
+// Site é por orçamento personalizado, por isso só precisamos do nome da categoria
+// (não há preço — em vez disso mostramos uma mensagem de orçamento à medida).
 $catNome = '';
-$catPrecoRef = null;
-
-$temPrecoRef = false;
-try {
-    $check = $conn->query("SHOW COLUMNS FROM categoria LIKE 'preco_referencia'");
-    $temPrecoRef = (bool)$check->fetch();
-} catch (Exception $e) { /* ignora */ }
-
-$colsCat = $temPrecoRef ? "nome, preco_referencia" : "nome";
-$stmt = $conn->prepare("SELECT $colsCat FROM categoria WHERE id = ? LIMIT 1");
+$stmt = $conn->prepare("SELECT nome FROM categoria WHERE id = ? LIMIT 1");
 $stmt->execute([$p['categoria_id']]);
 $cat = $stmt->fetch();
 if ($cat) {
-    $catNome     = $cat['nome'];
-    $catPrecoRef = isset($cat['preco_referencia']) && $cat['preco_referencia'] > 0
-                   ? (float)$cat['preco_referencia']
-                   : null;
+    $catNome = $cat['nome'];
 }
 
 /**
