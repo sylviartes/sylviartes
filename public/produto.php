@@ -206,11 +206,65 @@ main { padding: 0 !important; max-width: 100% !important; }
 }
 .produto-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(201,95,122,0.28); }
 
+/* ===== LIGHTBOX (igual ao do catálogo: frosted glass + miniaturas) ===== */
 .zoom-modal {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92);
-    z-index: 9999; justify-content: center; align-items: center; padding: 20px;
+    display: none; position: fixed; inset: 0; z-index: 99999;
+    background: rgba(10, 6, 14, 0.82);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    justify-content: center; align-items: center;
+    flex-direction: column; gap: 18px;
+    animation: zoomAbrir 0.22s ease;
 }
-.zoom-conteudo { max-width: 90%; max-height: 90vh; object-fit: contain; }
+@keyframes zoomAbrir { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+.zoom-conteudo {
+    max-width: min(88vw, 900px); max-height: 70vh; object-fit: contain;
+    border-radius: 10px; box-shadow: 0 32px 80px rgba(0,0,0,0.55);
+    transition: opacity 0.18s ease; display: block;
+}
+.zoom-contador {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.90); font-size: 13px; font-weight: 500;
+    padding: 6px 18px; border-radius: 999px; white-space: nowrap;
+}
+.zoom-fechar {
+    position: fixed; top: 16px; right: 20px; width: 44px; height: 44px;
+    border-radius: 50%; background: rgba(255,255,255,0.10);
+    border: 1.5px solid rgba(255,255,255,0.18); color: #fff; font-size: 17px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; z-index: 10;
+}
+.zoom-fechar:hover { background: rgba(255,255,255,0.22); }
+.zoom-nav {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    width: 50px; height: 50px; border-radius: 50%;
+    background: rgba(255,255,255,0.10); border: 1.5px solid rgba(255,255,255,0.18);
+    color: #fff; font-size: 17px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, transform 0.2s; z-index: 10;
+}
+.zoom-nav:hover {
+    background: rgba(214,109,127,0.55); border-color: rgba(214,109,127,0.65);
+    transform: translateY(-50%) scale(1.08);
+}
+.zoom-prev { left: 18px; }
+.zoom-next { right: 18px; }
+.zoom-thumbs {
+    display: flex; gap: 8px; padding: 8px 14px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px; max-width: min(88vw, 600px);
+    overflow-x: auto; scrollbar-width: none;
+}
+.zoom-thumbs::-webkit-scrollbar { display: none; }
+.zoom-thumb {
+    width: 54px; height: 54px; border-radius: 8px; overflow: hidden; flex-shrink: 0;
+    border: 2px solid transparent; opacity: 0.50; cursor: pointer;
+    transition: opacity 0.15s, border-color 0.15s; background: none; padding: 0;
+}
+.zoom-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.zoom-thumb:hover { opacity: 0.80; }
+.zoom-thumb.ativo { border-color: #d66d7f; opacity: 1; }
 
 /* Avaliações */
 .avaliacoes-secao {
@@ -467,37 +521,115 @@ echo json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP |
     <?php endif; ?>
 </div>
 
-<!-- Modal de zoom da imagem principal -->
-<div id="zoomModal" class="zoom-modal" onclick="fecharZoomModal()">
+<!-- Lightbox de zoom (frosted glass + miniaturas, igual ao catálogo) -->
+<div id="zoomModal" class="zoom-modal">
+    <div id="zoomContador" class="zoom-contador"></div>
+    <button class="zoom-fechar" id="zoomFechar" aria-label="Fechar"><i class="fas fa-times"></i></button>
     <img id="imgZoom" class="zoom-conteudo" alt="">
+    <button class="zoom-nav zoom-prev" id="zoomPrev" aria-label="Foto anterior"><i class="fas fa-chevron-left"></i></button>
+    <button class="zoom-nav zoom-next" id="zoomNext" aria-label="Próxima foto"><i class="fas fa-chevron-right"></i></button>
+    <div id="zoomThumbs" class="zoom-thumbs"></div>
 </div>
 
 <script>
-// Trocar imagem da galeria ao clicar num thumbnail
+// =============================================================================
+// GALERIA + LIGHTBOX (mesmo estilo do catálogo)
+// =============================================================================
+// Lista de todas as imagens do produto (vinda do PHP)
+const imagensProduto = <?= json_encode(array_values($imagens_produto)) ?>;
+let zoomIdx = 0;
+
+// Referencias ao DOM do lightbox
+const zModal  = document.getElementById('zoomModal');
+const zImg    = document.getElementById('imgZoom');
+const zCont   = document.getElementById('zoomContador');
+const zThumbs = document.getElementById('zoomThumbs');
+const zPrev   = document.getElementById('zoomPrev');
+const zNext   = document.getElementById('zoomNext');
+const zFechar = document.getElementById('zoomFechar');
+
+// Trocar a imagem principal ao clicar num thumbnail inline (abaixo da imagem)
 function trocarImagem(src, el) {
     document.getElementById('imgPrincipal').src = src;
     document.querySelectorAll('.galeria-thumb').forEach(e => e.classList.remove('active'));
     el.classList.add('active');
 }
 
-// Abre o modal de zoom da imagem principal
+// Abre o lightbox no índice da imagem principal atualmente mostrada
 function abrirZoomModal() {
-    document.getElementById('zoomModal').style.display = 'flex';
-    document.getElementById('imgZoom').src = document.getElementById('imgPrincipal').src;
-    document.body.style.overflow = 'hidden'; // bloqueia scroll do fundo
+    const atual = document.getElementById('imgPrincipal').getAttribute('src');
+    zoomIdx = imagensProduto.findIndex(s => s === atual);
+    if (zoomIdx < 0) zoomIdx = 0;
+
+    zModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    zImg.style.opacity = '1';
+    zImg.src = imagensProduto[zoomIdx];
+    construirZoomThumbs();
+    atualizarZoomUI();
 }
 
-// Fecha o modal e repõe o scroll
 function fecharZoomModal() {
-    document.getElementById('zoomModal').style.display = 'none';
+    zModal.style.display = 'none';
     document.body.style.overflow = '';
 }
 
-// Fechar o zoom com a tecla Escape
+// Sincroniza contador, setas e miniatura ativa
+function atualizarZoomUI() {
+    zCont.textContent = (zoomIdx + 1) + ' / ' + imagensProduto.length;
+    const multi = imagensProduto.length > 1;
+    zPrev.style.display   = multi ? 'flex' : 'none';
+    zNext.style.display   = multi ? 'flex' : 'none';
+    zThumbs.style.display = multi ? 'flex' : 'none';
+    document.querySelectorAll('.zoom-thumb').forEach((el, i) => el.classList.toggle('ativo', i === zoomIdx));
+}
+
+// Troca de imagem com fade suave
+function mudarZoom(dir) {
+    zoomIdx = (zoomIdx + dir + imagensProduto.length) % imagensProduto.length;
+    zImg.style.opacity = '0';
+    setTimeout(() => {
+        zImg.src = imagensProduto[zoomIdx];
+        zImg.style.opacity = '1';
+        atualizarZoomUI();
+    }, 170);
+}
+
+// Cria as miniaturas do lightbox (DOM seguro, sem innerHTML)
+function construirZoomThumbs() {
+    while (zThumbs.firstChild) zThumbs.removeChild(zThumbs.firstChild);
+    imagensProduto.forEach((src, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'zoom-thumb' + (idx === zoomIdx ? ' ativo' : '');
+        btn.setAttribute('aria-label', 'Ver foto ' + (idx + 1));
+        btn.addEventListener('click', (function (i) {
+            return function (e) {
+                e.stopPropagation();
+                zoomIdx = i;
+                zImg.style.opacity = '0';
+                setTimeout(() => { zImg.src = imagensProduto[zoomIdx]; zImg.style.opacity = '1'; atualizarZoomUI(); }, 170);
+            };
+        })(idx));
+        const img = document.createElement('img');
+        img.src = src; img.alt = '';
+        btn.appendChild(img);
+        zThumbs.appendChild(btn);
+    });
+}
+
+// Eventos do lightbox
+zModal.addEventListener('click', function (e) { if (e.target === zModal) fecharZoomModal(); });
+zFechar.addEventListener('click', fecharZoomModal);
+zPrev.addEventListener('click', function (e) { e.stopPropagation(); mudarZoom(-1); });
+zNext.addEventListener('click', function (e) { e.stopPropagation(); mudarZoom(1); });
+
+// Teclado: Esc fecha, setas navegam
 document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && document.getElementById('zoomModal').style.display === 'flex') {
-        fecharZoomModal();
-    }
+    if (zModal.style.display !== 'flex') return;
+    if (e.key === 'Escape')     fecharZoomModal();
+    if (e.key === 'ArrowLeft')  mudarZoom(-1);
+    if (e.key === 'ArrowRight') mudarZoom(1);
 });
 
 // Selecionar estrelas no form de avaliação (funciona com rato e teclado)
