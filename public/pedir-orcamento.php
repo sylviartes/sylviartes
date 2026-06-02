@@ -23,22 +23,6 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/csrf.php';
 require_once __DIR__ . '/../src/email.php'; // para enviar aviso à Sylvia quando chega pedido novo
 
-// =============================================================================
-// LOGIN OBRIGATÓRIO — só clientes com sessão iniciada podem pedir orçamento
-// =============================================================================
-// Se não estiver autenticado, envia para o login e volta a esta página depois
-// (preserva o ?inspiracao=ID, se vier de um item do portfólio).
-// Tem de ser ANTES de qualquer output (header.php) para o redirect funcionar.
-if (!isset($_SESSION['cliente_id'])) {
-    $voltar = 'pedir-orcamento.php';
-    if (isset($_GET['inspiracao'])) {
-        $voltar .= '?inspiracao=' . (int)$_GET['inspiracao'];
-    }
-    // O redirect é relativo a cliente/login.php — "../" volta à pasta public/
-    header('Location: cliente/login.php?redirect=' . urlencode('../' . $voltar));
-    exit;
-}
-
 // === REGEX (mesmas do projeto, fornecidas pelo professor) ===
 $regexPostal   = "/^[1-9]\d{3}(-\d{3})?$/";
 $regexTelefone = "/^(\+351)?(2\d{8}|9[1236]\d{7})$/";
@@ -446,13 +430,43 @@ main { padding: 0 !important; max-width: 100% !important; }
         <?php endif; ?>
 
         <?php if (!$clienteLogado): ?>
-            <div style="text-align:center; margin-bottom:18px; color:#666; font-size:14px;">
-                Já é cliente?
-                <a href="cliente/login.php?redirect=../pedir-orcamento.php<?= $inspiracaoId ? '?inspiracao=' . $inspiracaoId : '' ?>" style="color:#d66d7f; font-weight:600;">
-                    Faça login
-                </a>
-                para preencher os dados automaticamente.
+            <?php
+            // Link de login que volta a esta página depois de entrar (preserva a inspiração).
+            // urlencode garante que o ?inspiracao não se "perde" como parâmetro separado.
+            $loginRedirect = '../pedir-orcamento.php' . ($inspiracaoId ? '?inspiracao=' . $inspiracaoId : '');
+            $loginUrl = 'cliente/login.php?redirect=' . urlencode($loginRedirect);
+            ?>
+            <!-- Banner que incentiva (sem obrigar) o cliente a iniciar sessão -->
+            <div style="background:linear-gradient(135deg,#fff0f3,#fdeef2); border:1px solid #f4cdd5;
+                        border-radius:16px; padding:18px 20px; margin-bottom:22px;
+                        display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:220px;">
+                    <div style="font-weight:700; color:#bf5b6d; font-size:15px; margin-bottom:4px;">
+                        <i class="fas fa-circle-user"></i> Tem conta? Ganhe tempo!
+                    </div>
+                    <div style="color:#7a5a63; font-size:13.5px; line-height:1.55;">
+                        Inicie sessão e os seus dados são preenchidos automaticamente.
+                        Acompanhe as suas encomendas e peça orçamentos mais depressa da próxima vez.
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <a href="<?= htmlspecialchars($loginUrl) ?>"
+                       style="background:linear-gradient(135deg,#d66d7f,#bf5b6d); color:#fff;
+                              padding:10px 22px; border-radius:999px; text-decoration:none;
+                              font-weight:600; font-size:14px; white-space:nowrap;">
+                        <i class="fas fa-right-to-bracket"></i> Entrar
+                    </a>
+                    <a href="cliente/registo.php"
+                       style="background:#fff; color:#bf5b6d; border:1.5px solid #f0c8d2;
+                              padding:10px 20px; border-radius:999px; text-decoration:none;
+                              font-weight:600; font-size:14px; white-space:nowrap;">
+                        Criar conta
+                    </a>
+                </div>
             </div>
+            <p style="text-align:center; color:#999; font-size:13px; margin:-8px 0 18px;">
+                Ou continue sem conta — basta preencher os dados abaixo.
+            </p>
         <?php else: ?>
             <div style="text-align:center; margin-bottom:18px; color:#1f6b35; font-size:14px; background:#edf9f0; padding:10px; border-radius:10px;">
                 ✓ Olá <strong><?= htmlspecialchars($clienteLogado['nome']) ?></strong> — dados pré-preenchidos.
