@@ -359,18 +359,17 @@ echo json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP |
         <div style="background:#fff8fa; border:1px solid #f4cdd5; border-radius:14px;
                     padding:16px 18px; margin: 16px 0;">
 
-            <!-- Preço de referência — só aparece se a categoria tiver este campo preenchido -->
-            <?php if ($catPrecoRef): ?>
+            <!-- Mensagem de orçamento — substitui o preço fixo.
+                 O site é por orçamento personalizado: cada peça é avaliada à medida. -->
             <div style="margin-bottom:10px;">
-                <span style="font-size:0.8rem; color:#999; text-transform:uppercase; letter-spacing:0.5px;">
-                    A partir de
+                <span style="font-size:1.05rem; font-weight:700; color:#d66d7f;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Peça feita à medida
                 </span><br>
-                <span style="font-size:1.6rem; font-weight:700; color:#d66d7f;">
-                    <?= number_format($catPrecoRef, 2, ',', '.') ?> €
+                <span style="font-size:0.9rem; color:#666; line-height:1.5;">
+                    Cada peça é orçamentada conforme o que pretende — peça o seu
+                    orçamento grátis, resposta em 24h.
                 </span>
-                <span style="font-size:0.85rem; color:#888;"> (preço indicativo — orçamento gratuito)</span>
             </div>
-            <?php endif; ?>
 
             <!-- Características fixas desta categoria de produto -->
             <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px;">

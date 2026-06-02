@@ -26,16 +26,13 @@ if ($_POST && isset($_POST['guardar'])) {
     csrf_validate();
     $nome = trim($_POST['nome_cat'] ?? '');
     $desc = trim($_POST['desc_cat'] ?? '');
-    // Preço indicativo (opcional) — vazio fica NULL
-    $precoRefRaw = trim(str_replace(',', '.', $_POST['preco_ref'] ?? ''));
-    $precoRef = ($precoRefRaw !== '' && is_numeric($precoRefRaw)) ? (float)$precoRefRaw : null;
 
     if (!empty($nome)) {
-        $stmt = $conn->prepare('UPDATE categoria SET nome = :nome, descricao = :descricao, preco_referencia = :preco WHERE id = :id');
+        // Site por orçamento — categorias não têm preço (removido).
+        $stmt = $conn->prepare('UPDATE categoria SET nome = :nome, descricao = :descricao WHERE id = :id');
         $ok = $stmt->execute([
             ':nome' => $nome,
             ':descricao' => $desc,
-            ':preco' => $precoRef,
             ':id' => $id
         ]);
 
@@ -71,7 +68,7 @@ if ($_POST && isset($_POST['guardar'])) {
     <div class="admin-page-header">
         <div>
             <h1><i class="fas fa-edit"></i> Editar Categoria #<?= $id ?></h1>
-            <div class="subtitulo">Altera o nome, descrição ou preço indicativo desta categoria</div>
+            <div class="subtitulo">Altera o nome ou a descrição desta categoria</div>
         </div>
         <a href="index.php" class="btn-action btn-secondary">
             <i class="fas fa-arrow-left"></i> Voltar
@@ -98,29 +95,11 @@ if ($_POST && isset($_POST['guardar'])) {
                        value="<?= htmlspecialchars($cat['nome']) ?>" required>
             </div>
 
-            <!-- Grelha 2 colunas: Descrição + Preço lado a lado -->
-            <div class="form-grid">
-                <!-- Descrição (coluna esquerda, pré-preenchida) -->
-                <div class="form-field">
-                    <label for="desc_cat">Descrição <span class="opt">(opcional)</span></label>
-                    <textarea id="desc_cat" name="desc_cat"
-                              rows="4"><?= htmlspecialchars($cat['descricao'] ?? '') ?></textarea>
-                </div>
-
-                <!-- Preço indicativo (coluna direita) — number_format com '.' para o PHP parsear -->
-                <div class="form-field">
-                    <label for="preco_ref">Preço Indicativo <span class="opt">(opcional)</span></label>
-                    <div class="input-prefix-wrapper">
-                        <span class="input-prefix">€</span>
-                        <input type="text" id="preco_ref" name="preco_ref"
-                               placeholder="25.00"
-                               class="input-with-prefix"
-                               value="<?= isset($cat['preco_referencia']) && $cat['preco_referencia'] !== null
-                                          ? htmlspecialchars(number_format((float)$cat['preco_referencia'], 2, '.', ''))
-                                          : '' ?>">
-                    </div>
-                    <div class="form-hint">Aparece como "A partir de €X" na página do produto.</div>
-                </div>
+            <!-- Descrição (preço removido — site é por orçamento personalizado) -->
+            <div class="form-field form-field-full">
+                <label for="desc_cat">Descrição <span class="opt">(opcional)</span></label>
+                <textarea id="desc_cat" name="desc_cat"
+                          rows="4"><?= htmlspecialchars($cat['descricao'] ?? '') ?></textarea>
             </div>
 
             <!-- Botão guardar em secção própria -->

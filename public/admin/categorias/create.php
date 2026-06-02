@@ -10,16 +10,13 @@ if (isset($_POST['nova_categoria'])) {
     csrf_validate();
     $nome = trim($_POST['nome_cat'] ?? '');
     $desc = trim($_POST['desc_cat'] ?? '');
-    // Preço indicativo (opcional) — vazio fica NULL
-    $precoRefRaw = trim(str_replace(',', '.', $_POST['preco_ref'] ?? ''));
-    $precoRef = ($precoRefRaw !== '' && is_numeric($precoRefRaw)) ? (float)$precoRefRaw : null;
 
     if (!empty($nome)) {
-        $stmt = $conn->prepare("INSERT INTO categoria (nome, descricao, preco_referencia) VALUES (:nome, :descricao, :preco)");
+        // Site por orçamento — categorias não têm preço (removido).
+        $stmt = $conn->prepare("INSERT INTO categoria (nome, descricao) VALUES (:nome, :descricao)");
         $stmt->execute([
             ':nome' => $nome,
-            ':descricao' => $desc,
-            ':preco' => $precoRef
+            ':descricao' => $desc
         ]);
 
         header("Location: index.php");
@@ -80,26 +77,11 @@ if (isset($_POST['nova_categoria'])) {
                        placeholder="Ex: Toalhas" required autocomplete="off">
             </div>
 
-            <!-- Grelha 2 colunas: Descrição + Preço lado a lado -->
-            <div class="form-grid">
-                <!-- Descrição (coluna esquerda) -->
-                <div class="form-field">
-                    <label for="desc_cat">Descrição <span class="opt">(opcional)</span></label>
-                    <textarea id="desc_cat" name="desc_cat" rows="4"
-                              placeholder="Descrição da categoria..."></textarea>
-                </div>
-
-                <!-- Preço indicativo (coluna direita) -->
-                <div class="form-field">
-                    <label for="preco_ref">Preço Indicativo <span class="opt">(opcional)</span></label>
-                    <div class="input-prefix-wrapper">
-                        <span class="input-prefix">€</span>
-                        <input type="text" id="preco_ref" name="preco_ref"
-                               placeholder="25.00" class="input-with-prefix">
-                    </div>
-                    <!-- Explica onde este preço aparece no site público -->
-                    <div class="form-hint">Aparece como "A partir de €X" na página do produto.</div>
-                </div>
+            <!-- Descrição (preço removido — site é por orçamento personalizado) -->
+            <div class="form-field form-field-full">
+                <label for="desc_cat">Descrição <span class="opt">(opcional)</span></label>
+                <textarea id="desc_cat" name="desc_cat" rows="4"
+                          placeholder="Descrição da categoria..."></textarea>
             </div>
 
             <!-- Botão em secção própria com fundo levemente diferente -->
