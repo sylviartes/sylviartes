@@ -587,6 +587,88 @@ form label {
     }
 }
 
+/* =============================================================================
+   MELHORIAS VISUAIS — Adicionadas na revisão do painel admin (PAP)
+   =============================================================================
+   Todas as regras abaixo são ADICIONAIS — não alteram nenhum estilo existente.
+   ============================================================================= */
+
+/* --- Badges de estado — cores revistas para melhor contraste (WCAG AA) ---
+   As cores anteriores (#2ed573, #ffa502) tinham contraste insuficiente em fundo
+   branco. Estas versões usam fundo claro + texto escuro para garantir legibilidade. */
+.estado-analise   { background: rgba(245,158,11,0.12);  color: #92400e; border: 1px solid rgba(245,158,11,0.20); }
+.estado-pagamento { background: rgba(239,68,68,0.10);   color: #b91c1c; border: 1px solid rgba(239,68,68,0.15); }
+.estado-producao  { background: rgba(59,130,246,0.10);  color: #1e40af; border: 1px solid rgba(59,130,246,0.15); }
+.estado-concluido { background: rgba(16,185,129,0.12);  color: #065f46; border: 1px solid rgba(16,185,129,0.20); }
+.estado-entregue  { background: rgba(6,182,212,0.10);   color: #155e75; border: 1px solid rgba(6,182,212,0.15); }
+.estado-cancelado { background: rgba(239,68,68,0.08);   color: #991b1b; border: 1px solid rgba(239,68,68,0.12); }
+
+/* --- Cabeçalho padrão de página admin ---
+   Reutilizável em encomendas/, produtos/, categorias/, avaliacoes/.
+   Uso: <div class="admin-page-header">
+            <div><h1>Título</h1><div class="subtitulo">Subtítulo</div></div>
+            <div><!-- botão de ação --></div>
+        </div> */
+.admin-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f5e9ec;
+}
+.admin-page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--texto);
+    margin: 0 0 4px;
+}
+.admin-page-header .subtitulo {
+    color: var(--texto-secundario);
+    font-size: 13px;
+}
+
+/* --- Botões de moderação de avaliações ---
+   Centralizados aqui para serem consistentes com a paleta geral do admin.
+   Usados em avaliacoes/index.php com class="btn-aprovar", "btn-rejeitar", "btn-desaprovar". */
+.btn-aprovar {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #d1fae5; color: #065f46;
+    border: 1px solid #a7f3d0;
+    padding: 8px 14px; border-radius: 8px;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background 0.15s;
+}
+.btn-aprovar:hover { background: #a7f3d0; }
+
+.btn-rejeitar {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fee2e2; color: #991b1b;
+    border: 1px solid #fecaca;
+    padding: 8px 14px; border-radius: 8px;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background 0.15s;
+}
+.btn-rejeitar:hover { background: #fecaca; }
+
+.btn-desaprovar {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #f3f4f6; color: #374151;
+    border: 1px solid #e5e7eb;
+    padding: 8px 14px; border-radius: 8px;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background 0.15s;
+}
+.btn-desaprovar:hover { background: #e5e7eb; }
+
+/* --- KPI grid: 3 colunas em tablet ---
+   Com 5 KPIs (faturado + pipeline + encomendas + clientes + avaliação),
+   o auto-fit em tablet pode criar linhas desiguais. Este breakpoint força 3 colunas. */
+@media (min-width: 769px) and (max-width: 1100px) {
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
 /* ANIMAÇÕES */
 @keyframes shimmer {
     0% { background-position: -200% 0; }
@@ -613,3 +695,169 @@ form label {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--cor-primaria-hover);
 }
+
+/* =====================================================================
+   FORM CARD — Design clean: campos separados por divisores, sem sub-headers
+   Estrutura: .form-card > form > .form-field(s) + .form-actions
+   ===================================================================== */
+
+/* Card principal — centrado na área de conteúdo, preenche o espaço disponível */
+.form-card {
+    max-width: 760px;
+    width: 100%;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #ede8ea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+/* Grelha interna do formulário — 2 colunas em desktop */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+}
+/* Campo que ocupa as 2 colunas (ex: Nome, Descrição) */
+.form-grid .form-field-full { grid-column: 1 / -1; }
+
+/* Cada campo com padding e divisor inferior */
+.form-field {
+    padding: 18px 24px;
+    border-bottom: 1px solid #f3edef;
+    border-right: 1px solid #f3edef;
+}
+/* Campos na coluna da direita sem borda direita */
+.form-field:nth-child(even) { border-right: none; }
+/* Último campo antes das actions sem divisor inferior */
+.form-field:last-of-type { border-bottom: none; border-right: none; }
+/* Campo full-width também sem borda direita */
+.form-field-full.form-field { border-right: none; }
+
+/* Label limpo — uppercase pequeno, cor cinza quente */
+.form-field label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: #9b8890;
+    margin-bottom: 8px;
+}
+/* Asterisco de obrigatório */
+.req { color: #d66d7f; margin-left: 2px; }
+/* Texto "(opcional)" — sem destaque, só cinza claro */
+.opt { font-size: 11px; font-weight: 400; color: #bfb4b8; text-transform: none; letter-spacing: 0; margin-left: 4px; }
+
+/* Inputs e textareas — bordas simples, sem bordas demasiado arredondadas */
+.form-field input,
+.form-field textarea,
+.form-field select {
+    display: block; width: 100%;
+    padding: 10px 13px;
+    border: 1.5px solid #e2dde0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    color: #2d3436;
+    background: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+    outline: none;
+    border-color: #d66d7f;
+    box-shadow: 0 0 0 3px rgba(214, 109, 127, 0.10);
+}
+.form-field textarea { resize: vertical; min-height: 90px; }
+
+/* Input com prefixo € — linha visual dentro do campo */
+.input-prefix-wrapper {
+    display: flex;
+    border: 1.5px solid #e2dde0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input-prefix-wrapper:focus-within {
+    border-color: #d66d7f;
+    box-shadow: 0 0 0 3px rgba(214, 109, 127, 0.10);
+}
+.input-prefix {
+    display: flex; align-items: center;
+    padding: 0 13px;
+    background: #faf7f8;
+    color: #9b8890;
+    font-weight: 600; font-size: 14px;
+    border-right: 1px solid #e2dde0;
+    user-select: none;
+}
+/* Input dentro do wrapper: sem borda, sem raio (o wrapper trata disso) */
+.input-with-prefix {
+    flex: 1; border: none !important;
+    box-shadow: none !important; border-radius: 0 !important;
+    background: transparent;
+}
+
+/* Texto de ajuda abaixo do campo */
+.form-hint {
+    margin-top: 7px;
+    font-size: 12px;
+    color: #bfb4b8;
+    line-height: 1.5;
+}
+
+/* Secção de ações: fundo levemente diferente, separada do formulário */
+.form-actions {
+    padding: 16px 24px;
+    background: #faf7f8;
+    border-top: 1px solid #f3edef;
+}
+
+/* Botão de submissão */
+.btn-submit {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 11px;
+    background: #d66d7f;
+    color: #fff;
+    border: none; border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: background 0.15s;
+}
+/* Hover simples: escurece a cor (sem transform — mais sobrio) */
+.btn-submit:hover { background: #bf5b6d; }
+
+/* Botão secundário (Voltar/Cancelar) */
+.btn-secondary {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+    border: 1px solid #e0dce0 !important;
+    box-shadow: none !important;
+}
+.btn-secondary:hover {
+    background: #e8e4e8 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Mobile — grelha colapsa para 1 coluna */
+@media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-field { border-right: none !important; }
+    .form-field-full.form-field { border-right: none; }
+    .form-actions { padding: 14px 18px; }
+    .form-field { padding: 14px 18px; }
+}
+
+/* Mensagens de feedback com ícone */
+.msg-box {
+    display: flex; align-items: center; gap: 10px;
+    padding: 13px 16px; border-radius: 10px;
+    margin-bottom: 18px; font-size: 14px; font-weight: 500;
+}
+.msg-sucesso { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.msg-erro    { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }

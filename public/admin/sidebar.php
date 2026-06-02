@@ -100,7 +100,12 @@ function isActive($padrao) {
             <?php endif; ?>
         </a>
 
-        <a href="<?= htmlspecialchars($caminho_loja) ?>" target="_blank" class="sidebar-loja">
+        <!-- rel="noopener noreferrer": boa prática de segurança para links target="_blank"
+             Impede que a nova aba aceda ao objeto window da aba de origem (proteção contra tabnabbing) -->
+        <a href="<?= htmlspecialchars($caminho_loja) ?>" target="_blank"
+           rel="noopener noreferrer"
+           title="Abre o site público numa nova aba"
+           class="sidebar-loja">
             <i class="fas fa-external-link-alt"></i>
             <span>Ver Site</span>
         </a>
@@ -214,6 +219,12 @@ function isActive($padrao) {
 .sidebar-loja:hover {
     transform: translateY(-1px);
     box-shadow: 0 8px 20px rgba(214, 109, 127, 0.25);
+}
+
+/* Barra lateral do item ativo — visível sem necessitar de hover.
+   O ::before existe em todos os links (scaleY 0), mas no ativo deve estar sempre visível. */
+.sidebar a.active::before {
+    transform: scaleY(1);
 }
 </style>
 <script>

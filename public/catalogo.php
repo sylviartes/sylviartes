@@ -118,6 +118,9 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
 ?>
 
 <style>
+/* Anula o padding do .pagina-main — o catalogo-container gere o seu próprio espaçamento */
+main { padding: 0 !important; max-width: 100% !important; }
+
 .catalogo-container { max-width: 1280px; margin: 0 auto; padding: 20px; }
 .catalogo-layout { display: flex; gap: 28px; margin-top: 36px; align-items: flex-start; }
 
@@ -188,15 +191,26 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
 .produto-img-box { height: 240px; background: #fdf6f8; position: relative; cursor: zoom-in; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .produto-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
 .produto-card:hover .produto-img { transform: scale(1.04); }
+/* Overlay escuro + ícone de lupa centrado ao fazer hover */
+.produto-img-box::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(30,10,20,0);
+    transition: background 0.3s;
+    z-index: 1;
+}
 .produto-img-box::after {
     content: '\f00e'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
-    position: absolute; top: 12px; right: 12px;
-    width: 34px; height: 34px; border-radius: 50%;
-    background: rgba(255,255,255,0.9); color: #d66d7f;
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0.7);
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(255,255,255,0.92); color: #d66d7f;
     display: flex; align-items: center; justify-content: center;
-    font-size: 14px; opacity: 0; transition: opacity 0.2s;
+    font-size: 20px; opacity: 0;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 2;
 }
-.produto-card:hover .produto-img-box::after { opacity: 1; }
+.produto-card:hover .produto-img-box::before { background: rgba(30,10,20,0.22); }
+.produto-card:hover .produto-img-box::after { opacity: 1; transform: translate(-50%,-50%) scale(1); }
 
 .produto-info { padding: 18px 20px; flex-grow: 1; display: flex; flex-direction: column; }
 .produto-nome { font-size: 16px; font-weight: 600; color: #2d3436; text-decoration: none; margin-bottom: 8px; transition: color 0.2s; }
@@ -225,18 +239,138 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
 }
 .btn-orcamento:hover { background: #d66d7f; color: #fff; border-color: #d66d7f; }
 
-.modal-zoom { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
-.modal-conteudo { max-width: 90%; max-height: 85vh; object-fit: contain; }
-.modal-fechar { position: absolute; top: 20px; right: 30px; color: white; font-size: 45px; cursor: pointer; }
-.modal-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); color: white; border: none; padding: 20px; cursor: pointer; font-size: 30px; border-radius: 50%; transition: 0.3s; }
-.modal-nav:hover { background: #d66d7f; }
-.modal-prev { left: 20px; }
-.modal-next { right: 20px; }
-.modal-contador { position: absolute; bottom: 30px; color: white; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; }
+/* ============================================================
+   LIGHTBOX / MODAL ZOOM — redesign completo
+   ============================================================ */
+
+/* Fundo com efeito frosted glass em vez de preto sólido */
+.modal-zoom {
+    display: none;
+    position: fixed; inset: 0; z-index: 99999;
+    background: rgba(10, 6, 14, 0.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    justify-content: center; align-items: center;
+    flex-direction: column; gap: 18px;
+    /* Animação de abertura */
+    animation: modalAbrir 0.22s ease;
+}
+@keyframes modalAbrir {
+    from { opacity: 0; transform: scale(0.98); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* Imagem principal com sombra e transição de fade entre fotos */
+.modal-conteudo {
+    max-width: min(88vw, 900px);
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.55);
+    transition: opacity 0.18s ease;
+    display: block;
+}
+
+/* Contador "2 / 3" — pílula no topo ao centro */
+.modal-contador {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.90);
+    font-size: 13px; font-weight: 500; font-family: 'Poppins', sans-serif;
+    padding: 6px 18px; border-radius: 999px;
+    white-space: nowrap;
+}
+
+/* Botão fechar — círculo glass top-right */
+.modal-fechar {
+    position: fixed; top: 16px; right: 20px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    color: #fff; font-size: 17px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; z-index: 10;
+}
+.modal-fechar:hover { background: rgba(255,255,255,0.22); }
+
+/* Setas de navegação — glass com hover rosa */
+.modal-nav {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    width: 50px; height: 50px; border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    color: #fff; font-size: 17px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    z-index: 10;
+}
+.modal-nav:hover {
+    background: rgba(214,109,127,0.55);
+    border-color: rgba(214,109,127,0.65);
+    transform: translateY(-50%) scale(1.08);
+}
+.modal-prev { left: 18px; }
+.modal-next { right: 18px; }
+
+/* Tira de miniaturas no fundo — scroll horizontal se houver muitas */
+.modal-thumbs {
+    display: flex; gap: 8px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    max-width: min(88vw, 600px);
+    overflow-x: auto;
+    scrollbar-width: none; /* esconde scrollbar no Firefox */
+}
+.modal-thumbs::-webkit-scrollbar { display: none; }
+
+.modal-thumb {
+    width: 54px; height: 54px; border-radius: 8px;
+    overflow: hidden; flex-shrink: 0;
+    border: 2px solid transparent;
+    opacity: 0.50; cursor: pointer;
+    transition: opacity 0.15s, border-color 0.15s;
+    background: none; padding: 0;
+}
+.modal-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.modal-thumb:hover { opacity: 0.80; }
+/* Miniatura ativa: borda rosa + opacidade total */
+.modal-thumb.ativo { border-color: #d66d7f; opacity: 1; }
+
+/* Botão toggle — só aparece em mobile */
+.catalogo-filtros-toggle {
+    display: none;
+    width: 100%;
+    padding: 13px 20px;
+    background: #fff;
+    border: 1px solid #f0e3e7;
+    border-radius: 12px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    color: #d66d7f;
+    cursor: pointer;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: background 0.2s;
+}
+.catalogo-filtros-toggle:hover { background: #fff8fa; }
+.catalogo-filtros-toggle .toggle-seta { margin-left: auto; font-size: 12px; }
 
 @media (max-width: 768px) {
-    .catalogo-layout { flex-direction: column; }
-    .catalogo-filtros { width: 100%; position: static; }
+    /* align-items: stretch garante que o conteúdo ocupa 100% da largura disponível
+       (o padrão flex-start encolhia o conteúdo para zero se a BD estivesse vazia) */
+    .catalogo-layout { flex-direction: column; align-items: stretch; }
+    /* Sidebar oculta por defeito — revelada ao clicar no botão toggle */
+    .catalogo-filtros { width: 100%; position: static; display: none; }
+    .catalogo-filtros.abertos { display: block; }
+    .catalogo-filtros-toggle { display: flex; }
+    /* Conteúdo sempre ocupa a largura total */
+    .catalogo-conteudo { width: 100%; }
 }
 </style>
 
@@ -256,7 +390,15 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
         </a>
     </div>
     <div class="catalogo-layout">
-        <aside class="catalogo-filtros">
+
+        <!-- Botão que mostra/oculta os filtros em telemóvel -->
+        <button class="catalogo-filtros-toggle" id="btnFiltros"
+                aria-controls="sidebarFiltros" aria-expanded="false">
+            <i class="fas fa-filter"></i> Filtros e Pesquisa
+            <span class="toggle-seta" id="filtrosSeta">▼</span>
+        </button>
+
+        <aside class="catalogo-filtros" id="sidebarFiltros">
             <form method="get" data-no-loading>
                 <h3>Filtros</h3>
                 <label>Pesquisar</label>
@@ -431,54 +573,173 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
     </div>
 </div>
 
-<div id="modalZoom" class="modal-zoom" onclick="fecharZoom(event)">
-    <span class="modal-fechar">&times;</span>
-    <img id="imgNoModal" class="modal-conteudo" alt="Zoom produto">
-    <button class="modal-nav modal-prev" onclick="mudarImagem(event, -1)">&#10094;</button>
-    <button class="modal-nav modal-next" onclick="mudarImagem(event, 1)">&#10095;</button>
+<!-- ============================================================
+     LIGHTBOX — Estrutura redesenhada
+     - Fundo faz fechar ao clicar (JS via event delegation)
+     - Botões com Font Awesome em vez de caracteres Unicode
+     - Tira de miniaturas preenchida dinamicamente por JS
+     ============================================================ -->
+<div id="modalZoom" class="modal-zoom">
+
+    <!-- Contador "2 / 3" fixo no topo ao centro -->
     <div id="modalContador" class="modal-contador"></div>
+
+    <!-- Botão fechar — círculo glass top-right -->
+    <button class="modal-fechar" id="btnModalFechar" aria-label="Fechar lightbox">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <!-- Imagem principal com fade entre fotos -->
+    <img id="imgNoModal" class="modal-conteudo" alt="Zoom produto">
+
+    <!-- Setas de navegação -->
+    <button class="modal-nav modal-prev" id="btnModalPrev" aria-label="Foto anterior">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="modal-nav modal-next" id="btnModalNext" aria-label="Próxima foto">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <!-- Tira de miniaturas (preenchida pelo JS ao abrir) -->
+    <div id="modalThumbs" class="modal-thumbs"></div>
+
 </div>
 
 <script>
-let imagensAtuais = [];
-let indiceAtual = 0;
+// =============================================================================
+// LIGHTBOX — Lógica do modal redesenhado
+// =============================================================================
 
+let imagensAtuais = [];   // array de caminhos das imagens do produto atual
+let indiceAtual   = 0;    // índice da imagem visível no momento
+
+// --- Referências aos elementos do DOM ---
+const modal     = document.getElementById('modalZoom');
+const imgPrinc  = document.getElementById('imgNoModal');
+const contador  = document.getElementById('modalContador');
+const thumbsDiv = document.getElementById('modalThumbs');
+const btnPrev   = document.getElementById('btnModalPrev');
+const btnNext   = document.getElementById('btnModalNext');
+const btnFechar = document.getElementById('btnModalFechar');
+
+// Abre o lightbox com as imagens do produto e mostra a de índice idx
 function abrirZoom(imgs, idx) {
     imagensAtuais = imgs;
-    indiceAtual = idx;
-    document.getElementById("modalZoom").style.display = "flex";
-    document.body.style.overflow = "hidden"; // bloqueia o scroll do fundo
-    atualizarModal();
+    indiceAtual   = idx;
+
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // bloqueia scroll da página
+
+    // Mostra a imagem imediatamente (sem fade na abertura)
+    imgPrinc.style.opacity = '1';
+    imgPrinc.src = imagensAtuais[indiceAtual];
+
+    construirThumbs();   // gera/atualiza a tira de miniaturas
+    atualizarUI();       // sincroniza contador, nav, thumb ativa
 }
 
-function atualizarModal() {
-    document.getElementById("imgNoModal").src = imagensAtuais[indiceAtual];
-    document.getElementById("modalContador").innerText = (indiceAtual + 1) + " / " + imagensAtuais.length;
+// Atualiza o contador, setas e miniatura ativa sem trocar a imagem principal
+function atualizarUI() {
+    // Contador "1 / 3"
+    contador.textContent = (indiceAtual + 1) + ' / ' + imagensAtuais.length;
 
-    const display = imagensAtuais.length > 1 ? "block" : "none";
-    document.querySelectorAll(".modal-nav").forEach(el => el.style.display = display);
+    // Setas e tira de thumbs — só aparecem se houver mais de 1 foto
+    const multi = imagensAtuais.length > 1;
+    btnPrev.style.display  = multi ? 'flex' : 'none';
+    btnNext.style.display  = multi ? 'flex' : 'none';
+    thumbsDiv.style.display = multi ? 'flex' : 'none';
+
+    // Realça a miniatura ativa
+    document.querySelectorAll('.modal-thumb').forEach((el, i) => {
+        el.classList.toggle('ativo', i === indiceAtual);
+    });
 }
 
-function mudarImagem(e, dir) {
-    e.stopPropagation();
+// Troca para outra imagem com efeito de fade suave
+function mudarImagem(dir) {
     indiceAtual = (indiceAtual + dir + imagensAtuais.length) % imagensAtuais.length;
-    atualizarModal();
+
+    // Fade out → troca src → fade in
+    imgPrinc.style.opacity = '0';
+    setTimeout(() => {
+        imgPrinc.src = imagensAtuais[indiceAtual];
+        imgPrinc.style.opacity = '1';
+        atualizarUI();
+    }, 170); // duração igual à transition CSS (0.18s)
 }
 
-function fecharZoom(e) {
-    if (e.target.id === "modalZoom" || e.target.className === "modal-fechar") {
-        document.getElementById("modalZoom").style.display = "none";
-        document.body.style.overflow = ""; // repõe o scroll do fundo
-    }
+// Cria as miniaturas na tira inferior
+function construirThumbs() {
+    // Limpa filhos existentes via DOM (evita usar innerHTML)
+    while (thumbsDiv.firstChild) thumbsDiv.removeChild(thumbsDiv.firstChild);
+
+    imagensAtuais.forEach((src, idx) => {
+        const btn = document.createElement('button');
+        btn.type      = 'button';
+        btn.className = 'modal-thumb' + (idx === indiceAtual ? ' ativo' : '');
+        btn.setAttribute('aria-label', 'Ver foto ' + (idx + 1));
+
+        // Thumbnail com índice na closure
+        btn.addEventListener('click', (function(i) {
+            return function(e) {
+                e.stopPropagation();
+                indiceAtual = i;
+                imgPrinc.style.opacity = '0';
+                setTimeout(() => {
+                    imgPrinc.src = imagensAtuais[indiceAtual];
+                    imgPrinc.style.opacity = '1';
+                    atualizarUI();
+                }, 170);
+            };
+        })(idx));
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = '';
+        btn.appendChild(img);
+        thumbsDiv.appendChild(btn);
+    });
 }
 
-document.addEventListener('keydown', (e) => {
-    if (document.getElementById("modalZoom").style.display === "flex") {
-        if (e.key === "Escape") { document.getElementById("modalZoom").style.display = "none"; document.body.style.overflow = ""; }
-        if (e.key === "ArrowLeft") mudarImagem(e, -1);
-        if (e.key === "ArrowRight") mudarImagem(e, 1);
-    }
+// Fecha o lightbox
+function fecharModal() {
+    modal.style.display = 'none';
+    document.body.style.overflow = ''; // repõe o scroll
+}
+
+// --- Event listeners ---
+
+// Clique no fundo escuro fecha o modal
+modal.addEventListener('click', function(e) {
+    if (e.target === modal) fecharModal();
 });
+
+// Botão X fecha o modal
+btnFechar.addEventListener('click', fecharModal);
+
+// Setas de navegação
+btnPrev.addEventListener('click', function(e) { e.stopPropagation(); mudarImagem(-1); });
+btnNext.addEventListener('click', function(e) { e.stopPropagation(); mudarImagem(1); });
+
+// Teclado: Esc fecha, ← / → navega
+document.addEventListener('keydown', function(e) {
+    if (modal.style.display !== 'flex') return;
+    if (e.key === 'Escape')      fecharModal();
+    if (e.key === 'ArrowLeft')   mudarImagem(-1);
+    if (e.key === 'ArrowRight')  mudarImagem(1);
+});
+
+// === Toggle da barra de filtros em mobile ===
+(function () {
+    const btn = document.getElementById('btnFiltros');
+    const sidebar = document.getElementById('sidebarFiltros');
+    if (!btn || !sidebar) return;
+    btn.addEventListener('click', function () {
+        const aberto = sidebar.classList.toggle('abertos');
+        document.getElementById('filtrosSeta').textContent = aberto ? '▲' : '▼';
+        btn.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+    });
+})();
 
 // === Swipe (deslizar) no telemóvel para mudar de imagem ===
 (function () {
@@ -492,7 +753,7 @@ document.addEventListener('keydown', (e) => {
         if (xInicio === null || imagensAtuais.length < 2) return;
         var dx = e.changedTouches[0].clientX - xInicio;
         if (Math.abs(dx) > 50) {                 // só conta como swipe se mover > 50px
-            mudarImagem(e, dx < 0 ? 1 : -1);     // esquerda = próxima, direita = anterior
+            mudarImagem(dx < 0 ? 1 : -1);        // esquerda = próxima, direita = anterior
         }
         xInicio = null;
     }, { passive: true });

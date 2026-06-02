@@ -164,6 +164,9 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
 ?>
 
 <style>
+/* Anula o padding do .pagina-main — produto-detalhe gere o seu próprio espaçamento */
+main { padding: 0 !important; max-width: 100% !important; }
+
 .produto-detalhe {
     max-width: 1200px;
     margin: 30px auto;

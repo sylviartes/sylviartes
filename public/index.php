@@ -404,6 +404,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
 .btn-branco:hover { background: #ad4d61; border-color: #ad4d61; transform: translateY(-1px); }
 
 /* ===== RESPONSIVO ===== */
+/* Tablet — grelhas a 2 colunas */
 @media (max-width: 992px) {
     .home-hero h1 { font-size: 42px; }
     .home-hero-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
@@ -412,15 +413,20 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
     .home-hero-img img { height: 360px; }
     .home-hero-img::before { display: none; }
     .home-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    /* Esconde os separadores verticais em grelhas multi-linha (ficam desalinhados) */
+    .home-stat:not(:last-child)::after { display: none; }
     .servicos-grid, .destaques-grid, .depoimentos-grid, .porque-grid { grid-template-columns: repeat(2, 1fr); }
     .passos-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Telemóvel — coluna única */
 @media (max-width: 600px) {
     .home-hero { padding: 50px 20px 60px; }
     .home-hero h1 { font-size: 32px; }
     .home-titulo h2, .home-cta-final h2 { font-size: 28px; }
     .servicos-grid, .destaques-grid, .depoimentos-grid, .porque-grid, .passos-grid { grid-template-columns: 1fr; }
     .home-section { padding: 50px 20px; }
+    .home-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 

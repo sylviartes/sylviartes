@@ -44,8 +44,16 @@ require_once __DIR__ . '/../config/session.php';
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Animações e loading states personalizados -->
-    <link rel="stylesheet" href="<?php echo (strpos($_SERVER['PHP_SELF'], '/cliente/') !== false) ? '../imagens/animacoes.css' : 'imagens/animacoes.css'; ?>">
+    <!-- Animações e loading states personalizados.
+         O ?v=filemtime() é "cache-busting": junta a data de modificação do ficheiro
+         ao URL. Sempre que editamos o CSS, o URL muda e o browser carrega a versão
+         nova em vez de usar uma cópia antiga em cache (evita layouts partidos). -->
+    <?php
+        $animCssRel  = (strpos($_SERVER['PHP_SELF'], '/cliente/') !== false) ? '../imagens/animacoes.css' : 'imagens/animacoes.css';
+        $animCssPath = __DIR__ . '/imagens/animacoes.css';
+        $animCssVer  = file_exists($animCssPath) ? filemtime($animCssPath) : time();
+    ?>
+    <link rel="stylesheet" href="<?php echo $animCssRel . '?v=' . $animCssVer; ?>">
 
     <style>
         :root {
@@ -80,8 +88,11 @@ require_once __DIR__ . '/../config/session.php';
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            overflow-x: hidden;
-            background-image: 
+            /* overflow-x: clip corta o excesso horizontal SEM tornar o body um
+               container de scroll (ao contrário de "hidden", que força overflow-y:auto
+               e quebra a navbar sticky — causava página em branco na emulação mobile). */
+            overflow-x: clip;
+            background-image:
                 radial-gradient(ellipse at 0% 0%, rgba(214, 109, 127, 0.05) 0%, transparent 50%),
                 radial-gradient(ellipse at 100% 100%, rgba(214, 109, 127, 0.08) 0%, transparent 50%),
                 linear-gradient(180deg, #fafbfc 0%, #fff5f7 100%);
@@ -103,16 +114,7 @@ require_once __DIR__ . '/../config/session.php';
             box-shadow: 0 8px 40px rgba(214, 109, 127, 0.15); 
         }
 
-        .topbar { 
-            max-width: 1300px; 
-            margin: 0 auto; 
-            padding: 10px 30px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-        }
-
-        .logo-area { 
+        .logo-area {
             display: flex; 
             align-items: center; 
             gap: 15px; 
@@ -202,12 +204,13 @@ require_once __DIR__ . '/../config/session.php';
             box-shadow: 0 8px 25px rgba(214, 109, 127, 0.2);
         }
 
-        .container { 
-            width: 100%; 
-            max-width: 1300px; 
-            margin: 0 auto; 
-            padding: 50px 30px; 
-            flex: 1; 
+        /* Wrapper do conteúdo principal — nome próprio para não colidir com Bootstrap .container */
+        .pagina-main {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 50px 30px;
+            flex: 1;
         }
 
         .section-header { 
@@ -371,35 +374,29 @@ require_once __DIR__ . '/../config/session.php';
             animation: fadeInUp 0.7s ease forwards; 
         }
 
+        /* Tablet — reduz padding e tamanho de fonte */
         @media (max-width: 992px) {
-            .topbar { 
-                flex-direction: column; 
-                gap: 15px; 
-                padding: 15px 20px; 
+            .pagina-main {
+                padding: 40px 20px;
             }
-            nav { 
-                width: 100%; 
-                justify-content: center; 
-                gap: 8px; 
-                flex-wrap: wrap; 
+            .section-title {
+                font-size: 32px;
             }
-            .container { 
-                padding: 40px 20px; 
-            }
-            .section-title { 
-                font-size: 32px; 
-            }
-            .logo-img { 
-                height: 55px; 
+            .logo-img {
+                height: 55px;
             }
         }
 
+        /* Telemóvel — compressão máxima, mais espaço para conteúdo */
         @media (max-width: 576px) {
+            .pagina-main {
+                padding: 24px 16px;
+            }
             .section-title {
                 font-size: 26px;
             }
             .card-form {
-                padding: 25px;
+                padding: 24px 20px;
             }
         }
 
@@ -591,5 +588,5 @@ require_once __DIR__ . '/../config/session.php';
     </div>
 </nav>
 
-<main class="container">
+<main class="pagina-main">
 

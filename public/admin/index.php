@@ -27,21 +27,42 @@ require_once __DIR__ . '/auth.php';
 $estadoOrcamento = 'em_analise';
 
 // =============================================================================
-// FILTRO DE PERÍODO (para a faturação)
+// FILTRO DE PERÍODO — Aplicado em ambos os KPIs de faturação
 // =============================================================================
+// Separamos o filtro de DATA do filtro de ESTADO para poder reutilizar
+// a condição de data em duas queries distintas: "Faturado" e "Pipeline".
 $periodo = $_GET['periodo'] ?? 'mes';
-$wherePeriodo = "estado IN ('concluido','entregue')";
-if ($periodo === 'dia')          $wherePeriodo .= " AND DATE(data) = CURDATE()";
-elseif ($periodo === 'semana')   $wherePeriodo .= " AND YEARWEEK(data,1) = YEARWEEK(CURDATE(),1)";
-elseif ($periodo === 'mes')      $wherePeriodo .= " AND YEAR(data)=YEAR(CURDATE()) AND MONTH(data)=MONTH(CURDATE())";
-elseif ($periodo === 'ano')      $wherePeriodo .= " AND YEAR(data) = YEAR(CURDATE())";
-// 'vida' = sem filtro adicional
+
+// Condição de data isolada (sem filtro de estado — combinada abaixo)
+$filtroPeriodo = '1=1'; // 'vida' = sem limite de data
+if ($periodo === 'dia')    $filtroPeriodo = "DATE(data) = CURDATE()";
+elseif ($periodo === 'semana') $filtroPeriodo = "YEARWEEK(data,1) = YEARWEEK(CURDATE(),1)";
+elseif ($periodo === 'mes')    $filtroPeriodo = "YEAR(data)=YEAR(CURDATE()) AND MONTH(data)=MONTH(CURDATE())";
+elseif ($periodo === 'ano')    $filtroPeriodo = "YEAR(data) = YEAR(CURDATE())";
+
+// WHERE completo para cada KPI de faturação
+// Faturado = pedidos já entregues/concluídos (dinheiro realmente recebido)
+$whereFaturado = "estado IN ('concluido','entregue') AND $filtroPeriodo";
+// Pipeline = pedidos confirmados mas ainda em produção ou aguardar pagamento
+// (dinheiro comprometido que ainda não chegou — importante num negócio de orçamentos)
+$wherePipeline = "estado IN ('aguarda_pagamento','em_producao') AND $filtroPeriodo";
+
 $periodoLabel = ['dia'=>'Hoje','semana'=>'Esta Semana','mes'=>'Este Mês','ano'=>'Este Ano','vida'=>'Toda a Vida'][$periodo] ?? 'Este Mês';
 
 // =============================================================================
-// QUERIES — KPIs
+// QUERIES — KPIs de Faturação
 // =============================================================================
-$kpiFaturacao   = (float)$conn->query("SELECT IFNULL(SUM(valor_total),0) FROM pedido WHERE $wherePeriodo")->fetchColumn();
+// Faturado: soma dos pedidos já concluídos ou entregues no período selecionado
+$kpiFaturado = (float)$conn->query(
+    "SELECT IFNULL(SUM(valor_total),0) FROM pedido WHERE $whereFaturado"
+)->fetchColumn();
+
+// Pipeline: soma dos pedidos em produção ou aguardar pagamento no mesmo período
+// Mostra o dinheiro "garantido" que ainda não entrou — evita o dashboard mostrar 0€
+// enquanto há trabalho confirmado em andamento.
+$kpiPipeline = (float)$conn->query(
+    "SELECT IFNULL(SUM(valor_total),0) FROM pedido WHERE $wherePipeline"
+)->fetchColumn();
 $kpiEncomendasMes = (int)$conn->query("SELECT COUNT(*) FROM pedido WHERE YEAR(data)=YEAR(CURDATE()) AND MONTH(data)=MONTH(CURDATE())")->fetchColumn();
 $kpiClientes    = (int)$conn->query("SELECT COUNT(*) FROM utilizador WHERE nivel_acesso='cliente'")->fetchColumn();
 
@@ -109,16 +130,36 @@ $stmtAtividade = $conn->query("
 $atividadeRecente = $stmtAtividade->fetchAll(PDO::FETCH_ASSOC);
 
 // =============================================================================
-// GRÁFICO 1 — Vendas dos últimos 30 dias (linha)
+// GRÁFICO 1 — Faturação & Pipeline dos últimos 30 dias
 // =============================================================================
-$labels30d = [];
-$valores30d = [];
+// Preenche dois arrays em paralelo:
+//   $valores30d  → receita real (concluido + entregue) — linha rosa
+//   $pipeline30d → receita a caminho (em_producao + aguarda_pagamento) — linha cinza
+// Uma query por dia × 2: simples e fácil de explicar na defesa de PAP.
+$labels30d   = [];
+$valores30d  = [];
+$pipeline30d = [];
+
 for ($i = 29; $i >= 0; $i--) {
     $dia = date('Y-m-d', strtotime("-$i days"));
-    $stmt = $conn->prepare("SELECT IFNULL(SUM(valor_total),0) FROM pedido WHERE DATE(data)=? AND estado IN ('concluido','entregue')");
+
+    // Faturado neste dia
+    $stmt = $conn->prepare(
+        "SELECT IFNULL(SUM(valor_total),0) FROM pedido
+         WHERE DATE(data)=? AND estado IN ('concluido','entregue')"
+    );
     $stmt->execute([$dia]);
-    $labels30d[] = date('d/m', strtotime($dia));
     $valores30d[] = (float)$stmt->fetchColumn();
+
+    // Pipeline neste dia
+    $stmt = $conn->prepare(
+        "SELECT IFNULL(SUM(valor_total),0) FROM pedido
+         WHERE DATE(data)=? AND estado IN ('em_producao','aguarda_pagamento')"
+    );
+    $stmt->execute([$dia]);
+    $pipeline30d[] = (float)$stmt->fetchColumn();
+
+    $labels30d[] = date('d/m', strtotime($dia));
 }
 
 // =============================================================================
@@ -399,11 +440,30 @@ function tempo_decorrido(int $minutos): string {
     </div>
 
     <div class="kpi-grid">
+
+        <!-- KPI: Faturado — dinheiro realmente recebido (concluídos + entregues) -->
         <div class="kpi-card">
-            <div class="kpi-icone"><i class="fas fa-euro-sign"></i></div>
-            <div class="kpi-label">Faturação · <?= htmlspecialchars($periodoLabel) ?></div>
-            <div class="kpi-valor"><?= number_format($kpiFaturacao, 2, ',', '.') ?> €</div>
-            <div class="kpi-extra">Pedidos concluídos / entregues</div>
+            <div class="kpi-icone" style="background:#ecfdf5; color:#059669;">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="kpi-label">Faturado · <?= htmlspecialchars($periodoLabel) ?></div>
+            <div class="kpi-valor" style="color:#059669;">
+                <?= number_format($kpiFaturado, 2, ',', '.') ?> €
+            </div>
+            <div class="kpi-extra">Concluídos &amp; entregues</div>
+        </div>
+
+        <!-- KPI: Pipeline — dinheiro confirmado mas ainda a caminho -->
+        <!-- Evita que o dashboard mostre 0€ enquanto há trabalho ativo em produção -->
+        <div class="kpi-card">
+            <div class="kpi-icone" style="background:#f3f4f6; color:#6b7280;">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="kpi-label">Pipeline · <?= htmlspecialchars($periodoLabel) ?></div>
+            <div class="kpi-valor" style="color:#6b7280;">
+                <?= number_format($kpiPipeline, 2, ',', '.') ?> €
+            </div>
+            <div class="kpi-extra">Em produção &amp; aguarda pagamento</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-icone"><i class="fas fa-box"></i></div>
@@ -432,7 +492,7 @@ function tempo_decorrido(int $minutos): string {
     <!-- ============================================================ -->
     <div class="row-2col-asym">
         <div class="panel">
-            <h3><i class="fas fa-chart-area"></i> Faturação dos últimos 30 dias</h3>
+            <h3><i class="fas fa-chart-area"></i> Faturação &amp; Pipeline — 30 dias</h3>
             <div style="height: 260px;"><canvas id="grafVendas"></canvas></div>
         </div>
         <div class="panel">
@@ -486,7 +546,12 @@ function tempo_decorrido(int $minutos): string {
                                 <div class="titulo">
                                     <i class="fas fa-check-circle" style="color:#22c55e;"></i>
                                     <?= htmlspecialchars($a['nome']) ?> pagou
-                                    <?= number_format($a['valor_total'], 2, ',', '.') ?> €
+                                    <?php
+                                    // Correção: o UNION devolve 'valor' para linhas de pagamento,
+                                    // não 'valor_total' — usar coalescência para evitar NULL.
+                                    $valorAtividade = $a['valor_total'] ?? $a['valor'] ?? 0;
+                                    echo number_format((float)$valorAtividade, 2, ',', '.');
+                                    ?> €
                                 </div>
                             <?php else: ?>
                                 <div class="titulo">
@@ -518,27 +583,53 @@ function tempo_decorrido(int $minutos): string {
 </div>
 
 <script>
-// === Gráfico 1: Faturação 30 dias ===
+// =============================================================================
+// Gráfico 1: Faturação & Pipeline — últimos 30 dias (linha dupla)
+// =============================================================================
+// Dataset rosa (faturado): receita real confirmada (concluido + entregue)
+// Dataset cinza tracejado (pipeline): receita a caminho (em_producao + aguarda_pagamento)
+// Ambos os arrays foram preenchidos no PHP acima com uma query por dia.
 new Chart(document.getElementById('grafVendas'), {
     type: 'line',
     data: {
         labels: <?= json_encode($labels30d) ?>,
-        datasets: [{
-            label: 'Faturação (€)',
-            data: <?= json_encode($valores30d) ?>,
-            borderColor: '#d66d7f',
-            backgroundColor: 'rgba(214, 109, 127, 0.10)',
-            borderWidth: 2.5,
-            tension: 0.35,
-            fill: true,
-            pointRadius: 2,
-            pointHoverRadius: 6,
-        }]
+        datasets: [
+            {
+                label: 'Faturado (€)',
+                data: <?= json_encode($valores30d) ?>,
+                borderColor: '#d66d7f',
+                backgroundColor: 'rgba(214, 109, 127, 0.10)',
+                borderWidth: 2.5,
+                tension: 0.35,
+                fill: true,
+                pointRadius: 2,
+                pointHoverRadius: 6,
+            },
+            {
+                label: 'Pipeline (€)',
+                data: <?= json_encode($pipeline30d) ?>,
+                borderColor: '#9ca3af',
+                backgroundColor: 'transparent',
+                borderWidth: 1.5,
+                borderDash: [5, 4],   // linha tracejada = "ainda não confirmado"
+                tension: 0.35,
+                fill: false,
+                pointRadius: 2,
+                pointHoverRadius: 5,
+            }
+        ]
     },
     options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: {
+            // Legenda visível agora que há dois datasets distintos
+            legend: {
+                display: true,
+                position: 'top',
+                labels: { font: { size: 12 }, boxWidth: 16 }
+            }
+        },
         scales: {
             y: { beginAtZero: true, ticks: { callback: v => v + ' €' } },
             x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } }

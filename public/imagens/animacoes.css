@@ -11,12 +11,18 @@
  * =============================================================================
  */
 
-/* Fade-in geral ao carregar a página */
+/* Fade-in geral ao carregar a página.
+   IMPORTANTE: não aplicamos esta animação ao <main>/.pagina-main (o container
+   principal que envolve a página toda). Animar opacity+transform num container
+   grande pode, no modo de emulação mobile do Chromium, deixá-lo numa camada que
+   não é pintada até haver um repaint — resultando numa "página branca" em páginas
+   estáticas (ex: formulário de orçamento). Aplicamos o fade apenas aos wrappers
+   internos de cada secção, que são mais pequenos e seguros. */
 @keyframes sylvi-fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
 }
-main, .container, .checkout-wrapper, .cli-wrapper, .auth-container, .produto-detalhe, .avaliacoes-secao {
+.checkout-wrapper, .cli-wrapper, .auth-container, .produto-detalhe, .avaliacoes-secao {
     animation: sylvi-fadeIn 0.5s ease-out;
 }
 
@@ -114,6 +120,12 @@ input, textarea, select {
 /* Scroll suave em links âncora */
 html { scroll-behavior: smooth; }
 
+/* Previne scroll horizontal acidental.
+   Usamos "clip" em vez de "hidden": clip corta o excesso sem transformar o body
+   num container de scroll (hidden força overflow-y:auto, o que quebra a navbar
+   sticky e causava páginas em branco na emulação mobile do Chromium). */
+body { overflow-x: clip; }
+
 /* ==========================================================================
    ACESSIBILIDADE — Anel de foco visível
    ==========================================================================
@@ -173,8 +185,8 @@ table { max-width: 100%; }
 
 /* Mobile (≤ 768px) */
 @media (max-width: 768px) {
-    /* Containers públicos com menos padding */
-    .container, .container-fluid {
+    /* Containers públicos com menos padding lateral em mobile */
+    .pagina-main, .container, .container-fluid {
         padding-left: 16px !important;
         padding-right: 16px !important;
     }

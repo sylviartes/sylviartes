@@ -71,13 +71,21 @@ document.addEventListener('submit', function(e) {
     }
 });
 
-/**
- * Shake automático em alertas de erro ao carregar a página.
- */
 document.addEventListener('DOMContentLoaded', () => {
+    // Shake automático em alertas de erro
     document.querySelectorAll('.alert-danger, .auth-erro').forEach(el => {
         el.classList.add('shake');
         setTimeout(() => el.classList.remove('shake'), 500);
+    });
+
+    // Fecha o menu hamburger ao clicar num link de navegação (mobile)
+    document.querySelectorAll('#navbarNav .nav-link:not(.dropdown-toggle)').forEach(link => {
+        link.addEventListener('click', () => {
+            const nav = document.getElementById('navbarNav');
+            if (nav && nav.classList.contains('show')) {
+                bootstrap.Collapse.getInstance(nav)?.hide();
+            }
+        });
     });
 });
 </script>

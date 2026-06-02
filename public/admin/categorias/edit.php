@@ -59,61 +59,81 @@ if ($_POST && isset($_POST['guardar'])) {
     <link rel="stylesheet" href="../admin_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', sans-serif; }
-        h1 { font-family: 'Playfair Display', serif; font-size: 26px; color: #2d3436; font-weight: 600; }
-        .msg-box { padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
-        .msg-sucesso { background: rgba(40, 167, 69, 0.15); color: #28a745; }
-        .msg-erro { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #555; }
-        .form-group input, .form-group textarea { 
-            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 14px;
-            transition: all 0.3s;
-        }
-        .form-group input:focus, .form-group textarea:focus {
-            border-color: #d66d7f; outline: none; box-shadow: 0 0 0 4px rgba(214, 109, 127, 0.1);
-        }
-    </style>
+    <!-- Estilos do formulário centralizados em admin_style.css (.form-card, .form-field, etc.) -->
 </head>
 <body class="admin-body">
 
 <?php require_once __DIR__ . '/../sidebar.php'; ?>
 
 <div class="main-content">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-        <h1><i class="fas fa-edit"></i> Editar Categoria #<?php echo $id; ?></h1>
-        <a href="index.php" class="btn-action" style="background:#6c757d;"><i class="fas fa-arrow-left"></i> Voltar</a>
+
+    <!-- Cabeçalho: ID da categoria + botão Voltar -->
+    <div class="admin-page-header">
+        <div>
+            <h1><i class="fas fa-edit"></i> Editar Categoria #<?= $id ?></h1>
+            <div class="subtitulo">Altera o nome, descrição ou preço indicativo desta categoria</div>
+        </div>
+        <a href="index.php" class="btn-action btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
     </div>
 
-    <?php if($mensagem): ?>
-    <div class="msg-box <?php echo $tipo_msg === 'sucesso' ? 'msg-sucesso' : 'msg-erro'; ?>">
-        <?php echo htmlspecialchars($mensagem); ?>
-    </div>
+    <!-- Mensagem de erro (ex: nome vazio ao guardar) -->
+    <?php if ($mensagem): ?>
+        <div class="msg-box <?= $tipo_msg === 'sucesso' ? 'msg-sucesso' : 'msg-erro' ?>">
+            <i class="fas fa-<?= $tipo_msg === 'sucesso' ? 'check-circle' : 'exclamation-circle' ?>"></i>
+            <?= htmlspecialchars($mensagem) ?>
+        </div>
     <?php endif; ?>
 
-    <div class="card" style="max-width: 500px;">
+    <!-- Formulário de edição -->
+    <div class="form-card">
         <form method="POST">
             <?= csrf_input() ?>
-            <div class="form-group">
-                <label><i class="fas fa-tag"></i> Nome da Categoria:</label>
-                <input type="text" name="nome_cat" value="<?php echo htmlspecialchars($cat['nome']); ?>" required>
+
+            <!-- Nome — linha toda, pré-preenchido com o valor da BD -->
+            <div class="form-field form-field-full">
+                <label for="nome_cat">Nome da Categoria <span class="req">*</span></label>
+                <input type="text" id="nome_cat" name="nome_cat"
+                       value="<?= htmlspecialchars($cat['nome']) ?>" required>
             </div>
-            <div class="form-group">
-                <label><i class="fas fa-align-left"></i> Descrição (opcional):</label>
-                <textarea name="desc_cat" rows="3"><?php echo htmlspecialchars($cat['descricao'] ?? ''); ?></textarea>
+
+            <!-- Grelha 2 colunas: Descrição + Preço lado a lado -->
+            <div class="form-grid">
+                <!-- Descrição (coluna esquerda, pré-preenchida) -->
+                <div class="form-field">
+                    <label for="desc_cat">Descrição <span class="opt">(opcional)</span></label>
+                    <textarea id="desc_cat" name="desc_cat"
+                              rows="4"><?= htmlspecialchars($cat['descricao'] ?? '') ?></textarea>
+                </div>
+
+                <!-- Preço indicativo (coluna direita) — number_format com '.' para o PHP parsear -->
+                <div class="form-field">
+                    <label for="preco_ref">Preço Indicativo <span class="opt">(opcional)</span></label>
+                    <div class="input-prefix-wrapper">
+                        <span class="input-prefix">€</span>
+                        <input type="text" id="preco_ref" name="preco_ref"
+                               placeholder="25.00"
+                               class="input-with-prefix"
+                               value="<?= isset($cat['preco_referencia']) && $cat['preco_referencia'] !== null
+                                          ? htmlspecialchars(number_format((float)$cat['preco_referencia'], 2, '.', ''))
+                                          : '' ?>">
+                    </div>
+                    <div class="form-hint">Aparece como "A partir de €X" na página do produto.</div>
+                </div>
             </div>
-            <div class="form-group">
-                <label><i class="fas fa-euro-sign"></i> Preço indicativo (opcional):</label>
-                <input type="text" name="preco_ref" value="<?php echo isset($cat['preco_referencia']) && $cat['preco_referencia'] !== null ? htmlspecialchars(number_format((float)$cat['preco_referencia'], 2, '.', '')) : ''; ?>" placeholder="Ex: 25.00">
-                <small style="color:#888;">Mostrado como "A partir de €X" na página do produto. Deixe vazio se não quiser mostrar.</small>
+
+            <!-- Botão guardar em secção própria -->
+            <div class="form-actions">
+                <button type="submit" name="guardar" class="btn-submit">
+                    <i class="fas fa-save"></i> Guardar Alterações
+                </button>
             </div>
-            <button type="submit" name="guardar" class="btn-action" style="width:100%;">
-                <i class="fas fa-save"></i> Guardar Alterações
-            </button>
+
         </form>
-    </div>
-</div>
+    </div><!-- /form-card -->
+
+</div><!-- /main-content -->
 
 </body>
 </html>

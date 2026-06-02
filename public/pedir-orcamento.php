@@ -272,6 +272,9 @@ $val = function ($campo) use ($clienteLogado) {
 ?>
 
 <style>
+/* Anula o padding do .pagina-main — o orc-wrapper gere o seu próprio espaçamento */
+main { padding: 0 !important; max-width: 100% !important; }
+
 .orc-wrapper { max-width: 920px; margin: 30px auto 60px; background: #fff; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); padding: 40px; }
 .orc-title { text-align: center; font-size: 32px; font-weight: 700; color: #2d3436; margin-bottom: 8px; font-family: 'Playfair Display', serif; }
 .orc-subtitle { text-align: center; color: #7d7d7d; font-size: 16px; margin-bottom: 30px; }
@@ -324,13 +327,17 @@ $val = function ($campo) use ($clienteLogado) {
     background: #fff8fa; border-left: 4px solid #d66d7f; padding: 14px 18px;
     border-radius: 8px; margin-bottom: 22px; display: flex; gap: 14px; align-items: center;
 }
-/* Em tablets (800-991px) a grelha de 2 colunas ficava apertada — passa para 1 coluna */
+/* Tablet — grelha de 2 colunas passa a 1 coluna (campos ficavam muito estreitos) */
 @media (max-width: 991px) {
     .orc-grid { grid-template-columns: 1fr; }
 }
+/* Mobile — margens laterais pequenas + sem cantos exagerados */
 @media (max-width: 768px) {
-    .orc-wrapper { padding: 24px; margin: 16px; }
+    .orc-wrapper { padding: 24px 20px; margin: 16px; border-radius: 16px; }
     .orc-uploads { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+    .orc-wrapper { margin: 10px; padding: 20px 16px; }
 }
 </style>
 
