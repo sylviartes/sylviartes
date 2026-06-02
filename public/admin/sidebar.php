@@ -12,10 +12,11 @@
 // Detecta se estamos numa subpasta (produtos/, encomendas/, categorias/, avaliacoes/)
 $diretorio_atual = dirname($_SERVER['PHP_SELF']);
 $prefixo = (
-    strpos($diretorio_atual, 'produtos')   !== false ||
-    strpos($diretorio_atual, 'encomendas') !== false ||
-    strpos($diretorio_atual, 'categorias') !== false ||
-    strpos($diretorio_atual, 'avaliacoes') !== false
+    strpos($diretorio_atual, 'produtos')    !== false ||
+    strpos($diretorio_atual, 'encomendas')  !== false ||
+    strpos($diretorio_atual, 'categorias')  !== false ||
+    strpos($diretorio_atual, 'avaliacoes')  !== false ||
+    strpos($diretorio_atual, 'ferramentas') !== false
 ) ? '../' : '';
 
 // Caminho relativo para "ver loja"
@@ -98,6 +99,11 @@ function isActive($padrao) {
             <?php if ($badgeAvaliacoes > 0): ?>
                 <span class="sidebar-badge"><?= $badgeAvaliacoes ?></span>
             <?php endif; ?>
+        </a>
+
+        <a href="<?= $prefixo ?>ferramentas/migrar.php" class="<?= isActive('ferramentas/') ?>">
+            <i class="fas fa-database"></i>
+            <span>Migrações BD</span>
         </a>
 
         <!-- rel="noopener noreferrer": boa prática de segurança para links target="_blank"

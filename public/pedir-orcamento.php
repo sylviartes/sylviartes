@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validações
     if (!preg_match($regexNome, $nome))         $erros[] = "Nome inválido (Ex: Maria Silva).";
     if (!preg_match($regexEmail, $email))       $erros[] = "Email inválido.";
-    if (!preg_match($regexTelefone, $telefone)) $erros[] = "Telefone inválido (Ex: 912345678).";
+    if (!preg_match($regexTelefone, $telefone)) $erros[] = "Telefone inválido (Ex: 914345678).";
     if ($descricao === '' || strlen($descricao) < 15) {
         $erros[] = "Descreva o que pretende com algum detalhe (mínimo 15 caracteres).";
     }
@@ -513,7 +513,7 @@ main { padding: 0 !important; max-width: 100% !important; }
                     <label for="orc_telefone" style="display:block; margin-bottom:4px; font-weight:600; color:#555; font-size:14px;">
                         Telemóvel <span style="color:#d66d7f;">*</span>
                     </label>
-                    <input type="text" id="orc_telefone" name="telefone" placeholder="Ex: 912 345 678"
+                    <input type="text" id="orc_telefone" name="telefone" placeholder="Ex: 914 345 678"
                            value="<?= htmlspecialchars($val('telefone')) ?>" required>
                 </div>
             </div>

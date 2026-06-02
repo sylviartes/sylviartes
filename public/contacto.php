@@ -168,14 +168,14 @@ main { padding: 0 !important; max-width: 100% !important; }
     <div class="contacto-grid">
 
         <!-- Telefone — link tel: abre discador em telemóvel -->
-        <a href="tel:+351912058129" class="contacto-card">
+        <a href="tel:+351914058129" class="contacto-card">
             <span class="contacto-card-icone"><i class="fas fa-phone"></i></span>
             <h5>Telefone</h5>
-            <p class="val-rosa">+351 912 058 129</p>
+            <p class="val-rosa">+351 914 058 129</p>
         </a>
 
         <!-- WhatsApp — wa.me abre conversa direta no WhatsApp -->
-        <a href="https://wa.me/351912058129" target="_blank" rel="noopener noreferrer" class="contacto-card">
+        <a href="https://wa.me/351914058129" target="_blank" rel="noopener noreferrer" class="contacto-card">
             <span class="contacto-card-icone whatsapp"><i class="fab fa-whatsapp"></i></span>
             <h5>WhatsApp</h5>
             <p class="val-verde">Enviar mensagem</p>

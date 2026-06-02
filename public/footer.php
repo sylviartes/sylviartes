@@ -12,7 +12,7 @@
             <i class="fab fa-instagram"></i>
         </a>
         <!-- WhatsApp — muito usado em Portugal para contacto rápido com artesãos -->
-        <a href="https://wa.me/351912058129" target="_blank" rel="noopener noreferrer" title="Fale connosco no WhatsApp" aria-label="WhatsApp" style="color: #25D366; font-size: 1.8rem; transition: var(--transicao-suave); padding: 10px; border-radius: 50%;">
+        <a href="https://wa.me/351914058129" target="_blank" rel="noopener noreferrer" title="Fale connosco no WhatsApp" aria-label="WhatsApp" style="color: #25D366; font-size: 1.8rem; transition: var(--transicao-suave); padding: 10px; border-radius: 50%;">
             <i class="fab fa-whatsapp"></i>
         </a>
     </div>
@@ -36,7 +36,7 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 
     "description": "Costura criativa e bordados personalizados feitos à mão em Portugal.",
     "url": "<?= htmlspecialchars($baseUrl) ?>",
     "logo": "<?= htmlspecialchars($baseUrl) ?>/public/imagens/logo_sylviartes.png",
-    "telephone": "+351912058129",
+    "telephone": "+351914058129",
     "areaServed": "PT",
     "sameAs": [
         "https://www.facebook.com/people/SylviArtes/61565302160232/",
