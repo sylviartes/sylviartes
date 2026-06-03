@@ -6,11 +6,12 @@
  *
  *  Sistema com 3 níveis de fallback automático:
  *
- *    1. Gmail SMTP (método principal) — envia a partir de sylviartes.pt@gmail.com.
- *       Requer SMTP_HOST, SMTP_USER e SMTP_PASS preenchidos em config/.env.
+ *    1. RESEND API (método principal) — envia a partir do domínio verificado
+ *       (ex: noreply@sylviartes.pt). Entrega para qualquer cliente. Requer
+ *       RESEND_API_KEY e RESEND_FROM preenchidos em config/.env.
  *
- *    2. RESEND API (fallback) — se o SMTP falhar, tenta via Resend.
- *       Emails saem de onboarding@resend.dev (endereço de teste da Resend).
+ *    2. Gmail SMTP (fallback) — só se o Resend falhar e o SMTP estiver configurado.
+ *       Requer SMTP_HOST, SMTP_USER e SMTP_PASS em config/.env.
  *
  *    3. Outbox local (último recurso) — guarda como ficheiro .eml em
  *       docs/outbox/ para poder ver os emails sem internet.
@@ -54,7 +55,45 @@ if (!defined('ADMIN_EMAIL'))    define('ADMIN_EMAIL',    getenv('ADMIN_EMAIL')  
 function enviar_email(string $para, string $assunto, string $htmlCorpo, string $replyTo = ''): bool
 {
     // ===========================================================================
-    // Tentativa 1: Gmail SMTP (método principal — envia de sylviartes.pt@gmail.com)
+    // Tentativa 1: Resend API (método PRINCIPAL — envia do domínio verificado,
+    // ex: noreply@sylviartes.pt). Entrega para qualquer cliente.
+    // ===========================================================================
+    if (RESEND_API_KEY !== '' && function_exists('curl_init')) {
+        $payload = [
+            'from'    => RESEND_FROM,
+            'to'      => [$para],
+            'subject' => $assunto,
+            'html'    => $htmlCorpo,
+        ];
+        // Adiciona Reply-To se fornecido (ex: para o cliente poder responder à Sylvia)
+        if ($replyTo !== '') {
+            $payload['reply_to'] = [$replyTo];
+        }
+
+        $ch = curl_init('https://api.resend.com/emails');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode($payload),
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . RESEND_API_KEY,
+                'Content-Type: application/json',
+            ],
+            CURLOPT_TIMEOUT => 10,
+        ]);
+        $response = curl_exec($ch);
+        $status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $erro     = curl_error($ch);
+
+        if ($status >= 200 && $status < 300) {
+            return true; // Email enviado via Resend
+        }
+        error_log("Resend falhou (HTTP $status): " . ($erro ?: $response));
+    }
+
+    // ===========================================================================
+    // Tentativa 2: Gmail SMTP (fallback — só se o Resend falhar e o SMTP estiver
+    // configurado). Requer PHPMailer + SMTP_HOST/USER/PASS no .env.
     // ===========================================================================
     if (class_exists('\\PHPMailer\\PHPMailer\\PHPMailer') && SMTP_HOST !== '' && SMTP_USER !== '' && SMTP_PASS !== '') {
         try {
@@ -93,42 +132,6 @@ function enviar_email(string $para, string $assunto, string $htmlCorpo, string $
             // SMTP falhou → loga e cai para a tentativa seguinte
             error_log("Falha SMTP Gmail: " . $e->getMessage());
         }
-    }
-
-    // ===========================================================================
-    // Tentativa 2: Resend API (fallback — envia de onboarding@resend.dev)
-    // ===========================================================================
-    if (RESEND_API_KEY !== '' && function_exists('curl_init')) {
-        $payload = [
-            'from'    => RESEND_FROM,
-            'to'      => [$para],
-            'subject' => $assunto,
-            'html'    => $htmlCorpo,
-        ];
-        // Adiciona Reply-To se fornecido
-        if ($replyTo !== '') {
-            $payload['reply_to'] = [$replyTo];
-        }
-
-        $ch = curl_init('https://api.resend.com/emails');
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => json_encode($payload),
-            CURLOPT_HTTPHEADER     => [
-                'Authorization: Bearer ' . RESEND_API_KEY,
-                'Content-Type: application/json',
-            ],
-            CURLOPT_TIMEOUT => 10,
-        ]);
-        $response = curl_exec($ch);
-        $status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $erro     = curl_error($ch);
-
-        if ($status >= 200 && $status < 300) {
-            return true; // Email enviado via Resend
-        }
-        error_log("Resend falhou (HTTP $status): " . ($erro ?: $response));
     }
 
     // ===========================================================================
