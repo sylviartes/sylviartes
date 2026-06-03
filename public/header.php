@@ -25,6 +25,14 @@ require_once __DIR__ . '/../config/session.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon (logótipo no separador do browser).
+         Usa o mesmo padrão de caminho relativo do CSS: ajusta-se se a página
+         estiver dentro de /cliente/ (precisa de subir um nível com ../). -->
+    <?php $faviconRel = (strpos($_SERVER['PHP_SELF'], '/cliente/') !== false) ? '../imagens/logo_sylviartes.png' : 'imagens/logo_sylviartes.png'; ?>
+    <link rel="icon" type="image/png" href="<?php echo htmlspecialchars($faviconRel); ?>">
+    <link rel="apple-touch-icon" href="<?php echo htmlspecialchars($faviconRel); ?>">
+
     <!-- Título da página: cada página define $pageTitle antes de incluir este ficheiro.
          Se não definir, usa o título padrão. -->
     <title><?php echo isset($pageTitle) ? htmlspecialchars($pageTitle) . ' — SylviArtes' : 'SylviArtes - Costura Criativa'; ?></title>
