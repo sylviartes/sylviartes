@@ -10,7 +10,7 @@
  *  cancelar, etc.) o cliente clica em "Ver" e vai para encomenda.php?id=X.
  *
  *  IMPORTANTE: A query usa `WHERE p.utilizador_id = ?` para garantir que cada
- *  cliente só vê os SEUS próprios pedidos — nunca os de outras pessoas.
+ *  cliente só vê os SEUS próprios pedidos - nunca os de outras pessoas.
  * =============================================================================
  */
 
@@ -52,7 +52,7 @@ function pagamentoLabel($estado) {
         'validado' => 'Pago',
         'recusado' => 'Recusado',
     ];
-    return $labels[$estado] ?? '—';
+    return $labels[$estado] ?? '-';
 }
 ?>
 <!DOCTYPE html>
@@ -60,7 +60,7 @@ function pagamentoLabel($estado) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>As minhas encomendas — SylviArtes</title>
+    <title>As minhas encomendas - SylviArtes</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="cliente_style.css">
@@ -104,7 +104,7 @@ function pagamentoLabel($estado) {
                                         <span class="cli-badge b-<?php echo htmlspecialchars($p['estado_pagamento']); ?>">
                                             <?php echo htmlspecialchars(pagamentoLabel($p['estado_pagamento'])); ?>
                                         </span>
-                                    <?php else: ?>—<?php endif; ?>
+                                    <?php else: ?>-<?php endif; ?>
                                 </td>
                                 <td>
                                     <span class="cli-badge b-<?php echo htmlspecialchars($p['estado']); ?>">

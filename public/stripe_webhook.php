@@ -1,6 +1,6 @@
 <?php
 /**
- * Webhook do Stripe — endpoint público.
+ * Webhook do Stripe - endpoint público.
  *
  * Configurar no Stripe Dashboard ou via CLI:
  *   stripe listen --forward-to localhost:8080/public/stripe_webhook.php

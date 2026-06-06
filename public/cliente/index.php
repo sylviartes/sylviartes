@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  DASHBOARD DO CLIENTE — "Minha Conta"
+ *  DASHBOARD DO CLIENTE - "Minha Conta"
  * =============================================================================
  *
  *  Página inicial da área de cliente após login. Mostra:
@@ -51,7 +51,7 @@ $pwdResetada = isset($_GET['pwd_resetada']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Conta — SylviArtes</title>
+    <title>Minha Conta - SylviArtes</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="cliente_style.css">
@@ -74,7 +74,7 @@ $pwdResetada = isset($_GET['pwd_resetada']);
                     Tem <strong><?php echo $totalPedidos; ?></strong>
                     <?php echo $totalPedidos === 1 ? 'pedido registado' : 'pedidos registados'; ?>.
                     <?php if ($pendentes > 0): ?>
-                        — <strong><?php echo $pendentes; ?></strong>
+                        - <strong><?php echo $pendentes; ?></strong>
                         com pagamento pendente.
                     <?php endif; ?>
                 <?php endif; ?>

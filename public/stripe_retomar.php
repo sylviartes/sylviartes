@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  STRIPE — Retomar Pagamento de Pedido Existente
+ *  STRIPE - Retomar Pagamento de Pedido Existente
  * =============================================================================
  *
  *  Quando um cliente cria um pedido com cartão/MB Way mas fecha a janela do
@@ -49,13 +49,13 @@ if (!$row) {
     exit;
 }
 
-// Já está pago — não vamos cobrar de novo!
+// Já está pago - não vamos cobrar de novo!
 if ($row['estado_pagamento'] === 'validado') {
     header("Location: cliente/encomenda.php?id=" . $pedidoId);
     exit;
 }
 
-// Método offline (transferência/dinheiro) — não tem pagamento online
+// Método offline (transferência/dinheiro) - não tem pagamento online
 if (!in_array($row['metodo'], ['cartao', 'mbway'], true)) {
     header("Location: cliente/encomenda.php?id=" . $pedidoId);
     exit;
@@ -74,7 +74,7 @@ try {
         $row['email']
     );
 
-    // Substitui o session_id antigo (se houver) pelo novo — o webhook vai
+    // Substitui o session_id antigo (se houver) pelo novo - o webhook vai
     // procurar pagamento por este novo session_id
     $stmt = $conn->prepare("UPDATE pagamento SET stripe_session_id = ? WHERE id = ?");
     $stmt->execute([$session->id, $row['pag_id']]);

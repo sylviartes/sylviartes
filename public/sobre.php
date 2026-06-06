@@ -1,13 +1,13 @@
 <?php
 // Título e descrição para esta página (usados no <head> do header.php)
 $pageTitle       = 'Sobre Nós';
-$pageDescription = 'Conheça a história da SylviArtes — bordados artesanais feitos com amor desde 2020.';
+$pageDescription = 'Conheça a história da SylviArtes - bordados artesanais feitos com amor desde 2020.';
 require_once __DIR__ . '/header.php';
 ?>
 
 <style>
 /* ================================================================
-   SOBRE NÓS — estilos específicos desta página
+   SOBRE NÓS - estilos específicos desta página
    ================================================================ */
 
 /* Anula o padding do .pagina-main para permitir secções full-width
@@ -43,7 +43,7 @@ main { padding: 0 !important; max-width: 100% !important; }
     padding: 64px 24px 80px;
 }
 
-/* === HISTÓRIA — grelha texto + foto === */
+/* === HISTÓRIA - grelha texto + foto === */
 .sobre-historia {
     display: grid;
     grid-template-columns: 1.3fr 1fr;
@@ -190,10 +190,10 @@ main { padding: 0 !important; max-width: 100% !important; }
 </style>
 
 <!-- =============================================
-     SOBRE NÓS — História e valores da SylviArtes
+     SOBRE NÓS - História e valores da SylviArtes
      ============================================= -->
 
-<!-- Hero de topo — fundo gradient rosa, título e tagline -->
+<!-- Hero de topo - fundo gradient rosa, título e tagline -->
 <section class="sobre-hero">
     <h1>Sobre a SylviArtes</h1>
     <p>Costura artesanal com amor e dedicação desde 2020.</p>
@@ -213,7 +213,7 @@ main { padding: 0 !important; max-width: 100% !important; }
             </p>
             <p>
                 Hoje, essa mesma dedicação reflete-se na costura criativa. A SylviArtes é o
-                culminar de uma vida inteira de amor pela arte — cada peça é feita à mão com
+                culminar de uma vida inteira de amor pela arte - cada peça é feita à mão com
                 materiais de qualidade e um acabamento impecável.
             </p>
         </div>

@@ -1,6 +1,6 @@
 <?php
 /**
- * sitemap.php — Mapa do site em formato XML
+ * sitemap.php - Mapa do site em formato XML
  *
  * O Google usa este ficheiro para descobrir todas as páginas do site.
  * Inclui as páginas estáticas (homepage, portfólio, sobre, contacto)
@@ -14,7 +14,7 @@ require_once __DIR__ . '/../config/db.php';
 // Diz ao browser (e ao Google) que isto é XML, não HTML
 header('Content-Type: application/xml; charset=utf-8');
 
-// URL base do site — muda quando tiveres domínio próprio
+// URL base do site - muda quando tiveres domínio próprio
 $base = 'https://sylviartes.pt';
 
 // Busca todos os produtos visíveis para incluir no sitemap

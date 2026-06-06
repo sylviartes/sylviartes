@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  GUARD DE AUTENTICAÇÃO — Área Cliente
+ *  GUARD DE AUTENTICAÇÃO - Área Cliente
  * =============================================================================
  *
  *  Pequeno ficheiro que se inclui no topo de TODAS as páginas que requerem
@@ -15,7 +15,7 @@
  */
 
 // Inicia a sessão se ainda não estiver iniciada
-// (algumas páginas já chamam session_start() noutro sítio — por isso verificamos)
+// (algumas páginas já chamam session_start() noutro sítio - por isso verificamos)
 require_once __DIR__ . '/../../config/session.php';
 
 // Se não há cliente logado, manda para o login

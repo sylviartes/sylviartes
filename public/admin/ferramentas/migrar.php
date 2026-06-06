@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  ADMIN — Aplicar Migrações de Base de Dados
+ *  ADMIN - Aplicar Migrações de Base de Dados
  * =============================================================================
  *
  *  Verifica se as 3 atualizações de base de dados foram aplicadas
@@ -14,19 +14,19 @@ require_once __DIR__ . '/../auth.php';
 
 // ── Verificar estado de cada migração ────────────────────────────────────────
 
-// Migração 1 — coluna produto_id na tabela avaliacao
+// Migração 1 - coluna produto_id na tabela avaliacao
 $migr1 = false;
 try {
     $migr1 = (bool)$conn->query("SHOW COLUMNS FROM avaliacao LIKE 'produto_id'")->fetch();
 } catch (Exception $e) {}
 
-// Migração 2 — tabela pedido_inspiracao
+// Migração 2 - tabela pedido_inspiracao
 $migr2 = false;
 try {
     $migr2 = (bool)$conn->query("SHOW TABLES LIKE 'pedido_inspiracao'")->fetch();
 } catch (Exception $e) {}
 
-// Migração 3 — coluna stripe_payment_link_url na tabela pagamento
+// Migração 3 - coluna stripe_payment_link_url na tabela pagamento
 $migr3 = false;
 try {
     $migr3 = (bool)$conn->query("SHOW COLUMNS FROM pagamento LIKE 'stripe_payment_link_url'")->fetch();
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aplicar'])) {
         if ($aplicadas > 0) {
             $mensagem = "Todas as migrações foram aplicadas com sucesso!";
         } else {
-            $mensagem = "Nada a fazer — todas as migrações já estavam aplicadas.";
+            $mensagem = "Nada a fazer - todas as migrações já estavam aplicadas.";
         }
         $tipoMensagem = 'sucesso';
     } else {
@@ -111,7 +111,7 @@ $todasFeitas = $migr1 && $migr2 && $migr3;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Migrações — SylviArtes Admin</title>
+    <title>Migrações - SylviArtes Admin</title>
     <link rel="stylesheet" href="../admin_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">

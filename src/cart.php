@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  CARRINHO — SylviArtes
+ *  CARRINHO - SylviArtes
  * =============================================================================
  *
  *  O site usa um modelo de orçamento (sem preços fixos), por isso não há um
@@ -11,7 +11,7 @@
  */
 
 /**
- * Esvazia o carrinho — chamado em stripe_success.php depois do pagamento.
+ * Esvazia o carrinho - chamado em stripe_success.php depois do pagamento.
  */
 function clear_cart() {
     // Remove o array do carrinho da sessão do utilizador

@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  ADMIN — Enviar Link de Pagamento Stripe ao Cliente
+ *  ADMIN - Enviar Link de Pagamento Stripe ao Cliente
  * =============================================================================
  *
  *  Endpoint POST chamado pelo botão "Enviar link de pagamento" em view.php.
@@ -122,7 +122,7 @@ try {
         ");
         $stmt->execute([$linkUrl, $row['valor_total'], $row['pagamento_id']]);
     } else {
-        // Sem pagamento criado ainda — cria com método 'cartao'
+        // Sem pagamento criado ainda - cria com método 'cartao'
         $stmt = $conn->prepare("
             INSERT INTO pagamento (pedido_id, metodo, valor, estado_pagamento, stripe_payment_link_url)
             VALUES (?, 'cartao', ?, 'analise_pagamento', ?)

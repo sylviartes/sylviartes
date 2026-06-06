@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  DETALHE DE ENCOMENDA — Vista única do cliente
+ *  DETALHE DE ENCOMENDA - Vista única do cliente
  * =============================================================================
  *
  *  Página com toda a informação sobre uma encomenda específica e onde o
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tipoMsg = "erro";
         } else {
             $tamanho = $_FILES['comprovativo']['size'];
-            // mime_content_type lê os "magic bytes" do ficheiro — mais seguro
+            // mime_content_type lê os "magic bytes" do ficheiro - mais seguro
             // do que confiar na extensão (que pode ser falsificada)
             $tipo = mime_content_type($_FILES['comprovativo']['tmp_name']);
             $tiposOk = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
@@ -156,7 +156,7 @@ $stmt = $conn->prepare("SELECT * FROM pagamento WHERE pedido_id = ?");
 $stmt->execute([$pedidoId]);
 $pagamento = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Itens (detalhe do pedido) — JOIN com produto para ir buscar o nome
+// Itens (detalhe do pedido) - JOIN com produto para ir buscar o nome
 // (LEFT JOIN porque o produto pode ter sido eliminado entretanto)
 $stmt = $conn->prepare("
     SELECT dp.*, pr.nome AS produto_nome
@@ -195,7 +195,7 @@ function pagLabel2($e) {
         'analise_pagamento' => 'A validar',
         'validado' => 'Pago',
         'recusado' => 'Recusado',
-    ][$e] ?? '—';
+    ][$e] ?? '-';
 }
 function metodoLabel($m) {
     return [
@@ -211,7 +211,7 @@ function metodoLabel($m) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encomenda #<?php echo (int)$pedido['id']; ?> — SylviArtes</title>
+    <title>Encomenda #<?php echo (int)$pedido['id']; ?> - SylviArtes</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="cliente_style.css">
@@ -254,7 +254,7 @@ function metodoLabel($m) {
                 </div>
             <?php elseif (in_array($pedido['estado'], ['concluido', 'entregue'], true)): ?>
                 <?php
-                // Convite a avaliar — só se ainda não tiver avaliado o item de inspiração
+                // Convite a avaliar - só se ainda não tiver avaliado o item de inspiração
                 $inspiracaoId = (int)($pedido['portfolio_inspiracao_id'] ?? 0);
                 $podeAvaliarEste = false;
                 if ($inspiracaoId > 0 && avaliacoes_disponiveis($conn)) {
@@ -282,7 +282,7 @@ function metodoLabel($m) {
             <?php if ($pagamento): ?>
                 <p>
                     <strong>Pagamento:</strong>
-                    <?php echo htmlspecialchars(metodoLabel($pagamento['metodo'])); ?> —
+                    <?php echo htmlspecialchars(metodoLabel($pagamento['metodo'])); ?> -
                     <span class="cli-badge b-<?php echo htmlspecialchars($pagamento['estado_pagamento']); ?>">
                         <?php echo htmlspecialchars(pagLabel2($pagamento['estado_pagamento'])); ?>
                     </span>
@@ -292,7 +292,7 @@ function metodoLabel($m) {
             <p><strong>Entrega:</strong>
                 <?php echo $pedido['tipo_entrega'] === 'domicilio' ? 'Ao domicílio' : 'Levantamento no atelier'; ?>
                 <?php if ($pedido['tipo_entrega'] === 'domicilio'): ?>
-                    — <?php echo htmlspecialchars($pedido['morada_entrega']); ?>
+                    - <?php echo htmlspecialchars($pedido['morada_entrega']); ?>
                 <?php endif; ?>
             </p>
             <p><strong>Prazo desejado:</strong> <?php echo htmlspecialchars(date('d/m/Y', strtotime($pedido['prazo_entrega_desejado']))); ?></p>

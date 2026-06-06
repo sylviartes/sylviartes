@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  STRIPE — Página de Cancelamento
+ *  STRIPE - Página de Cancelamento
  * =============================================================================
  *
  *  Para onde o Stripe redireciona o utilizador se ele clicar em "Voltar"

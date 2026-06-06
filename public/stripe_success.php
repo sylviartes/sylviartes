@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  STRIPE — Página de Sucesso
+ *  STRIPE - Página de Sucesso
  * =============================================================================
  *
  *  URL para onde o Stripe redireciona o utilizador APÓS o pagamento.
@@ -43,11 +43,11 @@ if ($sessionId !== '' && stripe_disponivel()) {
         //   - 'unpaid'       → MB Way ainda à espera de confirmação assíncrona
         $estadoPagamento = ($session->payment_status === 'paid') ? 'validado' : 'analise_pagamento';
     } catch (Exception $e) {
-        // Se falhar não é grave — o webhook vai tratar de tudo
+        // Se falhar não é grave - o webhook vai tratar de tudo
     }
 }
 
-// Esvazia o carrinho — a compra foi feita
+// Esvazia o carrinho - a compra foi feita
 clear_cart();
 
 // Título simples para a página de confirmação de pagamento

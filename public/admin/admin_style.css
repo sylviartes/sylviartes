@@ -588,12 +588,12 @@ form label {
 }
 
 /* =============================================================================
-   MELHORIAS VISUAIS — Adicionadas na revisão do painel admin (PAP)
+   MELHORIAS VISUAIS - Adicionadas na revisão do painel admin (PAP)
    =============================================================================
-   Todas as regras abaixo são ADICIONAIS — não alteram nenhum estilo existente.
+   Todas as regras abaixo são ADICIONAIS - não alteram nenhum estilo existente.
    ============================================================================= */
 
-/* --- Badges de estado — cores revistas para melhor contraste (WCAG AA) ---
+/* --- Badges de estado - cores revistas para melhor contraste (WCAG AA) ---
    As cores anteriores (#2ed573, #ffa502) tinham contraste insuficiente em fundo
    branco. Estas versões usam fundo claro + texto escuro para garantir legibilidade. */
 .estado-analise   { background: rgba(245,158,11,0.12);  color: #92400e; border: 1px solid rgba(245,158,11,0.20); }
@@ -697,11 +697,11 @@ form label {
 }
 
 /* =====================================================================
-   FORM CARD — Design clean: campos separados por divisores, sem sub-headers
+   FORM CARD - Design clean: campos separados por divisores, sem sub-headers
    Estrutura: .form-card > form > .form-field(s) + .form-actions
    ===================================================================== */
 
-/* Card principal — centrado na área de conteúdo, preenche o espaço disponível */
+/* Card principal - centrado na área de conteúdo, preenche o espaço disponível */
 .form-card {
     max-width: 760px;
     width: 100%;
@@ -713,7 +713,7 @@ form label {
     overflow: hidden;
 }
 
-/* Grelha interna do formulário — 2 colunas em desktop */
+/* Grelha interna do formulário - 2 colunas em desktop */
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -735,7 +735,7 @@ form label {
 /* Campo full-width também sem borda direita */
 .form-field-full.form-field { border-right: none; }
 
-/* Label limpo — uppercase pequeno, cor cinza quente */
+/* Label limpo - uppercase pequeno, cor cinza quente */
 .form-field label {
     display: block;
     font-size: 11.5px;
@@ -747,10 +747,10 @@ form label {
 }
 /* Asterisco de obrigatório */
 .req { color: #d66d7f; margin-left: 2px; }
-/* Texto "(opcional)" — sem destaque, só cinza claro */
+/* Texto "(opcional)" - sem destaque, só cinza claro */
 .opt { font-size: 11px; font-weight: 400; color: #bfb4b8; text-transform: none; letter-spacing: 0; margin-left: 4px; }
 
-/* Inputs e textareas — bordas simples, sem bordas demasiado arredondadas */
+/* Inputs e textareas - bordas simples, sem bordas demasiado arredondadas */
 .form-field input,
 .form-field textarea,
 .form-field select {
@@ -774,7 +774,7 @@ form label {
 }
 .form-field textarea { resize: vertical; min-height: 90px; }
 
-/* Input com prefixo € — linha visual dentro do campo */
+/* Input com prefixo € - linha visual dentro do campo */
 .input-prefix-wrapper {
     display: flex;
     border: 1.5px solid #e2dde0;
@@ -828,7 +828,7 @@ form label {
     font-size: 14px; font-weight: 600; cursor: pointer;
     transition: background 0.15s;
 }
-/* Hover simples: escurece a cor (sem transform — mais sobrio) */
+/* Hover simples: escurece a cor (sem transform - mais sobrio) */
 .btn-submit:hover { background: #bf5b6d; }
 
 /* Botão secundário (Voltar/Cancelar) */
@@ -844,7 +844,7 @@ form label {
     box-shadow: none !important;
 }
 
-/* Mobile — grelha colapsa para 1 coluna */
+/* Mobile - grelha colapsa para 1 coluna */
 @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; }
     .form-field { border-right: none !important; }

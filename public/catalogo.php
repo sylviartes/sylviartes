@@ -1,14 +1,14 @@
 <?php
 /**
  * =============================================================================
- *  PORTFÓLIO — Galeria de Trabalhos Realizados
+ *  PORTFÓLIO - Galeria de Trabalhos Realizados
  * =============================================================================
  *
  *  Mostra os bordados que a SylviArtes já fez, agrupados por categoria.
- *  Cada item é uma "inspiração" — clicar abre o detalhe com galeria de fotos
+ *  Cada item é uma "inspiração" - clicar abre o detalhe com galeria de fotos
  *  e botão para pedir orçamento de algo parecido.
  *
- *  Não há preços visíveis nem checkout — todos os pedidos passam por
+ *  Não há preços visíveis nem checkout - todos os pedidos passam por
  *  pedir-orcamento.php (form único). Cada peça é personalizada.
  *
  *  Mantém pesquisa por nome/descrição e filtro por categoria.
@@ -105,7 +105,7 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
                 $imgs[] = $caminho;
             }
         }
-        // Nota: o ramo de fallback para BLOB (base64) foi removido — as imagens
+        // Nota: o ramo de fallback para BLOB (base64) foi removido - as imagens
         // são guardadas como nome de ficheiro desde a migração para produto_imagem.
     }
 
@@ -118,7 +118,7 @@ function get_todas_imagens_produto(PDO $conn, array $prod, bool $temMime, bool $
 ?>
 
 <style>
-/* Anula o padding do .pagina-main — o catalogo-container gere o seu próprio espaçamento */
+/* Anula o padding do .pagina-main - o catalogo-container gere o seu próprio espaçamento */
 main { padding: 0 !important; max-width: 100% !important; }
 
 .catalogo-container { max-width: 1280px; margin: 0 auto; padding: 20px; }
@@ -240,7 +240,7 @@ main { padding: 0 !important; max-width: 100% !important; }
 .btn-orcamento:hover { background: #d66d7f; color: #fff; border-color: #d66d7f; }
 
 /* ============================================================
-   LIGHTBOX / MODAL ZOOM — redesign completo
+   LIGHTBOX / MODAL ZOOM - redesign completo
    ============================================================ */
 
 /* Fundo com efeito frosted glass em vez de preto sólido */
@@ -271,7 +271,7 @@ main { padding: 0 !important; max-width: 100% !important; }
     display: block;
 }
 
-/* Contador "2 / 3" — pílula no topo ao centro */
+/* Contador "2 / 3" - pílula no topo ao centro */
 .modal-contador {
     position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
     background: rgba(255,255,255,0.12);
@@ -282,7 +282,7 @@ main { padding: 0 !important; max-width: 100% !important; }
     white-space: nowrap;
 }
 
-/* Botão fechar — círculo glass top-right */
+/* Botão fechar - círculo glass top-right */
 .modal-fechar {
     position: fixed; top: 16px; right: 20px;
     width: 44px; height: 44px; border-radius: 50%;
@@ -294,7 +294,7 @@ main { padding: 0 !important; max-width: 100% !important; }
 }
 .modal-fechar:hover { background: rgba(255,255,255,0.22); }
 
-/* Setas de navegação — glass com hover rosa */
+/* Setas de navegação - glass com hover rosa */
 .modal-nav {
     position: fixed; top: 50%; transform: translateY(-50%);
     width: 50px; height: 50px; border-radius: 50%;
@@ -313,7 +313,7 @@ main { padding: 0 !important; max-width: 100% !important; }
 .modal-prev { left: 18px; }
 .modal-next { right: 18px; }
 
-/* Tira de miniaturas no fundo — scroll horizontal se houver muitas */
+/* Tira de miniaturas no fundo - scroll horizontal se houver muitas */
 .modal-thumbs {
     display: flex; gap: 8px;
     padding: 8px 14px;
@@ -339,7 +339,7 @@ main { padding: 0 !important; max-width: 100% !important; }
 /* Miniatura ativa: borda rosa + opacidade total */
 .modal-thumb.ativo { border-color: #d66d7f; opacity: 1; }
 
-/* Botão toggle — só aparece em mobile */
+/* Botão toggle - só aparece em mobile */
 .catalogo-filtros-toggle {
     display: none;
     width: 100%;
@@ -365,7 +365,7 @@ main { padding: 0 !important; max-width: 100% !important; }
     /* align-items: stretch garante que o conteúdo ocupa 100% da largura disponível
        (o padrão flex-start encolhia o conteúdo para zero se a BD estivesse vazia) */
     .catalogo-layout { flex-direction: column; align-items: stretch; }
-    /* Sidebar oculta por defeito — revelada ao clicar no botão toggle */
+    /* Sidebar oculta por defeito - revelada ao clicar no botão toggle */
     .catalogo-filtros { width: 100%; position: static; display: none; }
     .catalogo-filtros.abertos { display: block; }
     .catalogo-filtros-toggle { display: flex; }
@@ -481,7 +481,7 @@ main { padding: 0 !important; max-width: 100% !important; }
                     $params[':q2'] = "%$q%";
                 }
 
-                // Aplica a ordenação escolhida (lista branca — seguro)
+                // Aplica a ordenação escolhida (lista branca - seguro)
                 $sql .= " ORDER BY " . $orderBy;
 
                 $stmt = $conn->prepare($sql);
@@ -544,7 +544,7 @@ main { padding: 0 !important; max-width: 100% !important; }
             endforeach;
 
             if (!$algoEncontrado):
-                // Estado vazio — aparece quando nenhum produto corresponde ao filtro
+                // Estado vazio - aparece quando nenhum produto corresponde ao filtro
             ?>
             <div style="text-align:center; padding:60px 20px;">
                 <div style="font-size:3rem; color:#e8a4b0; margin-bottom:16px;">
@@ -574,7 +574,7 @@ main { padding: 0 !important; max-width: 100% !important; }
 </div>
 
 <!-- ============================================================
-     LIGHTBOX — Estrutura redesenhada
+     LIGHTBOX - Estrutura redesenhada
      - Fundo faz fechar ao clicar (JS via event delegation)
      - Botões com Font Awesome em vez de caracteres Unicode
      - Tira de miniaturas preenchida dinamicamente por JS
@@ -584,7 +584,7 @@ main { padding: 0 !important; max-width: 100% !important; }
     <!-- Contador "2 / 3" fixo no topo ao centro -->
     <div id="modalContador" class="modal-contador"></div>
 
-    <!-- Botão fechar — círculo glass top-right -->
+    <!-- Botão fechar - círculo glass top-right -->
     <button class="modal-fechar" id="btnModalFechar" aria-label="Fechar lightbox">
         <i class="fas fa-times"></i>
     </button>
@@ -607,7 +607,7 @@ main { padding: 0 !important; max-width: 100% !important; }
 
 <script>
 // =============================================================================
-// LIGHTBOX — Lógica do modal redesenhado
+// LIGHTBOX - Lógica do modal redesenhado
 // =============================================================================
 
 let imagensAtuais = [];   // array de caminhos das imagens do produto atual
@@ -643,7 +643,7 @@ function atualizarUI() {
     // Contador "1 / 3"
     contador.textContent = (indiceAtual + 1) + ' / ' + imagensAtuais.length;
 
-    // Setas e tira de thumbs — só aparecem se houver mais de 1 foto
+    // Setas e tira de thumbs - só aparecem se houver mais de 1 foto
     const multi = imagensAtuais.length > 1;
     btnPrev.style.display  = multi ? 'flex' : 'none';
     btnNext.style.display  = multi ? 'flex' : 'none';

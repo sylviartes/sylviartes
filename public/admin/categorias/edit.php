@@ -28,7 +28,7 @@ if ($_POST && isset($_POST['guardar'])) {
     $desc = trim($_POST['desc_cat'] ?? '');
 
     if (!empty($nome)) {
-        // Site por orçamento — categorias não têm preço (removido).
+        // Site por orçamento - categorias não têm preço (removido).
         $stmt = $conn->prepare('UPDATE categoria SET nome = :nome, descricao = :descricao WHERE id = :id');
         $ok = $stmt->execute([
             ':nome' => $nome,
@@ -88,14 +88,14 @@ if ($_POST && isset($_POST['guardar'])) {
         <form method="POST">
             <?= csrf_input() ?>
 
-            <!-- Nome — linha toda, pré-preenchido com o valor da BD -->
+            <!-- Nome - linha toda, pré-preenchido com o valor da BD -->
             <div class="form-field form-field-full">
                 <label for="nome_cat">Nome da Categoria <span class="req">*</span></label>
                 <input type="text" id="nome_cat" name="nome_cat"
                        value="<?= htmlspecialchars($cat['nome']) ?>" required>
             </div>
 
-            <!-- Descrição (preço removido — site é por orçamento personalizado) -->
+            <!-- Descrição (preço removido - site é por orçamento personalizado) -->
             <div class="form-field form-field-full">
                 <label for="desc_cat">Descrição <span class="opt">(opcional)</span></label>
                 <textarea id="desc_cat" name="desc_cat"

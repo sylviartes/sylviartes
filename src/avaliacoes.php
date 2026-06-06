@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  AVALIAÇÕES DE PRODUTOS — Helpers
+ *  AVALIAÇÕES DE PRODUTOS - Helpers
  * =============================================================================
  *
  *  Funções utilitárias para o sistema de avaliações (estrelas + comentário):

@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  BREADCRUMBS — Migalhas de Navegação
+ *  BREADCRUMBS - Migalhas de Navegação
  * =============================================================================
  *
  *  Função utilitária que mostra o caminho hierárquico da página atual
@@ -30,7 +30,7 @@ function render_breadcrumbs(array $items): string
         $isUltimo = ($i === count($items) - 1);
 
         if ($isUltimo || empty($item['url'])) {
-            // Último item — não é link, fica em destaque
+            // Último item - não é link, fica em destaque
             $html .= '<li style="color:#d66d7f; font-weight:600;">'
                    . htmlspecialchars($item['nome']) . '</li>';
         } else {

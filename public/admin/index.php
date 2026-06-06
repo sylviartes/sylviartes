@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  ADMIN — Dashboard Principal
+ *  ADMIN - Dashboard Principal
  * =============================================================================
  *
  *  Painel inicial da área administrativa, adaptado ao modelo de portfólio +
@@ -20,20 +20,20 @@ require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/auth.php';
 
 // =============================================================================
-// ESTADO "POR TRATAR" — pedidos novos que precisam de orçamento
+// ESTADO "POR TRATAR" - pedidos novos que precisam de orçamento
 // =============================================================================
 // Novos pedidos são criados com estado 'em_analise'.
 // O dashboard mostra quantos estão neste estado para o admin tratar.
 $estadoOrcamento = 'em_analise';
 
 // =============================================================================
-// FILTRO DE PERÍODO — Aplicado em ambos os KPIs de faturação
+// FILTRO DE PERÍODO - Aplicado em ambos os KPIs de faturação
 // =============================================================================
 // Separamos o filtro de DATA do filtro de ESTADO para poder reutilizar
 // a condição de data em duas queries distintas: "Faturado" e "Pipeline".
 $periodo = $_GET['periodo'] ?? 'mes';
 
-// Condição de data isolada (sem filtro de estado — combinada abaixo)
+// Condição de data isolada (sem filtro de estado - combinada abaixo)
 $filtroPeriodo = '1=1'; // 'vida' = sem limite de data
 if ($periodo === 'dia')    $filtroPeriodo = "DATE(data) = CURDATE()";
 elseif ($periodo === 'semana') $filtroPeriodo = "YEARWEEK(data,1) = YEARWEEK(CURDATE(),1)";
@@ -44,13 +44,13 @@ elseif ($periodo === 'ano')    $filtroPeriodo = "YEAR(data) = YEAR(CURDATE())";
 // Faturado = pedidos já entregues/concluídos (dinheiro realmente recebido)
 $whereFaturado = "estado IN ('concluido','entregue') AND $filtroPeriodo";
 // Pipeline = pedidos confirmados mas ainda em produção ou aguardar pagamento
-// (dinheiro comprometido que ainda não chegou — importante num negócio de orçamentos)
+// (dinheiro comprometido que ainda não chegou - importante num negócio de orçamentos)
 $wherePipeline = "estado IN ('aguarda_pagamento','em_producao') AND $filtroPeriodo";
 
 $periodoLabel = ['dia'=>'Hoje','semana'=>'Esta Semana','mes'=>'Este Mês','ano'=>'Este Ano','vida'=>'Toda a Vida'][$periodo] ?? 'Este Mês';
 
 // =============================================================================
-// QUERIES — KPIs de Faturação
+// QUERIES - KPIs de Faturação
 // =============================================================================
 // Faturado: soma dos pedidos já concluídos ou entregues no período selecionado
 $kpiFaturado = (float)$conn->query(
@@ -58,7 +58,7 @@ $kpiFaturado = (float)$conn->query(
 )->fetchColumn();
 
 // Pipeline: soma dos pedidos em produção ou aguardar pagamento no mesmo período
-// Mostra o dinheiro "garantido" que ainda não entrou — evita o dashboard mostrar 0€
+// Mostra o dinheiro "garantido" que ainda não entrou - evita o dashboard mostrar 0€
 // enquanto há trabalho confirmado em andamento.
 $kpiPipeline = (float)$conn->query(
     "SELECT IFNULL(SUM(valor_total),0) FROM pedido WHERE $wherePipeline"
@@ -130,11 +130,11 @@ $stmtAtividade = $conn->query("
 $atividadeRecente = $stmtAtividade->fetchAll(PDO::FETCH_ASSOC);
 
 // =============================================================================
-// GRÁFICO 1 — Faturação & Pipeline dos últimos 30 dias
+// GRÁFICO 1 - Faturação & Pipeline dos últimos 30 dias
 // =============================================================================
 // Preenche dois arrays em paralelo:
-//   $valores30d  → receita real (concluido + entregue) — linha rosa
-//   $pipeline30d → receita a caminho (em_producao + aguarda_pagamento) — linha cinza
+//   $valores30d  → receita real (concluido + entregue) - linha rosa
+//   $pipeline30d → receita a caminho (em_producao + aguarda_pagamento) - linha cinza
 // Uma query por dia × 2: simples e fácil de explicar na defesa de PAP.
 $labels30d   = [];
 $valores30d  = [];
@@ -163,7 +163,7 @@ for ($i = 29; $i >= 0; $i--) {
 }
 
 // =============================================================================
-// GRÁFICO 2 — Distribuição por estado (donut)
+// GRÁFICO 2 - Distribuição por estado (donut)
 // =============================================================================
 $stmtEstados = $conn->query("SELECT estado, COUNT(*) AS qtd FROM pedido GROUP BY estado");
 $rotulosEstado = [
@@ -183,7 +183,7 @@ foreach ($stmtEstados->fetchAll(PDO::FETCH_ASSOC) as $e) {
 }
 
 // =============================================================================
-// GRÁFICO 3 — Top 5 categorias mais pedidas (barras horizontais)
+// GRÁFICO 3 - Top 5 categorias mais pedidas (barras horizontais)
 // =============================================================================
 $stmtCat = $conn->query("
     SELECT c.nome, COUNT(*) AS qtd
@@ -231,13 +231,13 @@ function tempo_decorrido(int $minutos): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard — SylviArtes Admin</title>
+    <title>Dashboard - SylviArtes Admin</title>
     <link rel="stylesheet" href="admin_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* ============== Dashboard refeita — paleta consistente ============== */
+        /* ============== Dashboard refeita - paleta consistente ============== */
         .dash-greeting {
             margin-bottom: 28px;
         }
@@ -393,7 +393,7 @@ function tempo_decorrido(int $minutos): string {
     </div>
 
     <!-- ============================================================ -->
-    <!-- 2. HERO — PEDIDOS POR TRATAR                                  -->
+    <!-- 2. HERO - PEDIDOS POR TRATAR                                  -->
     <!-- ============================================================ -->
     <div class="hero-tratar">
         <div>
@@ -410,7 +410,7 @@ function tempo_decorrido(int $minutos): string {
         <div class="hero-lista">
             <h4>5 mais antigos</h4>
             <?php if (empty($pedidosPorTratar)): ?>
-                <div class="vazio">✓ Sem pedidos pendentes — tudo em dia!</div>
+                <div class="vazio">✓ Sem pedidos pendentes - tudo em dia!</div>
             <?php else: ?>
                 <?php foreach ($pedidosPorTratar as $pt): ?>
                     <div class="hero-pedido">
@@ -441,7 +441,7 @@ function tempo_decorrido(int $minutos): string {
 
     <div class="kpi-grid">
 
-        <!-- KPI: Faturado — dinheiro realmente recebido (concluídos + entregues) -->
+        <!-- KPI: Faturado - dinheiro realmente recebido (concluídos + entregues) -->
         <div class="kpi-card">
             <div class="kpi-icone" style="background:#ecfdf5; color:#059669;">
                 <i class="fas fa-check-circle"></i>
@@ -453,7 +453,7 @@ function tempo_decorrido(int $minutos): string {
             <div class="kpi-extra">Concluídos &amp; entregues</div>
         </div>
 
-        <!-- KPI: Pipeline — dinheiro confirmado mas ainda a caminho -->
+        <!-- KPI: Pipeline - dinheiro confirmado mas ainda a caminho -->
         <!-- Evita que o dashboard mostre 0€ enquanto há trabalho ativo em produção -->
         <div class="kpi-card">
             <div class="kpi-icone" style="background:#f3f4f6; color:#6b7280;">
@@ -481,18 +481,18 @@ function tempo_decorrido(int $minutos): string {
             <div class="kpi-icone"><i class="fas fa-star"></i></div>
             <div class="kpi-label">Avaliação Média</div>
             <div class="kpi-valor">
-                <?= $kpiTotalAvaliacoes > 0 ? $kpiAvaliacaoMedia . ' ★' : '—' ?>
+                <?= $kpiTotalAvaliacoes > 0 ? $kpiAvaliacaoMedia . ' ★' : '-' ?>
             </div>
             <div class="kpi-extra"><?= $kpiTotalAvaliacoes ?> <?= $kpiTotalAvaliacoes === 1 ? 'avaliação aprovada' : 'avaliações aprovadas' ?></div>
         </div>
     </div>
 
     <!-- ============================================================ -->
-    <!-- 4. GRÁFICOS — Vendas 30d + Estados                            -->
+    <!-- 4. GRÁFICOS - Vendas 30d + Estados                            -->
     <!-- ============================================================ -->
     <div class="row-2col-asym">
         <div class="panel">
-            <h3><i class="fas fa-chart-area"></i> Faturação &amp; Pipeline — 30 dias</h3>
+            <h3><i class="fas fa-chart-area"></i> Faturação &amp; Pipeline - 30 dias</h3>
             <div style="height: 260px;"><canvas id="grafVendas"></canvas></div>
         </div>
         <div class="panel">
@@ -502,7 +502,7 @@ function tempo_decorrido(int $minutos): string {
     </div>
 
     <!-- ============================================================ -->
-    <!-- 5. LISTAS — Próximos Prazos + Atividade Recente               -->
+    <!-- 5. LISTAS - Próximos Prazos + Atividade Recente               -->
     <!-- ============================================================ -->
     <div class="row-2col">
         <div class="panel">
@@ -548,7 +548,7 @@ function tempo_decorrido(int $minutos): string {
                                     <?= htmlspecialchars($a['nome']) ?> pagou
                                     <?php
                                     // Correção: o UNION devolve 'valor' para linhas de pagamento,
-                                    // não 'valor_total' — usar coalescência para evitar NULL.
+                                    // não 'valor_total' - usar coalescência para evitar NULL.
                                     $valorAtividade = $a['valor_total'] ?? $a['valor'] ?? 0;
                                     echo number_format((float)$valorAtividade, 2, ',', '.');
                                     ?> €
@@ -584,7 +584,7 @@ function tempo_decorrido(int $minutos): string {
 
 <script>
 // =============================================================================
-// Gráfico 1: Faturação & Pipeline — últimos 30 dias (linha dupla)
+// Gráfico 1: Faturação & Pipeline - últimos 30 dias (linha dupla)
 // =============================================================================
 // Dataset rosa (faturado): receita real confirmada (concluido + entregue)
 // Dataset cinza tracejado (pipeline): receita a caminho (em_producao + aguarda_pagamento)

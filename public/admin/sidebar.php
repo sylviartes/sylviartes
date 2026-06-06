@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  ADMIN SIDEBAR — Navegação Lateral
+ *  ADMIN SIDEBAR - Navegação Lateral
  * =============================================================================
  *
  *  Incluída em todas as páginas admin (index, produtos, encomendas, etc.).
@@ -227,7 +227,7 @@ function isActive($padrao) {
     box-shadow: 0 8px 20px rgba(214, 109, 127, 0.25);
 }
 
-/* Barra lateral do item ativo — visível sem necessitar de hover.
+/* Barra lateral do item ativo - visível sem necessitar de hover.
    O ::before existe em todos os links (scaleY 0), mas no ativo deve estar sempre visível. */
 .sidebar a.active::before {
     transform: scaleY(1);

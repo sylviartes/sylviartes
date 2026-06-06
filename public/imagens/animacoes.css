@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- *  ANIMAÇÕES E LOADING STATES — SylviArtes
+ *  ANIMAÇÕES E LOADING STATES - SylviArtes
  * =============================================================================
  *  CSS global aplicado em todas as páginas. Inclui:
  *    - fade-in suave ao carregar a página
@@ -15,7 +15,7 @@
    IMPORTANTE: não aplicamos esta animação ao <main>/.pagina-main (o container
    principal que envolve a página toda). Animar opacity+transform num container
    grande pode, no modo de emulação mobile do Chromium, deixá-lo numa camada que
-   não é pintada até haver um repaint — resultando numa "página branca" em páginas
+   não é pintada até haver um repaint - resultando numa "página branca" em páginas
    estáticas (ex: formulário de orçamento). Aplicamos o fade apenas aos wrappers
    internos de cada secção, que são mais pequenos e seguros. */
 @keyframes sylvi-fadeIn {
@@ -31,7 +31,7 @@ a {
     transition: color 0.2s, opacity 0.2s;
 }
 
-/* Botões — efeito ripple/elevate consistente */
+/* Botões - efeito ripple/elevate consistente */
 button, .btn-primary, .btn-cart, .checkout-btn, .auth-btn, .cli-btn, .produto-btn {
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
@@ -127,7 +127,7 @@ html { scroll-behavior: smooth; }
 body { overflow-x: clip; }
 
 /* ==========================================================================
-   ACESSIBILIDADE — Anel de foco visível
+   ACESSIBILIDADE - Anel de foco visível
    ==========================================================================
    :focus-visible só aparece quando o utilizador navega com o TECLADO (Tab).
    Não aparece ao clicar com o rato, o que mantém o design limpo mas garante
@@ -151,7 +151,7 @@ textarea:focus-visible {
 }
 
 /* Texto muted com contraste mínimo AA (4.5:1) */
-/* #888 em fundo branco é apenas ~2.8:1 — #5b6470 é ~5.6:1 */
+/* #888 em fundo branco é apenas ~2.8:1 - #5b6470 é ~5.6:1 */
 .text-muted,
 small {
     color: #5b6470 !important;
@@ -167,13 +167,13 @@ small {
 }
 
 /* ============================================================
-   RESPONSIVIDADE GLOBAL — todas as páginas públicas
+   RESPONSIVIDADE GLOBAL - todas as páginas públicas
    ============================================================ */
 
 /* Imagens nunca transbordam */
 img { max-width: 100%; height: auto; }
 
-/* Tabelas dentro de containers — scroll horizontal subtil */
+/* Tabelas dentro de containers - scroll horizontal subtil */
 table { max-width: 100%; }
 
 /* Tablet (≤ 992px) */
@@ -198,11 +198,11 @@ table { max-width: 100%; }
     }
     .home-hero-ctas { flex-direction: column; align-items: stretch; }
 
-    /* Catálogo / portfólio — menos padding lateral */
+    /* Catálogo / portfólio - menos padding lateral */
     .catalogo-container { padding: 12px !important; }
     .catalogo-layout { gap: 16px !important; }
 
-    /* Formulários auth do cliente — caixas mais largas em mobile */
+    /* Formulários auth do cliente - caixas mais largas em mobile */
     .auth-container { padding: 16px !important; }
     .auth-box { padding: 30px 22px !important; }
 
@@ -217,7 +217,7 @@ table { max-width: 100%; }
     }
     .produto-detalhe-img { height: auto !important; max-height: 360px !important; }
 
-    /* Headers de páginas — texto mais legível */
+    /* Headers de páginas - texto mais legível */
     h1 { font-size: 28px !important; }
     h2 { font-size: 24px !important; }
     h3 { font-size: 18px !important; }
@@ -231,12 +231,12 @@ table { max-width: 100%; }
     h1 { font-size: 24px !important; }
     h2 { font-size: 20px !important; }
 
-    /* Cards do portfólio — maiores para serem legíveis */
+    /* Cards do portfólio - maiores para serem legíveis */
     .produto-card .produto-img-box { height: 200px !important; }
 }
 
 /* ============================================================
-   ALVOS DE TOQUE — telemóvel/tablet
+   ALVOS DE TOQUE - telemóvel/tablet
    ============================================================
    Em ecrãs de toque, os botões e links de ação devem ter pelo
    menos ~44px (recomendação de acessibilidade da Apple/Google),
@@ -247,7 +247,7 @@ table { max-width: 100%; }
     .modal-nav, .modal-fechar {
         min-height: 44px;
     }
-    /* Setas e botão fechar do lightbox — área de toque maior */
+    /* Setas e botão fechar do lightbox - área de toque maior */
     .modal-nav { min-width: 48px; padding: 16px !important; }
     .modal-fechar { padding: 8px 16px; }
 }

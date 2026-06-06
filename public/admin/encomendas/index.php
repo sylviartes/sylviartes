@@ -87,7 +87,7 @@ $totalEncomendas = array_sum($contagens);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encomendas — SylviArtes Admin</title>
+    <title>Encomendas - SylviArtes Admin</title>
     <link rel="stylesheet" href="../admin_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -197,7 +197,7 @@ $totalEncomendas = array_sum($contagens);
         .estado-entregue          { background-color: #cffafe; color: #155e75; }
         .estado-cancelado         { background-color: #fee2e2; color: #991b1b; }
 
-        /* Botão de ver detalhes — compacto, ícone + texto numa linha */
+        /* Botão de ver detalhes - compacto, ícone + texto numa linha */
         .btn-ver {
             display: inline-flex;
             align-items: center;

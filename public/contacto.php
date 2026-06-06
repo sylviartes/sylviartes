@@ -1,13 +1,13 @@
 <?php
 // Título e descrição para esta página (usados no <head> do header.php)
 $pageTitle       = 'Contacto';
-$pageDescription = 'Entre em contacto com a SylviArtes — bordados personalizados para todas as ocasiões.';
+$pageDescription = 'Entre em contacto com a SylviArtes - bordados personalizados para todas as ocasiões.';
 require_once __DIR__ . '/header.php';
 ?>
 
 <style>
 /* ================================================================
-   CONTACTO — estilos específicos desta página
+   CONTACTO - estilos específicos desta página
    ================================================================ */
 
 /* Anula o padding do .pagina-main para secções full-width */
@@ -50,7 +50,7 @@ main { padding: 0 !important; max-width: 100% !important; }
     margin-bottom: 52px;
 }
 
-/* Card base — tanto <a> como <div> partilham estes estilos */
+/* Card base - tanto <a> como <div> partilham estes estilos */
 .contacto-card {
     background: #fff;
     border-radius: 16px;
@@ -58,7 +58,7 @@ main { padding: 0 !important; max-width: 100% !important; }
     text-align: center;
     box-shadow: 0 8px 30px rgba(214, 109, 127, 0.10);
     border: 1px solid #f5e6ea;
-    /* Transição CSS em vez de onmouseover/onmouseout JS — mais limpo e acessível */
+    /* Transição CSS em vez de onmouseover/onmouseout JS - mais limpo e acessível */
     transition: transform 0.25s, box-shadow 0.25s;
     /* Reset para <a> */
     text-decoration: none;
@@ -139,7 +139,7 @@ main { padding: 0 !important; max-width: 100% !important; }
 @media (max-width: 768px) {
     .contacto-hero { padding: 52px 20px; }
     .contacto-hero h1 { font-size: 2rem; }
-    /* 2 colunas em tablet — mais legível do que 3 */
+    /* 2 colunas em tablet - mais legível do que 3 */
     .contacto-grid { grid-template-columns: repeat(2, 1fr); }
     .contacto-conteudo { padding: 44px 20px 60px; }
 }
@@ -153,7 +153,7 @@ main { padding: 0 !important; max-width: 100% !important; }
 </style>
 
 <!-- ==================================================
-     CONTACTO — Meios de contacto da SylviArtes
+     CONTACTO - Meios de contacto da SylviArtes
      ================================================== -->
 
 <!-- Hero de topo -->
@@ -167,14 +167,14 @@ main { padding: 0 !important; max-width: 100% !important; }
     <!-- Grelha de cards de contacto -->
     <div class="contacto-grid">
 
-        <!-- Telefone — link tel: abre discador em telemóvel -->
+        <!-- Telefone - link tel: abre discador em telemóvel -->
         <a href="tel:+351914058129" class="contacto-card">
             <span class="contacto-card-icone"><i class="fas fa-phone"></i></span>
             <h5>Telefone</h5>
             <p class="val-rosa">+351 914 058 129</p>
         </a>
 
-        <!-- WhatsApp — wa.me abre conversa direta no WhatsApp -->
+        <!-- WhatsApp - wa.me abre conversa direta no WhatsApp -->
         <a href="https://wa.me/351914058129" target="_blank" rel="noopener noreferrer" class="contacto-card">
             <span class="contacto-card-icone whatsapp"><i class="fab fa-whatsapp"></i></span>
             <h5>WhatsApp</h5>
@@ -188,7 +188,7 @@ main { padding: 0 !important; max-width: 100% !important; }
             <p class="val-rosa">sylviartes.pt@gmail.com</p>
         </a>
 
-        <!-- Localização — não é clicável, usa <div> em vez de <a> -->
+        <!-- Localização - não é clicável, usa <div> em vez de <a> -->
         <div class="contacto-card">
             <span class="contacto-card-icone"><i class="fas fa-map-marker-alt"></i></span>
             <h5>Localização</h5>

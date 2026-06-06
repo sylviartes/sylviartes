@@ -5,7 +5,7 @@
  * =============================================================================
  *
  *  Termina a sessão do cliente. Diferente do logout admin (que destrói TUDO),
- *  aqui só removemos as variáveis do cliente — o carrinho de compras (se
+ *  aqui só removemos as variáveis do cliente - o carrinho de compras (se
  *  existir) é preservado, para o caso de o utilizador querer continuar a
  *  comprar como convidado depois de sair.
  * =============================================================================

@@ -1,18 +1,18 @@
 <?php
 /**
  * =============================================================================
- *  ADMIN — Detalhe de Encomenda
+ *  ADMIN - Detalhe de Encomenda
  * =============================================================================
  *
  *  Painel onde o admin vê toda a informação de um pedido específico:
  *  cliente, produtos, total, estado, e gere o pagamento.
  *
  *  Acções disponíveis (só para o admin):
- *    1. VALIDAR pagamento manual (transferência) — após confirmar a entrada
+ *    1. VALIDAR pagamento manual (transferência) - após confirmar a entrada
  *       do dinheiro na conta bancária. Avança automaticamente o pedido para
  *       'em_producao'.
- *    2. RECUSAR pagamento — se o comprovativo for inválido.
- *    3. VER COMPROVATIVO — descarrega o BLOB diretamente como ficheiro.
+ *    2. RECUSAR pagamento - se o comprovativo for inválido.
+ *    3. VER COMPROVATIVO - descarrega o BLOB diretamente como ficheiro.
  * =============================================================================
  */
 
@@ -105,7 +105,7 @@ if (isset($_GET['comprovativo']) && $_GET['comprovativo'] === '1') {
     $blob = $stmt->fetchColumn();
 
     if ($blob) {
-        // O PDO pode devolver o BLOB como stream — converte para string se preciso
+        // O PDO pode devolver o BLOB como stream - converte para string se preciso
         $blob = is_resource($blob) ? stream_get_contents($blob) : $blob;
 
         // Deteta o tipo MIME real do ficheiro pelos magic bytes
@@ -176,7 +176,7 @@ $estadoCores = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encomenda #<?php echo $pedido_id; ?> — SylviArtes Admin</title>
+    <title>Encomenda #<?php echo $pedido_id; ?> - SylviArtes Admin</title>
     <link rel="stylesheet" href="../admin_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -347,7 +347,7 @@ $estadoCores = [
     </div>
 
     <!-- =====================================================================
-         SECÇÃO 1 — Cliente + Estado
+         SECÇÃO 1 - Cliente + Estado
     ====================================================================== -->
     <div class="secao">
         <div class="secao-titulo"><i class="fas fa-user"></i> Cliente &amp; Estado</div>
@@ -386,7 +386,7 @@ $estadoCores = [
     </div>
 
     <!-- =====================================================================
-         SECÇÃO 2 — Entrega + Observações
+         SECÇÃO 2 - Entrega + Observações
     ====================================================================== -->
     <div class="secao">
         <div class="secao-titulo"><i class="fas fa-truck"></i> Entrega &amp; Pedido</div>
@@ -421,7 +421,7 @@ $estadoCores = [
     </div>
 
     <!-- =====================================================================
-         SECÇÃO 3 — Imagens de Inspiração
+         SECÇÃO 3 - Imagens de Inspiração
     ====================================================================== -->
     <?php
     // Carrega imagens de inspiração enviadas pelo cliente
@@ -466,7 +466,7 @@ $estadoCores = [
     </div>
 
     <!-- =====================================================================
-         SECÇÃO 4 — Orçamento & Link de Pagamento
+         SECÇÃO 4 - Orçamento & Link de Pagamento
     ====================================================================== -->
     <div class="secao">
         <div class="secao-titulo"><i class="fas fa-file-invoice-dollar"></i> Orçamento &amp; Link de Pagamento</div>
@@ -476,7 +476,7 @@ $estadoCores = [
         $msgsOrcamento = [
             'preco_atualizado'      => ['ok',  '<i class="fas fa-check-circle"></i> Preço atualizado com sucesso.'],
             'link_enviado'          => ['ok',  '<i class="fas fa-check-circle"></i> Link de pagamento enviado por email à cliente!'],
-            'link_gerado_sem_email' => ['av',  '<i class="fas fa-exclamation-circle"></i> Link gerado mas falhou o email — copie o URL abaixo manualmente.'],
+            'link_gerado_sem_email' => ['av',  '<i class="fas fa-exclamation-circle"></i> Link gerado mas falhou o email - copie o URL abaixo manualmente.'],
             'erro_stripe'           => ['err', '<i class="fas fa-times-circle"></i> Erro Stripe: ' . htmlspecialchars($_GET['erro_stripe'] ?? '')],
             'erro'                  => ['err', '<i class="fas fa-times-circle"></i> Erro: ' . htmlspecialchars($_GET['erro'] ?? '')],
         ];
@@ -549,7 +549,7 @@ $estadoCores = [
     </div>
 
     <!-- =====================================================================
-         SECÇÃO 5 — Validação de Pagamento (só se existir pagamento)
+         SECÇÃO 5 - Validação de Pagamento (só se existir pagamento)
     ====================================================================== -->
     <?php if (!empty($pedido['metodo_pagamento'])): ?>
     <div class="secao">
@@ -566,7 +566,7 @@ $estadoCores = [
             &nbsp;·&nbsp;
             <strong>Estado:</strong>
             <span class="estado-badge" style="background:<?php echo $estadoCores[$pedido['estado_pagamento'] ?? ''] ?? '#f0e3e7;color:#555'; ?>; margin-left:4px;">
-                <?php echo htmlspecialchars($pedido['estado_pagamento'] ?? '—'); ?>
+                <?php echo htmlspecialchars($pedido['estado_pagamento'] ?? '-'); ?>
             </span>
         </p>
 
@@ -583,9 +583,9 @@ $estadoCores = [
                 </p>
             <?php endif; ?>
         <?php elseif (in_array($pedido['metodo_pagamento'], ['cartao', 'mbway'], true)): ?>
-            <p style="color:#666; font-size:14px; margin-bottom:16px;">Pagamento processado pela Stripe — atualizado automaticamente via webhook.</p>
+            <p style="color:#666; font-size:14px; margin-bottom:16px;">Pagamento processado pela Stripe - atualizado automaticamente via webhook.</p>
         <?php else: ?>
-            <p style="color:#666; font-size:14px; margin-bottom:16px;">Pagamento em dinheiro — a ser efetuado no levantamento.</p>
+            <p style="color:#666; font-size:14px; margin-bottom:16px;">Pagamento em dinheiro - a ser efetuado no levantamento.</p>
         <?php endif; ?>
 
         <?php if (($pedido['estado_pagamento'] ?? '') !== 'validado'): ?>
@@ -612,7 +612,7 @@ $estadoCores = [
     <?php endif; ?>
 
     <!-- =====================================================================
-         SECÇÃO 6 — Itens do Pedido
+         SECÇÃO 6 - Itens do Pedido
     ====================================================================== -->
     <div class="secao">
         <div class="secao-titulo"><i class="fas fa-shopping-bag"></i> Itens do Pedido</div>
@@ -627,7 +627,7 @@ $estadoCores = [
             </thead>
             <tbody>
                 <?php foreach ($itens as $item):
-                    // BLOB pode vir como stream resource — converte para string
+                    // BLOB pode vir como stream resource - converte para string
                     $imagem_dados = is_resource($item['imagem']) ? stream_get_contents($item['imagem']) : $item['imagem'];
                     // Detecta o tipo MIME real pela assinatura do ficheiro
                     $imgMime = !empty($imagem_dados) ? (new finfo(FILEINFO_MIME_TYPE))->buffer($imagem_dados) : '';

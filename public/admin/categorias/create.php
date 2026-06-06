@@ -12,7 +12,7 @@ if (isset($_POST['nova_categoria'])) {
     $desc = trim($_POST['desc_cat'] ?? '');
 
     if (!empty($nome)) {
-        // Site por orçamento — categorias não têm preço (removido).
+        // Site por orçamento - categorias não têm preço (removido).
         $stmt = $conn->prepare("INSERT INTO categoria (nome, descricao) VALUES (:nome, :descricao)");
         $stmt->execute([
             ':nome' => $nome,
@@ -70,14 +70,14 @@ if (isset($_POST['nova_categoria'])) {
         <form method="POST">
             <?= csrf_input() ?>
 
-            <!-- Nome — ocupa a linha toda (campo mais importante) -->
+            <!-- Nome - ocupa a linha toda (campo mais importante) -->
             <div class="form-field form-field-full">
                 <label for="nome_cat">Nome da Categoria <span class="req">*</span></label>
                 <input type="text" id="nome_cat" name="nome_cat"
                        placeholder="Ex: Toalhas" required autocomplete="off">
             </div>
 
-            <!-- Descrição (preço removido — site é por orçamento personalizado) -->
+            <!-- Descrição (preço removido - site é por orçamento personalizado) -->
             <div class="form-field form-field-full">
                 <label for="desc_cat">Descrição <span class="opt">(opcional)</span></label>
                 <textarea id="desc_cat" name="desc_cat" rows="4"

@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  HEADER — Topo de TODAS as páginas públicas
+ *  HEADER - Topo de TODAS as páginas públicas
  * =============================================================================
  *
  *  Cabeçalho comum: logo, menu de navegação, link "Entrar"/"Minha Conta",
@@ -35,14 +35,14 @@ require_once __DIR__ . '/../config/session.php';
 
     <!-- Título da página: cada página define $pageTitle antes de incluir este ficheiro.
          Se não definir, usa o título padrão. -->
-    <title><?php echo isset($pageTitle) ? htmlspecialchars($pageTitle) . ' — SylviArtes' : 'SylviArtes - Costura Criativa'; ?></title>
+    <title><?php echo isset($pageTitle) ? htmlspecialchars($pageTitle) . ' - SylviArtes' : 'SylviArtes - Costura Criativa'; ?></title>
 
     <!-- Meta description: aparece no resultado do Google por baixo do título.
          Cada página pode definir $pageDescription para personalizar. -->
     <?php if (!empty($pageDescription)): ?>
     <meta name="description" content="<?php echo htmlspecialchars($pageDescription); ?>">
     <?php else: ?>
-    <meta name="description" content="SylviArtes — Costura criativa e bordados personalizados feitos à mão em Portugal.">
+    <meta name="description" content="SylviArtes - Costura criativa e bordados personalizados feitos à mão em Portugal.">
     <?php endif; ?>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -80,13 +80,13 @@ require_once __DIR__ . '/../config/session.php';
             --gradiente-rosa: linear-gradient(135deg, #d66d7f 0%, #e8a4b0 50%, #d66d7f 100%);
             --gradiente-rosa-hover: linear-gradient(135deg, #bf5b6d 0%, #d66d7f 100%);
             --transicao-suave: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            /* Transição suave sem overshooting — mais confortável para utilizadores
+            /* Transição suave sem overshooting - mais confortável para utilizadores
                sensíveis a movimento (vestibular sensitivity) */
             --transicao-bounce: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        /* scroll-behavior: smooth — definido em animacoes.css para não duplicar */
+        /* scroll-behavior: smooth - definido em animacoes.css para não duplicar */
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -98,7 +98,7 @@ require_once __DIR__ . '/../config/session.php';
             min-height: 100vh;
             /* overflow-x: clip corta o excesso horizontal SEM tornar o body um
                container de scroll (ao contrário de "hidden", que força overflow-y:auto
-               e quebra a navbar sticky — causava página em branco na emulação mobile). */
+               e quebra a navbar sticky - causava página em branco na emulação mobile). */
             overflow-x: clip;
             background-image:
                 radial-gradient(ellipse at 0% 0%, rgba(214, 109, 127, 0.05) 0%, transparent 50%),
@@ -212,7 +212,7 @@ require_once __DIR__ . '/../config/session.php';
             box-shadow: 0 8px 25px rgba(214, 109, 127, 0.2);
         }
 
-        /* Wrapper do conteúdo principal — nome próprio para não colidir com Bootstrap .container */
+        /* Wrapper do conteúdo principal - nome próprio para não colidir com Bootstrap .container */
         .pagina-main {
             width: 100%;
             max-width: 1300px;
@@ -382,7 +382,7 @@ require_once __DIR__ . '/../config/session.php';
             animation: fadeInUp 0.7s ease forwards; 
         }
 
-        /* Tablet — reduz padding e tamanho de fonte */
+        /* Tablet - reduz padding e tamanho de fonte */
         @media (max-width: 992px) {
             .pagina-main {
                 padding: 40px 20px;
@@ -395,7 +395,7 @@ require_once __DIR__ . '/../config/session.php';
             }
         }
 
-        /* Telemóvel — compressão máxima, mais espaço para conteúdo */
+        /* Telemóvel - compressão máxima, mais espaço para conteúdo */
         @media (max-width: 576px) {
             .pagina-main {
                 padding: 24px 16px;
@@ -422,7 +422,7 @@ require_once __DIR__ . '/../config/session.php';
             color: #d66d7f !important;
         }
 
-        /* === NAVBAR — limpa, refinada, com hover animation === */
+        /* === NAVBAR - limpa, refinada, com hover animation === */
         .navbar { padding-top: 12px !important; padding-bottom: 12px !important; }
 
         .navbar-nav { gap: 4px; align-items: center; }
@@ -436,7 +436,7 @@ require_once __DIR__ . '/../config/session.php';
             transition: color 0.2s;
         }
 
-        /* Linha animada por baixo dos links — aparece no hover/active */
+        /* Linha animada por baixo dos links - aparece no hover/active */
         .navbar-nav .nav-link::after {
             content: '';
             position: absolute;
@@ -473,7 +473,7 @@ require_once __DIR__ . '/../config/session.php';
         .navbar-nav .facebook-link:hover { color: #1877F2 !important; }
         .navbar-nav .instagram-link:hover { color: #e4405f !important; }
 
-        /* === Botão "Pedir Orçamento" — pílula refinada === */
+        /* === Botão "Pedir Orçamento" - pílula refinada === */
         .btn-pedir-orcamento {
             display: inline-flex;
             align-items: center;
@@ -500,7 +500,7 @@ require_once __DIR__ . '/../config/session.php';
         }
         .btn-pedir-orcamento i { font-size: 12px; }
 
-        /* Dropdown da conta — limpo */
+        /* Dropdown da conta - limpo */
         .navbar-nav .dropdown-menu {
             border: 1px solid #ececea;
             border-radius: 10px;
@@ -526,7 +526,7 @@ require_once __DIR__ . '/../config/session.php';
     <div class="container">
         <a href="index.php" class="navbar-brand d-flex align-items-center" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
             <!-- Alt descritivo: explica o que é a imagem, não só "Logo" -->
-            <img src="imagens/logo_sylviartes.png" alt="SylviArtes — Costura Criativa" class="me-2" style="height: 44px; border-radius: 10px;" onerror="this.style.display='none';">
+            <img src="imagens/logo_sylviartes.png" alt="SylviArtes - Costura Criativa" class="me-2" style="height: 44px; border-radius: 10px;" onerror="this.style.display='none';">
             <span class="fw-bold text-primary" style="font-size: 1.35rem; font-family: 'Playfair Display', serif; letter-spacing: 0.3px;">SylviArtes</span>
         </a>
 
@@ -554,9 +554,9 @@ require_once __DIR__ . '/../config/session.php';
                 <li class="nav-item">
                     <a href="contacto.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'contacto.php' ? 'active' : ''; ?>">Contacto</a>
                 </li>
-<?php // Carrinho removido — modelo é por orçamento personalizado. ?>
+<?php // Carrinho removido - modelo é por orçamento personalizado. ?>
 
-                <?php // === ZONA DE LOGIN/CONTA — muda conforme estado da sessão === ?>
+                <?php // === ZONA DE LOGIN/CONTA - muda conforme estado da sessão === ?>
                 <?php if (isset($_SESSION['cliente_id'])): ?>
                     <?php // Cliente AUTENTICADO: dropdown com opções da conta ?>
                     <li class="nav-item dropdown">

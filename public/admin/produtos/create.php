@@ -161,7 +161,7 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
         }
 
         /* ============================================================
-           PICKER DE FOTOS — substitui o input nativo (incompatível com
+           PICKER DE FOTOS - substitui o input nativo (incompatível com
            o seletor de thumbnails do Windows 11 para múltiplos ficheiros)
            ============================================================ */
 
@@ -177,7 +177,7 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
             border: 2px solid #e2dde0; background: #fff;
             transition: border-color 0.15s;
         }
-        /* A 1ª foto é a "principal" — borda rosa */
+        /* A 1ª foto é a "principal" - borda rosa */
         .foto-item.foto-principal { border-color: #d66d7f; }
 
         /* Imagem da miniatura */
@@ -204,7 +204,7 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
         }
         .btn-foto-del:hover { color: #c0392b; }
 
-        /* Botão "Adicionar foto" — estilo dashed */
+        /* Botão "Adicionar foto" - estilo dashed */
         .btn-add-foto {
             display: inline-flex; align-items: center; gap: 8px;
             padding: 10px 18px;
@@ -263,7 +263,7 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <!-- Picker de fotos — cada clique em "Adicionar foto" abre 1 seletor
+                <!-- Picker de fotos - cada clique em "Adicionar foto" abre 1 seletor
                      e cria um <input type="file" name="fotos[]"> separado no DOM.
                      O PHP recebe todos via $_FILES['fotos'] (array) como antes. -->
                 <div class="form-group full-width">
@@ -305,7 +305,7 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
 
 <script>
 // =============================================================================
-// PICKER DE FOTOS — adiciona pré-visualizações uma a uma
+// PICKER DE FOTOS - adiciona pré-visualizações uma a uma
 // =============================================================================
 // Cada clique em "Adicionar foto" cria um <input type="file"> invisível e
 // abre o seletor do sistema operativo. Quando o utilizador escolhe UMA imagem,
@@ -343,7 +343,7 @@ document.getElementById('btnAddFoto').addEventListener('click', function () {
             // Esconde o aviso de "sem fotos"
             document.getElementById('fotosErro').classList.remove('visivel');
         } else {
-            // Utilizador cancelou — remove o input sem ficheiro
+            // Utilizador cancelou - remove o input sem ficheiro
             input.remove();
         }
     });
@@ -367,7 +367,7 @@ function criarMiniatura(id, src, nome) {
     thumbDiv.className = 'foto-thumb';
 
     var img = document.createElement('img');
-    img.src = src;   // data: URL gerado pelo FileReader — seguro
+    img.src = src;   // data: URL gerado pelo FileReader - seguro
     img.alt = '';    // nome aparece no rodapé
     thumbDiv.appendChild(img);
 
@@ -377,7 +377,7 @@ function criarMiniatura(id, src, nome) {
 
     var span = document.createElement('span');
     var nomeExibido = nome.length > 14 ? nome.substring(0, 14) + '…' : nome;
-    span.textContent = nomeExibido;  // textContent — nunca interpreta HTML
+    span.textContent = nomeExibido;  // textContent - nunca interpreta HTML
     span.title = nome;
 
     var btn = document.createElement('button');

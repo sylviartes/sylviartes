@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  ESQUECI-ME DA PASSWORD — Pedido de Recuperação
+ *  ESQUECI-ME DA PASSWORD - Pedido de Recuperação
  * =============================================================================
  *
  *  Cliente introduz o seu email; se existir conta:
@@ -10,7 +10,7 @@
  *    3. Enviamos email com link para nova_password.php?token=...
  *
  *  POR SEGURANÇA: respondemos sempre com a mesma mensagem (mesmo se o email
- *  não existir) — para não permitir descobrir que emails têm conta no site.
+ *  não existir) - para não permitir descobrir que emails têm conta no site.
  * =============================================================================
  */
 
@@ -60,27 +60,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $url = $protocolo . "://" . $_SERVER['HTTP_HOST']
                  . dirname($_SERVER['PHP_SELF']) . "/nova_password.php?token=" . $token;
 
-            // === Composição do email HTML ===
+            // === Composição do email HTML (mesmo estilo polido dos outros emails) ===
+            $primeiroNome = htmlspecialchars(explode(' ', $u['nome'])[0] ?? 'Cliente');
             $corpo = "
                 <div style='font-family:Arial,sans-serif; max-width:600px; margin:0 auto; padding:30px; background:#fff;'>
-                    <h2 style='color:#d66d7f;'>SylviArtes — Recuperação de Password</h2>
-                    <p>Olá, " . htmlspecialchars($u['nome']) . ",</p>
-                    <p>Recebemos um pedido para redefinir a password da sua conta.</p>
-                    <p>Clique no botão abaixo para criar uma nova password (válido durante 1 hora):</p>
-                    <p style='text-align:center; margin:30px 0;'>
+                    <div style='text-align:center; margin-bottom:30px;'>
+                        <h1 style='color:#d66d7f; font-family:Georgia,serif; margin:0;'>SylviArtes</h1>
+                        <p style='color:#888; margin:4px 0 0; font-size:13px;'>Costura Criativa &middot; Bordados Personalizados</p>
+                    </div>
+
+                    <h2 style='color:#2d3436; margin:0 0 16px;'>Recuperação de password</h2>
+
+                    <p style='color:#555; line-height:1.6;'>Olá, " . $primeiroNome . "!</p>
+                    <p style='color:#555; line-height:1.6;'>
+                        Recebemos um pedido para redefinir a password da sua conta.
+                        Clique no botão abaixo para criar uma nova. Este link é válido durante <strong>1 hora</strong>.
+                    </p>
+
+                    <p style='text-align:center; margin:35px 0;'>
                         <a href='" . htmlspecialchars($url) . "'
-                           style='background:#d66d7f; color:#fff; padding:14px 30px; border-radius:999px;
-                                  text-decoration:none; font-weight:bold;'>
+                           style='background:#d66d7f; color:#fff; padding:16px 40px; border-radius:999px;
+                                  text-decoration:none; font-weight:bold; font-size:16px; display:inline-block;'>
                             Criar nova password
                         </a>
                     </p>
-                    <p style='color:#666; font-size:13px;'>Se não foi você, pode ignorar este email — a password não será alterada.</p>
+
+                    <p style='color:#888; font-size:13px; line-height:1.6;'>
+                        Se não foi você que fez este pedido, ignore este email com segurança.
+                        A sua password permanece inalterada.
+                    </p>
+
                     <hr style='border:none; border-top:1px solid #eee; margin:30px 0;'>
-                    <p style='color:#999; font-size:12px;'>SylviArtes • Costura Criativa</p>
+                    <p style='color:#999; font-size:12px; text-align:center;'>
+                        SylviArtes &middot; Costura Criativa
+                    </p>
                 </div>
             ";
 
-            enviar_email($email, "Recuperação de password — SylviArtes", $corpo);
+            enviar_email($email, "Recuperação de password - SylviArtes", $corpo);
         }
 
         // Mensagem genérica (NÃO revela se o email existe ou não)
@@ -94,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Esqueci-me da password — SylviArtes</title>
+    <title>Esqueci-me da password - SylviArtes</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="cliente_style.css">

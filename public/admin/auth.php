@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  GUARD DE AUTENTICAÇÃO — Área Admin
+ *  GUARD DE AUTENTICAÇÃO - Área Admin
  * =============================================================================
  *
  *  Incluído no topo de TODAS as páginas administrativas (gestão de produtos,

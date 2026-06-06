@@ -1,11 +1,11 @@
 <?php
 /**
  * =============================================================================
- *  PERFIL DO CLIENTE — Editar dados pessoais e password
+ *  PERFIL DO CLIENTE - Editar dados pessoais e password
  * =============================================================================
  *  Permite ao cliente alterar:
  *    1. Dados pessoais: nome, telefone, morada, código postal, localidade
- *       (o email NÃO se pode mudar — é a chave de identificação da conta)
+ *       (o email NÃO se pode mudar - é a chave de identificação da conta)
  *    2. Password: exige a password atual antes de permitir a alteração
  * =============================================================================
  */
@@ -16,7 +16,7 @@ require_once __DIR__ . '/../../config/csrf.php';
 
 $clienteId = $_SESSION['cliente_id'];
 
-// Regex de validação — iguais ao registo e ao checkout (consistência total)
+// Regex de validação - iguais ao registo e ao checkout (consistência total)
 $regexPostal   = "/^[1-9]\d{3}(-\d{3})?$/";
 $regexTelefone = "/^(\+351)?(2\d{8}|9[1236]\d{7})$/";
 $regexNome     = "/(^[A-ZAÁÀÃÂEÉÈÊIÍÌÎOÓÒÔÕUÚÙÛ][a-zaáàãâeéèêiíìîoóòôõuúùû]+( [A-ZAÁÀÃÂEÉÈÊIÍÌÎOÓÒÔÕUÚÙÛ][a-zaáàãâeéèêiíìîoóòôõuúùû]+)+$)|(^[A-ZAÁÀÃÂEÉÈÊIÍÌÎOÓÒÔÕUÚÙÛ][a-zaáàãâeéèêiíìîoóòôõuúùû]+( [A-ZAÁÀÃÂEÉÈÊIÍÌÎOÓÒÔÕUÚÙÛ][a-zaáàãâeéèêiíìîoóòôõuúùû]+)*( ((de)|(dos)|(da)|(do Ó)))?( [A-ZAÁÀÃÂEÉÈÊIÍÌÎOÓÒÔÕUÚÙÛ][a-zaáàãâeéèêiíìîoóòôõuúùû]+)+$)/u";
@@ -88,13 +88,13 @@ $c = $stmt->fetch(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Os meus dados — SylviArtes</title>
+    <title>Os meus dados - SylviArtes</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="cliente_style.css">
     <style>
     /* ================================================================
-       OS MEUS DADOS — estilos específicos desta página
+       OS MEUS DADOS - estilos específicos desta página
        ================================================================ */
 
     body { background: #f4f6f9; }
@@ -353,7 +353,7 @@ $c = $stmt->fetch(PDO::FETCH_ASSOC);
     <?php endif; ?>
 
     <!-- ============================================================
-         CARD 1 — Informação Pessoal
+         CARD 1 - Informação Pessoal
          ============================================================ -->
     <div class="perfil-card">
         <div class="perfil-card-cabecalho">
@@ -367,7 +367,7 @@ $c = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 <div class="campos-grid">
 
-                    <!-- Email — só leitura, é a chave de login -->
+                    <!-- Email - só leitura, é a chave de login -->
                     <div class="campo campo-full">
                         <label>Email (não editável)</label>
                         <input type="email" value="<?= htmlspecialchars($c['email']) ?>" disabled>
@@ -418,7 +418,7 @@ $c = $stmt->fetch(PDO::FETCH_ASSOC);
     </div>
 
     <!-- ============================================================
-         CARD 2 — Alterar Password
+         CARD 2 - Alterar Password
          ============================================================ -->
     <div class="perfil-card">
         <div class="perfil-card-cabecalho">

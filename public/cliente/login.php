@@ -11,7 +11,7 @@
  *
  *  Suporta um parâmetro ?redirect=... para mandar o utilizador de volta à
  *  página de onde veio (ex: do checkout). Por segurança, só são aceites
- *  caminhos relativos — protege contra "open redirect" attacks.
+ *  caminhos relativos - protege contra "open redirect" attacks.
  * =============================================================================
  */
 
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $emailPosto = $email;
 
     if ($email !== '' && $password !== '') {
-        // Procura o utilizador (apenas com nível 'cliente' — admins entram noutro lado)
+        // Procura o utilizador (apenas com nível 'cliente' - admins entram noutro lado)
         $stmt = $conn->prepare("
             SELECT id, nome, password
             FROM utilizador
@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($row) {
             // Verifica com hash bcrypt (única forma aceite)
             if (password_verify($password, $row['password'])) {
-                // ✓ Login bem-sucedido — regenera sessão e grava na sessão
+                // ✓ Login bem-sucedido - regenera sessão e grava na sessão
                 session_regenerate_id(true);
                 $_SESSION['cliente_id'] = $row['id'];
                 $_SESSION['cliente_nome'] = $row['nome'];
@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar — SylviArtes</title>
+    <title>Entrar - SylviArtes</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="cliente_style.css">

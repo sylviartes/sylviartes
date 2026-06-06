@@ -1,19 +1,19 @@
 <?php
 /**
  * =============================================================================
- *  ENVIO DE EMAIL — Helper SylviArtes
+ *  ENVIO DE EMAIL - Helper SylviArtes
  * =============================================================================
  *
  *  Sistema com 3 níveis de fallback automático:
  *
- *    1. RESEND API (método principal) — envia a partir do domínio verificado
+ *    1. RESEND API (método principal) - envia a partir do domínio verificado
  *       (ex: noreply@sylviartes.pt). Entrega para qualquer cliente. Requer
  *       RESEND_API_KEY e RESEND_FROM preenchidos em config/.env.
  *
- *    2. Gmail SMTP (fallback) — só se o Resend falhar e o SMTP estiver configurado.
+ *    2. Gmail SMTP (fallback) - só se o Resend falhar e o SMTP estiver configurado.
  *       Requer SMTP_HOST, SMTP_USER e SMTP_PASS em config/.env.
  *
- *    3. Outbox local (último recurso) — guarda como ficheiro .eml em
+ *    3. Outbox local (último recurso) - guarda como ficheiro .eml em
  *       docs/outbox/ para poder ver os emails sem internet.
  *
  *  O sistema escolhe automaticamente o primeiro nível configurado.
@@ -23,7 +23,7 @@
 require_once __DIR__ . '/../config/env.php';
 
 // =============================================================================
-// CONSTANTES — lidas do config/.env (nunca hardcoded aqui)
+// CONSTANTES - lidas do config/.env (nunca hardcoded aqui)
 // =============================================================================
 
 // Gmail SMTP
@@ -55,7 +55,7 @@ if (!defined('ADMIN_EMAIL'))    define('ADMIN_EMAIL',    getenv('ADMIN_EMAIL')  
 function enviar_email(string $para, string $assunto, string $htmlCorpo, string $replyTo = ''): bool
 {
     // ===========================================================================
-    // Tentativa 1: Resend API (método PRINCIPAL — envia do domínio verificado,
+    // Tentativa 1: Resend API (método PRINCIPAL - envia do domínio verificado,
     // ex: noreply@sylviartes.pt). Entrega para qualquer cliente.
     // ===========================================================================
     if (RESEND_API_KEY !== '' && function_exists('curl_init')) {
@@ -92,7 +92,7 @@ function enviar_email(string $para, string $assunto, string $htmlCorpo, string $
     }
 
     // ===========================================================================
-    // Tentativa 2: Gmail SMTP (fallback — só se o Resend falhar e o SMTP estiver
+    // Tentativa 2: Gmail SMTP (fallback - só se o Resend falhar e o SMTP estiver
     // configurado). Requer PHPMailer + SMTP_HOST/USER/PASS no .env.
     // ===========================================================================
     if (class_exists('\\PHPMailer\\PHPMailer\\PHPMailer') && SMTP_HOST !== '' && SMTP_USER !== '' && SMTP_PASS !== '') {
@@ -241,7 +241,7 @@ function enviar_email_orcamento(
     // Reply-To = Gmail da Sylvia, para que o cliente possa responder directamente
     $replyTo = ADMIN_EMAIL ?: '';
 
-    return enviar_email($email, "Orçamento da sua encomenda — SylviArtes", $corpo, $replyTo);
+    return enviar_email($email, "Orçamento da sua encomenda - SylviArtes", $corpo, $replyTo);
 }
 
 
@@ -340,7 +340,7 @@ function enviar_email_nova_encomenda(
     // Reply-To = email do cliente, para poder responder directamente a ele
     return enviar_email(
         $adminEmail,
-        "🔔 Novo pedido #$pedidoId — " . $nomeCliente,
+        "🔔 Novo pedido #$pedidoId - " . $nomeCliente,
         $corpo,
         $emailCliente
     );

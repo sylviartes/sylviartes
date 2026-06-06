@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  PÁGINA 404 — Página Não Encontrada
+ *  PÁGINA 404 - Página Não Encontrada
  * =============================================================================
  *
  *  Página de erro personalizada para quando um URL não corresponde a nenhuma
@@ -80,7 +80,7 @@ require_once __DIR__ . '/header.php';
 <div class="erro-404">
     <h1 class="codigo">404</h1>
     <h2>Esta página perdeu-se na costura...</h2>
-    <p>A página que procura não existe ou foi removida. Mas não se preocupe — temos muitas peças bonitas à sua espera!</p>
+    <p>A página que procura não existe ou foi removida. Mas não se preocupe - temos muitas peças bonitas à sua espera!</p>
     <div class="acoes">
         <a href="index.php" class="btn-rosa">🏠 Voltar à página inicial</a>
         <a href="catalogo.php" class="btn-ghost">Ver catálogo</a>

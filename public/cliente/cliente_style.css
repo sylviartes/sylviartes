@@ -1,5 +1,5 @@
 /* =============================================================================
-   ÁREA DE CLIENTE — SylviArtes
+   ÁREA DE CLIENTE - SylviArtes
    Estilo limpo e profissional, paleta rosa suave (estilo bordados artesanais).
    ============================================================================= */
 
@@ -202,7 +202,7 @@ body {
 
 .cli-back:hover { color: var(--rosa); }
 
-/* Cabeçalho do dashboard — look limpo, fundo subtil em vez do gradiente forte */
+/* Cabeçalho do dashboard - look limpo, fundo subtil em vez do gradiente forte */
 .cli-header {
     background: #fff;
     border: 1px solid var(--borda);

@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  PRODUTO — Página de detalhe individual
+ *  PRODUTO - Página de detalhe individual
  * =============================================================================
  *
  *  URL: produto.php?id=N
@@ -72,7 +72,7 @@ $p = $stmt->fetch();
 
 // Define o título da aba do browser com o nome do produto
 $pageTitle       = $p ? htmlspecialchars($p['nome']) : 'Produto';
-$pageDescription = $p ? 'Bordado artesanal ' . htmlspecialchars($p['nome']) . ' — encomende o seu em SylviArtes.' : '';
+$pageDescription = $p ? 'Bordado artesanal ' . htmlspecialchars($p['nome']) . ' - encomende o seu em SylviArtes.' : '';
 
 require_once __DIR__ . '/header.php';
 
@@ -91,7 +91,7 @@ exit;
 
 // === Categoria do produto ===
 // Site é por orçamento personalizado, por isso só precisamos do nome da categoria
-// (não há preço — em vez disso mostramos uma mensagem de orçamento à medida).
+// (não há preço - em vez disso mostramos uma mensagem de orçamento à medida).
 $catNome = '';
 $stmt = $conn->prepare("SELECT nome FROM categoria WHERE id = ? LIMIT 1");
 $stmt->execute([$p['categoria_id']]);
@@ -118,7 +118,7 @@ function obter_imagens_produto_loja($conn, $produto_id, $p) {
             if (file_exists($caminho)) {
                 $imagens[] = 'imagens/produtos/' . $row['imagem'];
             }
-            // O ramo de fallback BLOB foi removido — imagens são sempre nomes de ficheiro.
+            // O ramo de fallback BLOB foi removido - imagens são sempre nomes de ficheiro.
         }
     }
 
@@ -151,7 +151,7 @@ $podeAvaliar = isset($_SESSION['cliente_id'])
 ?>
 
 <style>
-/* Anula o padding do .pagina-main — produto-detalhe gere o seu próprio espaçamento */
+/* Anula o padding do .pagina-main - produto-detalhe gere o seu próprio espaçamento */
 main { padding: 0 !important; max-width: 100% !important; }
 
 .produto-detalhe {
@@ -400,14 +400,14 @@ echo json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP |
         <div style="background:#fff8fa; border:1px solid #f4cdd5; border-radius:14px;
                     padding:16px 18px; margin: 16px 0;">
 
-            <!-- Mensagem de orçamento — substitui o preço fixo.
+            <!-- Mensagem de orçamento - substitui o preço fixo.
                  O site é por orçamento personalizado: cada peça é avaliada à medida. -->
             <div style="margin-bottom:10px;">
                 <span style="font-size:1.05rem; font-weight:700; color:#d66d7f;">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> Peça feita à medida
                 </span><br>
                 <span style="font-size:0.9rem; color:#666; line-height:1.5;">
-                    Cada peça é orçamentada conforme o que pretende — peça o seu
+                    Cada peça é orçamentada conforme o que pretende - peça o seu
                     orçamento grátis, resposta em 24h.
                 </span>
             </div>
@@ -430,7 +430,7 @@ echo json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP |
         </div>
 
         <a href="pedir-orcamento.php?inspiracao=<?= $id ?>" class="produto-btn" style="text-decoration:none; display:inline-block;">
-            ✨ Quero algo parecido — Pedir Orçamento
+            ✨ Quero algo parecido - Pedir Orçamento
         </a>
     </div>
 </div>

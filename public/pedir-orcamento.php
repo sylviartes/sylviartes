@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  PEDIR ORÇAMENTO — Form único de pedido personalizado
+ *  PEDIR ORÇAMENTO - Form único de pedido personalizado
  * =============================================================================
  *
  *  Ponto único de contacto. Substitui o checkout do antigo carrinho.
@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $temColPortfolio = (bool)$check->fetch();
             } catch (Exception $e) { /* ignora */ }
 
-            // === 3. Inserir pedido (estado: em_analise — aparece imediatamente no painel admin) ===
+            // === 3. Inserir pedido (estado: em_analise - aparece imediatamente no painel admin) ===
             if ($temColPortfolio) {
                 $stmt = $conn->prepare("
                     INSERT INTO pedido (utilizador_id, prazo_entrega_desejado, estado, valor_total, observacoes,
@@ -148,9 +148,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pedidoId = (int)$conn->lastInsertId();
 
             // === 4. Inserir uma linha em detalhe_pedido se houver categoria escolhida ===
-            // (genérica — sem produto_id real, descrição contém o pedido completo)
+            // (genérica - sem produto_id real, descrição contém o pedido completo)
             if ($categoriaId > 0) {
-                // Vai buscar o "produto-tipo" da categoria — primeiro item visível
+                // Vai buscar o "produto-tipo" da categoria - primeiro item visível
                 $stmt = $conn->prepare("SELECT id FROM produto WHERE categoria_id = ? AND visivel_catalogo = 1 LIMIT 1");
                 $stmt->execute([$categoriaId]);
                 $produtoTipo = $stmt->fetchColumn();
@@ -195,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $tamanho = $_FILES['inspiracao']['size'][$i];
                     if ($tamanho > $maxBytes) {
-                        // Foto demasiado grande para o BLOB — ignora silenciosamente
+                        // Foto demasiado grande para o BLOB - ignora silenciosamente
                         // (no admin há outro aviso geral; aqui o pedido continua sem essa foto)
                         continue;
                     }
@@ -231,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pedidoConcluido = true;
 
         } catch (Exception $e) {
-            // Tenta rollBack — se a conexão já foi perdida (server has gone away),
+            // Tenta rollBack - se a conexão já foi perdida (server has gone away),
             // o próprio rollBack pode lançar exceção. Apanhamos para mostrar erro
             // amigável em vez de página em branco.
             try {
@@ -243,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 . $e->getMessage() . " em " . $e->getFile() . ":" . $e->getLine());
 
             if (str_contains($e->getMessage(), 'gone away') || str_contains($e->getMessage(), 'too large')) {
-                $mensagem = "Erro ao registar pedido. As fotos enviadas são demasiado grandes — tente com fotos mais pequenas (máx 1MB cada).";
+                $mensagem = "Erro ao registar pedido. As fotos enviadas são demasiado grandes - tente com fotos mais pequenas (máx 1MB cada).";
             } elseif (str_contains($e->getMessage(), 'Data truncated') || str_contains($e->getMessage(), 'ENUM')) {
                 // Este erro acontece se a migração SQL setup_completo.sql não foi aplicada
                 $mensagem = "Erro de configuração na base de dados. Contacte a administração.";
@@ -260,7 +260,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Título e descrição para esta página
 $pageTitle       = 'Pedir Orçamento';
-$pageDescription = 'Peça um orçamento gratuito para o seu bordado personalizado — resposta em 24h.';
+$pageDescription = 'Peça um orçamento gratuito para o seu bordado personalizado - resposta em 24h.';
 require_once __DIR__ . '/header.php';
 
 // Helper para auto-fill
@@ -272,7 +272,7 @@ $val = function ($campo) use ($clienteLogado) {
 ?>
 
 <style>
-/* Anula o padding do .pagina-main — o orc-wrapper gere o seu próprio espaçamento */
+/* Anula o padding do .pagina-main - o orc-wrapper gere o seu próprio espaçamento */
 main { padding: 0 !important; max-width: 100% !important; }
 
 .orc-wrapper { max-width: 920px; margin: 30px auto 60px; background: #fff; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); padding: 40px; }
@@ -327,11 +327,11 @@ main { padding: 0 !important; max-width: 100% !important; }
     background: #fff8fa; border-left: 4px solid #d66d7f; padding: 14px 18px;
     border-radius: 8px; margin-bottom: 22px; display: flex; gap: 14px; align-items: center;
 }
-/* Tablet — grelha de 2 colunas passa a 1 coluna (campos ficavam muito estreitos) */
+/* Tablet - grelha de 2 colunas passa a 1 coluna (campos ficavam muito estreitos) */
 @media (max-width: 991px) {
     .orc-grid { grid-template-columns: 1fr; }
 }
-/* Mobile — margens laterais pequenas + sem cantos exagerados */
+/* Mobile - margens laterais pequenas + sem cantos exagerados */
 @media (max-width: 768px) {
     .orc-wrapper { padding: 24px 20px; margin: 16px; border-radius: 16px; }
     .orc-uploads { grid-template-columns: 1fr; }
@@ -415,7 +415,7 @@ main { padding: 0 !important; max-width: 100% !important; }
     <?php else: ?>
 
         <h1 class="orc-title">Pedir Orçamento</h1>
-        <p class="orc-subtitle">Conte-nos o que pretende — fazemos o orçamento sob medida.</p>
+        <p class="orc-subtitle">Conte-nos o que pretende - fazemos o orçamento sob medida.</p>
 
         <?php if ($itemInspiracao): ?>
             <div class="orc-inspiracao">
@@ -465,11 +465,11 @@ main { padding: 0 !important; max-width: 100% !important; }
                 </div>
             </div>
             <p style="text-align:center; color:#999; font-size:13px; margin:-8px 0 18px;">
-                Ou continue sem conta — basta preencher os dados abaixo.
+                Ou continue sem conta - basta preencher os dados abaixo.
             </p>
         <?php else: ?>
             <div style="text-align:center; margin-bottom:18px; color:#1f6b35; font-size:14px; background:#edf9f0; padding:10px; border-radius:10px;">
-                ✓ Olá <strong><?= htmlspecialchars($clienteLogado['nome']) ?></strong> — dados pré-preenchidos.
+                ✓ Olá <strong><?= htmlspecialchars($clienteLogado['nome']) ?></strong> - dados pré-preenchidos.
             </div>
         <?php endif; ?>
 
@@ -547,7 +547,7 @@ main { padding: 0 !important; max-width: 100% !important; }
             <!-- FOTOS DE INSPIRAÇÃO -->
             <div class="orc-section">Fotos de Inspiração (opcional)</div>
             <p style="color:#666; font-size:13px; margin: -8px 0 12px;">
-                Pode juntar até 3 fotos do que tem em mente — modelos que viu, cores, estilo, etc.
+                Pode juntar até 3 fotos do que tem em mente - modelos que viu, cores, estilo, etc.
                 (JPG, PNG, GIF, WEBP, máx 5 MB cada).
             </p>
             <div class="orc-uploads">

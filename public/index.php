@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  HOMEPAGE — SylviArtes
+ *  HOMEPAGE - SylviArtes
  * =============================================================================
  *
  *  Página inicial pública. Estrutura:
@@ -20,7 +20,7 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../src/avaliacoes.php';
 // Título e descrição para esta página (usados no <head> do header.php)
 $pageTitle       = 'Costura Criativa & Bordados Personalizados';
-$pageDescription = 'Bordados artesanais feitos à mão em Portugal. Encomendar é fácil — peça o seu orçamento grátis.';
+$pageDescription = 'Bordados artesanais feitos à mão em Portugal. Encomendar é fácil - peça o seu orçamento grátis.';
 require_once __DIR__ . '/header.php';
 
 // === Produtos em destaque: 4 produtos visíveis ===
@@ -68,7 +68,7 @@ $totalCategorias = (int)$conn->query("SELECT COUNT(*) FROM categoria")->fetchCol
 
 <style>
 :root {
-    /* Paleta rosa — mesmos valores usados em header.php e admin_style.css */
+    /* Paleta rosa - mesmos valores usados em header.php e admin_style.css */
     --rosa: #d66d7f;
     --rosa-soft: #bf5b6d;
     --rosa-tinte: rgba(214,109,127,0.08);
@@ -404,7 +404,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
 .btn-branco:hover { background: #ad4d61; border-color: #ad4d61; transform: translateY(-1px); }
 
 /* ===== RESPONSIVO ===== */
-/* Tablet — grelhas a 2 colunas */
+/* Tablet - grelhas a 2 colunas */
 @media (max-width: 992px) {
     .home-hero h1 { font-size: 42px; }
     .home-hero-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
@@ -419,7 +419,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
     .passos-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* Telemóvel — coluna única */
+/* Telemóvel - coluna única */
 @media (max-width: 600px) {
     .home-hero { padding: 50px 20px 60px; }
     .home-hero h1 { font-size: 32px; }
@@ -442,7 +442,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
             <h1>Peças únicas,<br>feitas com <em>amor</em>.</h1>
             <p>
                 Transformamos tecidos em memórias. Enxovais de bebé, toalhas bordadas
-                e presentes personalizados — cada peça é feita à mão, sob medida para si.
+                e presentes personalizados - cada peça é feita à mão, sob medida para si.
             </p>
             <div class="home-hero-ctas">
                 <a href="pedir-orcamento.php" class="btn-rosa">
@@ -470,7 +470,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
 <section class="home-stats">
     <div class="home-stats-grid">
 
-        <!-- Peças entregues — se ainda não há, mostra "Desde 2020" (sempre verdade) -->
+        <!-- Peças entregues - se ainda não há, mostra "Desde 2020" (sempre verdade) -->
         <div class="home-stat">
             <?php if ($pecasEntregues > 0): ?>
                 <div class="num"><?= $pecasEntregues ?>+</div>
@@ -481,7 +481,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
             <?php endif; ?>
         </div>
 
-        <!-- Avaliações — se não há, mostra classificação baseada em qualidade artesanal -->
+        <!-- Avaliações - se não há, mostra classificação baseada em qualidade artesanal -->
         <div class="home-stat">
             <?php if ($avalTotal > 0): ?>
                 <div class="num"><?= $avalMedia ?> ★</div>
@@ -498,7 +498,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
             <div class="label">Categorias</div>
         </div>
 
-        <!-- Envio — facto concreto sempre verdadeiro -->
+        <!-- Envio - facto concreto sempre verdadeiro -->
         <div class="home-stat">
             <div class="num"><i class="fas fa-shipping-fast" style="font-size:1.8rem;"></i></div>
             <div class="label">Envio para todo Portugal</div>
@@ -536,7 +536,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
 </section>
 
 <!-- ============================================================ -->
-<!-- 4. COMO FUNCIONA — 4 passos                                    -->
+<!-- 4. COMO FUNCIONA - 4 passos                                    -->
 <!-- ============================================================ -->
 <section class="home-passos">
     <div class="home-section">
@@ -593,7 +593,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
                 if (file_exists($caminhoLocal)) {
                     $imgSrc = 'imagens/produtos/' . $pd['imagem'];
                 }
-                // Ramo BLOB removido — imagens são sempre nomes de ficheiro.
+                // Ramo BLOB removido - imagens são sempre nomes de ficheiro.
             }
             $estatsP = calcular_media_estrelas($conn, (int)$pd['id']);
         ?>
@@ -698,7 +698,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
         <div class="porque-item">
             <i class="fa-solid fa-shield-halved"></i>
             <h5>Pagamento Seguro</h5>
-            <p>Stripe — cartão ou MB Way, totalmente protegido.</p>
+            <p>Stripe - cartão ou MB Way, totalmente protegido.</p>
         </div>
     </div>
 </section>
@@ -710,7 +710,7 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
     <div class="home-cta-final-inner">
         <span class="eyebrow">Vamos começar</span>
         <h2>Pronto para criar uma peça única?</h2>
-        <p>Conte-nos o que pretende e fazemos o orçamento sob medida — sem compromisso.</p>
+        <p>Conte-nos o que pretende e fazemos o orçamento sob medida - sem compromisso.</p>
         <a href="pedir-orcamento.php" class="btn-branco">
             <i class="fa-solid fa-wand-magic-sparkles"></i>
             Pedir Orçamento

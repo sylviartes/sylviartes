@@ -413,7 +413,7 @@ $categorias = $stmtCats->fetchAll(PDO::FETCH_ASSOC);
                         <label><i class="fas fa-upload"></i> Adicionar Novas Imagens</label>
                         <input type="file" name="fotos[]" accept="image/*" multiple>
                         <small style="color:#888; font-size: 12px;">
-                            Selecione várias imagens (jpg, png, gif, webp) — máximo <?= ini_get('upload_max_filesize') ?>B por ficheiro
+                            Selecione várias imagens (jpg, png, gif, webp) - máximo <?= ini_get('upload_max_filesize') ?>B por ficheiro
                         </small>
                     </div>
 

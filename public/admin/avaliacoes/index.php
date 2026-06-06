@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- *  ADMIN — Moderação de Avaliações
+ *  ADMIN - Moderação de Avaliações
  * =============================================================================
  *
  *  Página onde o administrador vê todas as avaliações deixadas pelos clientes
@@ -31,7 +31,7 @@ if (!$temColunaProduto) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Avaliações — SylviArtes Admin</title>
+        <title>Avaliações - SylviArtes Admin</title>
         <link rel="stylesheet" href="../admin_style.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $conn->prepare("UPDATE avaliacao SET aprovado = 1 WHERE id = ?");
             $stmt->execute([$avalId]);
         } elseif ($accao === 'rejeitar') {
-            // Em vez de só desaprovar, eliminamos — o cliente pode submeter nova
+            // Em vez de só desaprovar, eliminamos - o cliente pode submeter nova
             $stmt = $conn->prepare("DELETE FROM avaliacao WHERE id = ?");
             $stmt->execute([$avalId]);
         } elseif ($accao === 'desaprovar') {
@@ -134,7 +134,7 @@ function estrelas_html(int $n): string
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Avaliações — Admin SylviArtes</title>
+    <title>Avaliações - Admin SylviArtes</title>
     <link rel="stylesheet" href="../admin_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -168,7 +168,7 @@ function estrelas_html(int $n): string
             </h3>
 
             <?php if (empty($pendentes)): ?>
-                <p class="secao-vazia">✓ Sem avaliações pendentes — bom trabalho!</p>
+                <p class="secao-vazia">✓ Sem avaliações pendentes - bom trabalho!</p>
             <?php else: ?>
                 <table class="aval-tabela">
                     <thead>
