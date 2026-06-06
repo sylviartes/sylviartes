@@ -95,16 +95,12 @@ function criar_checkout_session(int $pedidoId, float $valorTotal, string $metodo
 }
 
 /**
- * Cria um Stripe Payment Link para um orçamento.
+ * [LEGADO / ABORDAGEM INICIAL] Cria um Stripe Payment Link para um orçamento.
  *
- * Usado pelo admin (mãe) DEPOIS de telefonar à cliente e fechar o preço.
- * Devolve um URL público que pode ser enviado por email — a cliente paga
- * quando quiser, com cartão ou MB Way.
- *
- * Diferente de criar_checkout_session():
- *   - Não tem success/cancel URLs fixas (cliente fica em página Stripe ao pagar)
- *   - URL é permanente até ao admin desativar o link no dashboard
- *   - Stripe envia evento checkout.session.completed quando alguém paga
+ * Esta foi a PRIMEIRA abordagem ao pagamento de valor variável. Foi substituída
+ * por criar_fatura_stripe() (ver abaixo), porque os Payment Links não permitem,
+ * de forma segura, recolher morada de faturação/envio nem emitir um documento
+ * de fatura formal. Mantida apenas como referência da evolução do projeto.
  *
  * @param int    $pedidoId   ID do pedido
  * @param float  $valorTotal Valor final em euros (já ajustado pela admin)
@@ -149,4 +145,84 @@ function criar_payment_link(int $pedidoId, float $valorTotal, string $email, str
     ]);
 
     return $paymentLink;
+}
+
+/**
+ * [SOLUÇÃO ADOTADA] Emite uma FATURA dinâmica (Stripe Billing / Invoices).
+ *
+ * Esta é a forma usada pela SylviArtes para cobrar orçamentos de valor variável.
+ * Ao contrário dos Payment Links, a fatura:
+ *   - regista um Cliente Stripe com morada de FATURAÇÃO e de ENVIO;
+ *   - gera um documento de fatura formal (com número e PDF);
+ *   - é enviada por email pela Stripe e tem prazo de vencimento;
+ *   - aceita cartão e MB Way na página de pagamento alojada (hosted invoice).
+ *
+ * Fluxo (depois de a proprietária fechar o preço com o cliente):
+ *   1. Cria/atualiza o Cliente Stripe (com address = faturação e shipping = envio);
+ *   2. Cria um InvoiceItem com o valor exato do orçamento (em cêntimos);
+ *   3. Cria a Invoice (collection_method = send_invoice, vencimento em N dias);
+ *   4. Finaliza a fatura -> gera número, PDF e hosted_invoice_url.
+ *
+ * @param int    $pedidoId        ID do pedido
+ * @param float  $valorTotal      Valor final do orçamento em euros
+ * @param array  $cliente         ['nome','email','morada','codigo_postal','localidade','telefone']
+ * @param string $descricao       Descrição da peça (linha da fatura)
+ * @param int    $diasVencimento  Prazo de pagamento (dias)
+ * @return \Stripe\Invoice         Fatura finalizada (->hosted_invoice_url, ->invoice_pdf, ->number, ->id)
+ */
+function criar_fatura_stripe(
+    int $pedidoId,
+    float $valorTotal,
+    array $cliente,
+    string $descricao = '',
+    int $diasVencimento = 7
+) {
+    stripe_init();
+
+    // --- 1. Cliente Stripe com morada de faturação e de envio ---
+    $dadosCliente = [
+        'name'     => $cliente['nome']  ?? '',
+        'email'    => $cliente['email'] ?? '',
+        'metadata' => ['pedido_id' => (string) $pedidoId],
+    ];
+
+    if (!empty($cliente['morada'])) {
+        // Morada usada tanto para faturação como para envio (PT)
+        $morada = [
+            'line1'       => $cliente['morada'],
+            'postal_code' => $cliente['codigo_postal'] ?? '',
+            'city'        => $cliente['localidade']    ?? '',
+            'country'     => 'PT',
+        ];
+        $dadosCliente['address']  = $morada;                 // endereço de FATURAÇÃO
+        $dadosCliente['shipping'] = [                        // endereço de ENVIO
+            'name'    => $cliente['nome'] ?? '',
+            'phone'   => $cliente['telefone'] ?? null,
+            'address' => $morada,
+        ];
+    }
+
+    $customer = \Stripe\Customer::create($dadosCliente);
+
+    // --- 2. Linha da fatura: valor dinâmico do orçamento (em cêntimos) ---
+    \Stripe\InvoiceItem::create([
+        'customer'    => $customer->id,
+        'amount'      => (int) round($valorTotal * 100),
+        'currency'    => STRIPE_CURRENCY,
+        'description' => $descricao ?: ('Bordado personalizado - Pedido #' . $pedidoId),
+    ]);
+
+    // --- 3. Criar a fatura (envio por email, com prazo de vencimento) ---
+    $invoice = \Stripe\Invoice::create([
+        'customer'          => $customer->id,
+        'collection_method' => 'send_invoice',
+        'days_until_due'    => $diasVencimento,
+        'description'       => 'SylviArtes - Pedido #' . $pedidoId,
+        'metadata'          => ['pedido_id' => (string) $pedidoId],
+    ]);
+
+    // --- 4. Finalizar -> gera número de fatura, PDF e URL de pagamento alojada ---
+    $invoice = $invoice->finalizeInvoice();
+
+    return $invoice;
 }

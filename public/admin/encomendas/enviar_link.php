@@ -8,8 +8,9 @@
  *  Fluxo:
  *    1. Valida admin autenticado + pedido válido
  *    2. Vai buscar email do cliente + valor_total atual
- *    3. Cria Stripe Payment Link via criar_payment_link() (config/stripe.php)
- *    4. Guarda URL em pagamento.stripe_payment_link_url
+ *    3. Emite uma fatura dinâmica via criar_fatura_stripe() (config/stripe.php),
+ *       com morada de faturação e de envio do cliente
+ *    4. Guarda a hosted_invoice_url em pagamento.stripe_payment_link_url
  *    5. Atualiza pedido.estado para 'aguarda_pagamento'
  *    6. Envia email ao cliente via enviar_email_orcamento() (src/email.php)
  *    7. Regista mudança em log_alteracoes_pedido
@@ -41,6 +42,8 @@ if ($pedidoId <= 0) {
 $stmt = $conn->prepare("
     SELECT p.id, p.estado, p.valor_total,
            u.nome AS cliente_nome, u.email AS cliente_email,
+           u.morada AS cliente_morada, u.codigo_postal AS cliente_cp,
+           u.localidade AS cliente_localidade, u.telefone AS cliente_telefone,
            pg.id AS pagamento_id, pg.metodo
     FROM pedido p
     JOIN utilizador u ON u.id = p.utilizador_id
@@ -101,15 +104,24 @@ foreach ($itens as $it) {
 $descricao = implode(', ', $descricaoItens);
 
 try {
-    // === 4. Cria Stripe Payment Link ===
-    $paymentLink = criar_payment_link(
+    // === 4. Emite a FATURA dinâmica no Stripe (Billing / Invoices) ===
+    // Recolhe morada de faturação e de envio a partir dos dados do cliente.
+    $fatura = criar_fatura_stripe(
         $pedidoId,
         (float)$row['valor_total'],
-        $row['cliente_email'],
+        [
+            'nome'          => $row['cliente_nome'],
+            'email'         => $row['cliente_email'],
+            'morada'        => $row['cliente_morada'] ?? '',
+            'codigo_postal' => $row['cliente_cp'] ?? '',
+            'localidade'    => $row['cliente_localidade'] ?? '',
+            'telefone'      => $row['cliente_telefone'] ?? '',
+        ],
         $descricao
     );
 
-    $linkUrl = $paymentLink->url;
+    // URL da fatura alojada pela Stripe (onde o cliente paga com cartão ou MB Way)
+    $linkUrl = $fatura->hosted_invoice_url;
 
     // === 5. Guarda URL na BD (atualiza pagamento existente, ou cria novo) ===
     if ($row['pagamento_id']) {
