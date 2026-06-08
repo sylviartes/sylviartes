@@ -6,9 +6,17 @@
  *   stripe listen --forward-to localhost:8080/public/stripe_webhook.php
  *
  * Eventos tratados:
- *   - checkout.session.completed   → pagamento bem-sucedido (cartão)
- *   - checkout.session.async_payment_succeeded → MB Way confirmado
- *   - checkout.session.async_payment_failed    → MB Way recusado
+ *   FATURAS (método atual - Stripe Billing/Invoices):
+ *   - invoice.paid / invoice.payment_succeeded → fatura paga (cartão ou MB Way)
+ *   - invoice.payment_failed                   → pagamento da fatura recusado
+ *
+ *   CHECKOUT/PAYMENT LINKS (método legado, mantido por compatibilidade):
+ *   - checkout.session.completed                → pagamento bem-sucedido (cartão)
+ *   - checkout.session.async_payment_succeeded  → MB Way confirmado
+ *   - checkout.session.async_payment_failed     → MB Way recusado
+ *
+ *  Nas faturas, o pedido é identificado por invoice.metadata.pedido_id (definido
+ *  em criar_fatura_stripe(), config/stripe.php).
  */
 
 require_once __DIR__ . '/../config/db.php';
@@ -70,6 +78,32 @@ function avancar_pedido(PDO $conn, int $pedidoId, string $novoEstado): void
 }
 
 switch ($event->type) {
+    // ===== FATURAS (Stripe Billing / Invoices) - método atual =====
+    case 'invoice.paid':
+    case 'invoice.payment_succeeded':
+        // A fatura traz o pedido_id nos metadados (definido em criar_fatura_stripe)
+        $invoice  = $event->data->object;
+        $pedidoId = (int)($invoice->metadata->pedido_id ?? 0);
+        if ($pedidoId > 0) {
+            // Marca o pagamento desse pedido como validado
+            $stmt = $conn->prepare("UPDATE pagamento SET estado_pagamento = 'validado' WHERE pedido_id = ?");
+            $stmt->execute([$pedidoId]);
+            // Avança o pedido para produção (com registo no log)
+            avancar_pedido($conn, $pedidoId, 'em_producao');
+        }
+        break;
+
+    case 'invoice.payment_failed':
+        // Pagamento da fatura recusado -> marca o pagamento como recusado
+        $invoice  = $event->data->object;
+        $pedidoId = (int)($invoice->metadata->pedido_id ?? 0);
+        if ($pedidoId > 0) {
+            $stmt = $conn->prepare("UPDATE pagamento SET estado_pagamento = 'recusado' WHERE pedido_id = ?");
+            $stmt->execute([$pedidoId]);
+        }
+        break;
+
+    // ===== CHECKOUT / PAYMENT LINKS (método legado) =====
     case 'checkout.session.completed':
         $session = $event->data->object;
         if ($session->payment_status === 'paid') {
