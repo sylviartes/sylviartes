@@ -49,6 +49,31 @@ DROP TABLE IF EXISTS utilizador;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+-- Procedures e triggers sao objetos de schema (NAO saem com DROP TABLE),
+-- por isso removem-se explicitamente para o script poder correr varias vezes
+-- sem dar erro "already exists".
+DROP PROCEDURE IF EXISTS gerir_stock_produto;
+DROP PROCEDURE IF EXISTS obter_totais_dashboard;
+DROP PROCEDURE IF EXISTS processar_pedido_completo;
+DROP PROCEDURE IF EXISTS relatorio_vendas_mensal;
+
+DROP TRIGGER IF EXISTS trg_validar_utilizador_antes_insert;
+DROP TRIGGER IF EXISTS trg_utilizador_antes_update;
+DROP TRIGGER IF EXISTS trg_validar_avaliacao_antes_insert;
+DROP TRIGGER IF EXISTS trg_avaliacao_antes_update;
+DROP TRIGGER IF EXISTS trg_validar_categoria_antes_insert;
+DROP TRIGGER IF EXISTS trg_categoria_antes_update;
+DROP TRIGGER IF EXISTS trg_validar_pedido_antes_insert;
+DROP TRIGGER IF EXISTS trg_pedido_antes_update;
+DROP TRIGGER IF EXISTS trg_validar_produto_antes_insert;
+DROP TRIGGER IF EXISTS trg_produto_antes_update;
+DROP TRIGGER IF EXISTS trg_verificar_stock_antes_venda;
+DROP TRIGGER IF EXISTS trg_verificar_stock_antes_update_detalhe;
+DROP TRIGGER IF EXISTS trg_validar_mensagem_antes_insert;
+DROP TRIGGER IF EXISTS trg_mensagem_antes_update;
+DROP TRIGGER IF EXISTS trg_validar_pagamento_antes_insert;
+DROP TRIGGER IF EXISTS trg_pagamento_antes_update;
+
 
 -- =============================================================================
 --  TABELAS
