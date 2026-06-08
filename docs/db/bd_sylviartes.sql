@@ -522,9 +522,10 @@ END$$
 CREATE TRIGGER trg_verificar_stock_antes_venda
 BEFORE INSERT ON detalhe_pedido FOR EACH ROW
 BEGIN
-    DECLARE stock_atual INT DEFAULT 0;
-    SELECT IFNULL(produto.stock, 0) INTO stock_atual FROM produto WHERE produto.id = NEW.produto_id;
-    IF stock_atual < NEW.quantidade THEN
+    DECLARE stock_atual INT;
+    SELECT produto.stock INTO stock_atual FROM produto WHERE produto.id = NEW.produto_id;
+    -- Stock NULL = produto feito a medida (sem limite). So valida se houver stock definido.
+    IF stock_atual IS NOT NULL AND stock_atual < NEW.quantidade THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Nao ha stock suficiente para este produto.';
     END IF;
 END$$
@@ -532,12 +533,12 @@ END$$
 CREATE TRIGGER trg_verificar_stock_antes_update_detalhe
 BEFORE UPDATE ON detalhe_pedido FOR EACH ROW
 BEGIN
-    DECLARE stock_atual INT DEFAULT 0;
-    SELECT IFNULL(produto.stock, 0) INTO stock_atual FROM produto WHERE produto.id = NEW.produto_id;
-    IF NEW.quantidade <> OLD.quantidade AND NEW.quantidade > OLD.quantidade THEN
-        IF stock_atual + OLD.quantidade < NEW.quantidade THEN
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Nao ha stock suficiente para aumentar a quantidade.';
-        END IF;
+    DECLARE stock_atual INT;
+    SELECT produto.stock INTO stock_atual FROM produto WHERE produto.id = NEW.produto_id;
+    -- Stock NULL = sem limite. So valida se houver stock definido.
+    IF stock_atual IS NOT NULL AND NEW.quantidade > OLD.quantidade
+       AND stock_atual + OLD.quantidade < NEW.quantidade THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Nao ha stock suficiente para aumentar a quantidade.';
     END IF;
 END$$
 
@@ -579,5 +580,5 @@ DELIMITER ;
 
 -- =============================================================================
 --  FIM  -  Base de dados SylviArtes criada (12 tabelas, 7 views,
---          4 procedures, 16 triggers, 3 indices).
+--          4 procedures, 16 triggers, 3 indices).pedidopedido
 -- =============================================================================
