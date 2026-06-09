@@ -41,7 +41,7 @@ try {
     <title>Ver Categoria - <?php echo htmlspecialchars($categoria['nome']); ?></title>
     <!-- Favicon: logotipo no separador do browser -->
     <link rel="icon" type="image/png" href="../../imagens/logo_sylviartes.png">
-    <link rel="stylesheet" href="../admin_style.css">
+    <link rel="stylesheet" href="../admin_style.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .cat-header { background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 5px solid #d66d7f; }
