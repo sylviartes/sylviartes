@@ -34,7 +34,7 @@ if (!$temColunaProduto) {
         <title>Avaliações - SylviArtes Admin</title>
         <!-- Favicon: logotipo no separador do browser -->
         <link rel="icon" type="image/png" href="../../imagens/logo_sylviartes.png">
-        <link rel="stylesheet" href="../admin_style.css?v=2">
+        <link rel="stylesheet" href="../admin_style.css?v=3">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
         <style>body { font-family: 'Poppins', sans-serif; }</style>
@@ -141,7 +141,7 @@ function estrelas_html(int $n): string
     <title>Avaliações - Admin SylviArtes</title>
     <!-- Favicon: logotipo no separador do browser -->
     <link rel="icon" type="image/png" href="../../imagens/logo_sylviartes.png">
-    <link rel="stylesheet" href="../admin_style.css?v=2">
+    <link rel="stylesheet" href="../admin_style.css?v=3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .aval-tabela { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
