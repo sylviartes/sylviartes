@@ -298,7 +298,10 @@ h1::after {
     position: absolute;
     bottom: -8px;
     left: 0;
-    width: 60px;
+    /* Acompanha a largura do proprio titulo (o h1 e inline-block), para o
+       tracinho ser coerente em todas as paginas do admin, em vez de um
+       traco fixo de 60px que parecia ter tamanhos diferentes consoante o titulo. */
+    width: 100%;
     height: 4px;
     background: var(--gradiente-rosa);
     border-radius: 2px;
