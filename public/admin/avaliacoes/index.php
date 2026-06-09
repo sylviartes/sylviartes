@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // === Carrega avaliações pendentes ===
 $stmt = $conn->query("
-    SELECT a.id, a.estrelas, a.comentario, a.data,
+    SELECT a.id, a.estrelas, a.comentario, a.data, a.pedido_id,
            u.nome AS cliente, u.email,
            p.id AS produto_id, p.nome AS produto
     FROM avaliacao a
@@ -110,7 +110,7 @@ $pendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // === Carrega avaliações aprovadas ===
 $stmt = $conn->query("
-    SELECT a.id, a.estrelas, a.comentario, a.data,
+    SELECT a.id, a.estrelas, a.comentario, a.data, a.pedido_id,
            u.nome AS cliente, u.email,
            p.id AS produto_id, p.nome AS produto
     FROM avaliacao a
@@ -257,6 +257,8 @@ function estrelas_html(int $n): string
                                         <a href="../../produto.php?id=<?= (int)$a['produto_id'] ?>" target="_blank">
                                             <?= htmlspecialchars($a['produto']) ?>
                                         </a>
+                                    <?php elseif (!empty($a['pedido_id'])): ?>
+                                        <em style="color:#777;">Encomenda #<?= (int)$a['pedido_id'] ?></em>
                                     <?php else: ?>
                                         <em style="color:#999;">Loja em geral</em>
                                     <?php endif; ?>
@@ -320,6 +322,8 @@ function estrelas_html(int $n): string
                                         <a href="../../produto.php?id=<?= (int)$a['produto_id'] ?>" target="_blank">
                                             <?= htmlspecialchars($a['produto']) ?>
                                         </a>
+                                    <?php elseif (!empty($a['pedido_id'])): ?>
+                                        <em style="color:#777;">Encomenda #<?= (int)$a['pedido_id'] ?></em>
                                     <?php else: ?>
                                         <em style="color:#999;">Loja em geral</em>
                                     <?php endif; ?>

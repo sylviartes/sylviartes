@@ -84,6 +84,35 @@ function cliente_tem_pedido_avaliavel(PDO $conn, int $clienteId): bool
 }
 
 /**
+ * Verifica se a tabela `avaliacao` tem a coluna `pedido_id` (migração aplicada).
+ * Permite que o sistema de avaliação por encomenda se desative graciosamente
+ * caso a migração ainda não tenha sido corrida.
+ */
+function avaliacao_por_pedido_disponivel(PDO $conn): bool
+{
+    static $cache = null;
+    if ($cache !== null) return $cache;
+    try {
+        $stmt = $conn->query("SHOW COLUMNS FROM avaliacao LIKE 'pedido_id'");
+        $cache = (bool)$stmt->fetch();
+    } catch (Exception $e) {
+        $cache = false;
+    }
+    return $cache;
+}
+
+/**
+ * Indica se uma encomenda já foi avaliada (regra: uma avaliação por encomenda).
+ */
+function pedido_ja_avaliado(PDO $conn, int $pedidoId): bool
+{
+    if ($pedidoId <= 0 || !avaliacao_por_pedido_disponivel($conn)) return false;
+    $stmt = $conn->prepare("SELECT 1 FROM avaliacao WHERE pedido_id = ? LIMIT 1");
+    $stmt->execute([$pedidoId]);
+    return (bool)$stmt->fetch();
+}
+
+/**
  * Devolve as avaliações APROVADAS de um produto, ordenadas da mais recente.
  * Inclui o nome do cliente para mostrar.
  */

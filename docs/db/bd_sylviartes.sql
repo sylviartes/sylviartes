@@ -165,17 +165,20 @@ CREATE TABLE pagamento (
   CONSTRAINT fk_pagamento_pedido FOREIGN KEY (pedido_id) REFERENCES pedido(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- avaliacao : estrelas + comentario de um cliente sobre um produto (moderada)
+-- avaliacao : estrelas + comentario de um cliente (moderada)
+-- Pode estar ligada a uma encomenda concluida (pedido_id) e/ou a um produto.
 CREATE TABLE avaliacao (
   id            INT AUTO_INCREMENT PRIMARY KEY,
   utilizador_id INT NOT NULL,
   produto_id    INT NULL,                                      -- NULL = avaliacao geral a loja
+  pedido_id     INT NULL,                                      -- encomenda que originou a avaliacao
   estrelas      INT NOT NULL,
   comentario    TEXT NULL,
   data          DATETIME DEFAULT CURRENT_TIMESTAMP,
   aprovado      TINYINT NOT NULL DEFAULT 0,                    -- 0 = por moderar, 1 = visivel
   CONSTRAINT fk_avaliacao_utilizador FOREIGN KEY (utilizador_id) REFERENCES utilizador(id),
   CONSTRAINT fk_avaliacao_produto    FOREIGN KEY (produto_id)    REFERENCES produto(id),
+  CONSTRAINT fk_avaliacao_pedido     FOREIGN KEY (pedido_id)     REFERENCES pedido(id) ON DELETE SET NULL,
   CONSTRAINT uniq_aval_user_produto  UNIQUE (utilizador_id, produto_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

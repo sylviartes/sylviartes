@@ -26,6 +26,7 @@
 
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../config/csrf.php';
 require_once __DIR__ . '/../../src/avaliacoes.php';
 
 $clienteId = $_SESSION['cliente_id'];
@@ -133,6 +134,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+    // ----- AÇÃO: Avaliar a encomenda (estrelas + comentário) -----
+    elseif ($accao === 'avaliar') {
+        csrf_validate();
+        $estrelas = (int)($_POST['estrelas'] ?? 0);
+        $comentario = trim($_POST['comentario'] ?? '');
+
+        // Só se pode avaliar uma encomenda já concluída/entregue
+        if (!in_array($pedido['estado'], ['concluido', 'entregue'], true)) {
+            $mensagem = "Só pode avaliar encomendas concluídas.";
+            $tipoMsg = "erro";
+        } elseif ($estrelas < 1 || $estrelas > 5) {
+            $mensagem = "Selecione entre 1 e 5 estrelas.";
+            $tipoMsg = "erro";
+        } elseif (pedido_ja_avaliado($conn, $pedidoId)) {
+            $mensagem = "Já avaliou esta encomenda. Obrigado!";
+            $tipoMsg = "erro";
+        } else {
+            // aprovado = 0 → fica à espera de moderação no admin.
+            // produto_id NULL → testemunho geral (aparece na homepage após aprovação).
+            $stmt = $conn->prepare("
+                INSERT INTO avaliacao (utilizador_id, produto_id, pedido_id, estrelas, comentario, aprovado)
+                VALUES (?, NULL, ?, ?, ?, 0)
+            ");
+            $stmt->execute([$clienteId, $pedidoId, $estrelas, $comentario]);
+            header("Location: encomenda.php?id=" . $pedidoId . "&msg=avaliacao");
+            exit;
+        }
+    }
 }
 
 // Mensagens "flash" passadas via querystring depois de um redirect
@@ -140,6 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (isset($_GET['msg'])) {
     if ($_GET['msg'] === 'cancelado') { $mensagem = "Pedido cancelado."; $tipoMsg = "ok"; }
     if ($_GET['msg'] === 'comprovativo') { $mensagem = "Comprovativo enviado. Estamos a validar o pagamento."; $tipoMsg = "ok"; }
+    if ($_GET['msg'] === 'avaliacao') { $mensagem = "Avaliação enviada! Obrigado. Vai aparecer no site assim que for aprovada."; $tipoMsg = "ok"; }
 }
 
 // =========================================================================
@@ -217,6 +247,30 @@ function metodoLabel($m) {
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="cliente_style.css">
+    <style>
+        /* Formulário de avaliação da encomenda */
+        .aval-encomenda {
+            background: linear-gradient(135deg, #fff8fa, #fdf0f4);
+            border: 1px solid #f0c8d2; border-radius: 12px;
+            padding: 18px 22px; margin: 16px 0;
+        }
+        .aval-encomenda h3 { margin: 0 0 4px; color: #d66d7f; font-size: 18px; }
+        .aval-encomenda p { color: #636e72; font-size: 14px; margin: 0 0 12px; }
+        /* Estrelas clicáveis */
+        .aval-estrelas { display: inline-flex; gap: 6px; font-size: 30px; color: #ddd; margin-bottom: 14px; }
+        .aval-estrelas .aval-estrela {
+            background: none; border: none; padding: 2px; margin: 0;
+            cursor: pointer; color: inherit; font-size: inherit; line-height: 1;
+        }
+        .aval-estrelas i { transition: color 0.15s; }
+        .aval-estrelas i.ativa { color: #f5b301; }
+        .aval-encomenda textarea {
+            width: 100%; box-sizing: border-box; padding: 12px;
+            border-radius: 10px; border: 1px solid #e8cdd4;
+            font-family: inherit; font-size: 14px; resize: vertical; margin-bottom: 12px;
+        }
+        .aval-encomenda textarea:focus { outline: none; border-color: #d66d7f; }
+    </style>
 </head>
 <body>
     <div class="cli-wrapper">
@@ -255,28 +309,36 @@ function metodoLabel($m) {
                     Verifique o email com o link de pagamento.
                 </div>
             <?php elseif (in_array($pedido['estado'], ['concluido', 'entregue'], true)): ?>
-                <?php
-                // Convite a avaliar - só se ainda não tiver avaliado o item de inspiração
-                $inspiracaoId = (int)($pedido['portfolio_inspiracao_id'] ?? 0);
-                $podeAvaliarEste = false;
-                if ($inspiracaoId > 0 && avaliacoes_disponiveis($conn)) {
-                    $podeAvaliarEste = cliente_pode_avaliar($conn, $clienteId, $inspiracaoId);
-                }
-                ?>
-                <?php if ($podeAvaliarEste): ?>
-                    <div style="background:linear-gradient(135deg,#fff8fa,#fdf0f4); border:1px solid #f0c8d2; border-radius:10px; padding:16px 20px; margin:14px 0; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;">
-                        <div>
-                            <strong style="color:#d66d7f;"><i class="fas fa-star"></i> Como foi a sua experiência?</strong>
-                            <div style="color:#555; font-size:14px; margin-top:4px;">A sua opinião ajuda outras clientes a escolher.</div>
-                        </div>
-                        <a href="../produto.php?id=<?= $inspiracaoId ?>#avaliar" class="cli-btn">
-                            Deixar Avaliação
-                        </a>
-                    </div>
-                <?php elseif ($inspiracaoId > 0): ?>
+                <?php if (pedido_ja_avaliado($conn, $pedidoId)): ?>
+                    <!-- Já avaliada: agradecimento -->
                     <div style="background:#f0fdf4; border-left:4px solid #22c55e; padding:14px 18px; border-radius:8px; margin:14px 0; color:#555;">
                         <i class="fas fa-check-circle" style="color:#22c55e;"></i>
-                        <strong>Pedido entregue!</strong> Obrigado pela sua confiança.
+                        <strong>Obrigado pela sua avaliação!</strong> Vai aparecer no site assim que for aprovada.
+                    </div>
+                <?php else: ?>
+                    <!-- Formulário para avaliar a experiência desta encomenda -->
+                    <div class="aval-encomenda">
+                        <h3><i class="fas fa-star"></i> Como correu a sua encomenda?</h3>
+                        <p>A sua opinião ajuda outras pessoas a conhecer o nosso trabalho. (1 = mau, 5 = excelente)</p>
+                        <form method="POST" id="form-avaliar" onsubmit="return validarAvaliacao();">
+                            <?= csrf_input() ?>
+                            <input type="hidden" name="accao" value="avaliar">
+                            <input type="hidden" name="estrelas" id="aval-estrelas-input" value="0">
+
+                            <!-- Estrelas clicáveis (rato ou teclado) -->
+                            <div class="aval-estrelas" id="aval-estrelas" role="radiogroup" aria-label="Classificação em estrelas">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <button type="button" class="aval-estrela" data-valor="<?= $i ?>"
+                                            role="radio" aria-checked="false" aria-label="<?= $i ?> estrela<?= $i > 1 ? 's' : '' ?>">
+                                        <i class="far fa-star"></i>
+                                    </button>
+                                <?php endfor; ?>
+                            </div>
+
+                            <textarea name="comentario" rows="3" maxlength="500"
+                                      placeholder="Conte como foi a sua experiência (opcional)..."></textarea>
+                            <button type="submit" class="cli-btn">Enviar avaliação</button>
+                        </form>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
@@ -385,5 +447,45 @@ function metodoLabel($m) {
             </div>
         <?php endif; ?>
     </div>
+
+    <script>
+    // === Seleção de estrelas no formulário de avaliação ===
+    // Funciona com rato e teclado (os botões são focáveis).
+    (function () {
+        const grupo = document.getElementById('aval-estrelas');
+        if (!grupo) return; // a encomenda pode não ter formulário (não concluída / já avaliada)
+
+        const input = document.getElementById('aval-estrelas-input');
+        const botoes = grupo.querySelectorAll('.aval-estrela');
+        const icones = grupo.querySelectorAll('i');
+
+        function pintar(valor) {
+            input.value = valor;
+            icones.forEach((el, idx) => {
+                const ativa = idx < valor;
+                el.classList.toggle('fas', ativa);   // estrela cheia
+                el.classList.toggle('far', !ativa);  // estrela vazia
+                el.classList.toggle('ativa', ativa);
+            });
+            botoes.forEach((b) => {
+                b.setAttribute('aria-checked', (parseInt(b.dataset.valor, 10) === valor) ? 'true' : 'false');
+            });
+        }
+
+        botoes.forEach((b) => {
+            b.addEventListener('click', () => pintar(parseInt(b.dataset.valor, 10)));
+        });
+    })();
+
+    // Impede submeter sem ter escolhido estrelas
+    function validarAvaliacao() {
+        const v = parseInt(document.getElementById('aval-estrelas-input').value, 10);
+        if (!v || v < 1) {
+            alert('Por favor escolha uma classificação de 1 a 5 estrelas.');
+            return false;
+        }
+        return true;
+    }
+    </script>
 </body>
 </html>
