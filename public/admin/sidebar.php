@@ -101,11 +101,6 @@ function isActive($padrao) {
             <?php endif; ?>
         </a>
 
-        <a href="<?= $prefixo ?>ferramentas/migrar.php" class="<?= isActive('ferramentas/') ?>">
-            <i class="fas fa-database"></i>
-            <span>Migrações BD</span>
-        </a>
-
         <!-- rel="noopener noreferrer": boa prática de segurança para links target="_blank"
              Impede que a nova aba aceda ao objeto window da aba de origem (proteção contra tabnabbing) -->
         <a href="<?= htmlspecialchars($caminho_loja) ?>" target="_blank"

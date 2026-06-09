@@ -356,7 +356,7 @@ main { padding: 0 !important; max-width: 100% !important; }
                 Pedido recebido!
             </h2>
             <p style="color:#d66d7f; font-weight:600; font-size:17px; margin-bottom:20px;">
-                #<?= $pedidoId ?>
+                Obrigado! O seu pedido foi registado com sucesso.
             </p>
 
             <!-- O que acontece a seguir -->

@@ -134,6 +134,8 @@ function estrelas_html(int $n): string
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
+    <!-- Essencial para o layout responsivo (cartoes no telemovel) funcionar -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avaliações - Admin SylviArtes</title>
     <link rel="stylesheet" href="../admin_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -146,6 +148,64 @@ function estrelas_html(int $n): string
         .btn-rejeitar { background: #dc3545; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; }
         .btn-desaprovar { background: #6c757d; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; }
         .secao-vazia { text-align: center; padding: 30px; color: #999; font-style: italic; }
+
+        /* ===== TELEMOVEL: cada linha da tabela vira um cartao empilhado =====
+           Ate 768px de largura as tabelas sao dificeis de ler/gerir, por isso
+           escondemos o cabecalho e mostramos cada avaliacao como um cartao, com
+           o nome do campo (data-label) a esquerda e o valor a direita. */
+        @media (max-width: 768px) {
+            /* Anula o scroll horizontal generico do admin para estas tabelas */
+            .card .aval-tabela { display: block; overflow: visible; min-width: 0; }
+            .aval-tabela thead { display: none; }
+            .aval-tabela tbody,
+            .aval-tabela tr,
+            .aval-tabela td { display: block; width: 100%; box-sizing: border-box; }
+
+            /* Cada linha = um cartao */
+            .aval-tabela tr {
+                border: 1px solid #f0e3e7;
+                border-radius: 12px;
+                padding: 10px 14px;
+                margin-bottom: 14px;
+                background: #fff;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            }
+
+            /* Cada celula: etiqueta a esquerda, valor a direita */
+            .aval-tabela td {
+                border: none;
+                padding: 8px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 14px;
+                text-align: right;
+                border-bottom: 1px solid #f5f5f5;
+            }
+            .aval-tabela td:last-child { border-bottom: none; }
+            .aval-tabela td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #d66d7f;
+                text-transform: uppercase;
+                font-size: 11px;
+                letter-spacing: 0.5px;
+                text-align: left;
+                flex-shrink: 0;
+            }
+
+            /* Comentario ocupa a largura toda, alinhado a esquerda */
+            .aval-tabela td.aval-comentario {
+                flex-direction: column;
+                text-align: left;
+                max-width: none;
+            }
+
+            /* Coluna de acoes: botoes empilhados em largura total */
+            .aval-tabela td.aval-acoes { flex-direction: column; gap: 8px; }
+            .aval-tabela td.aval-acoes form { display: block !important; width: 100%; margin: 0; }
+            .aval-tabela td.aval-acoes button { width: 100%; justify-content: center; margin: 0; }
+        }
     </style>
 </head>
 <body class="admin-body">
@@ -184,11 +244,11 @@ function estrelas_html(int $n): string
                     <tbody>
                         <?php foreach ($pendentes as $a): ?>
                             <tr>
-                                <td>
+                                <td data-label="Cliente">
                                     <strong><?= htmlspecialchars($a['cliente']) ?></strong><br>
                                     <small style="color:#666;"><?= htmlspecialchars($a['email']) ?></small>
                                 </td>
-                                <td>
+                                <td data-label="Produto">
                                     <?php if ($a['produto']): ?>
                                         <a href="../../produto.php?id=<?= (int)$a['produto_id'] ?>" target="_blank">
                                             <?= htmlspecialchars($a['produto']) ?>
@@ -197,12 +257,12 @@ function estrelas_html(int $n): string
                                         <em style="color:#999;">Loja em geral</em>
                                     <?php endif; ?>
                                 </td>
-                                <td><?= estrelas_html((int)$a['estrelas']) ?></td>
-                                <td class="aval-comentario">
+                                <td data-label="Estrelas"><?= estrelas_html((int)$a['estrelas']) ?></td>
+                                <td class="aval-comentario" data-label="Comentário">
                                     <?= !empty($a['comentario']) ? nl2br(htmlspecialchars($a['comentario'])) : '<em style="color:#999;">(sem comentário)</em>' ?>
                                 </td>
-                                <td><?= date('d/m/Y H:i', strtotime($a['data'])) ?></td>
-                                <td>
+                                <td data-label="Data"><?= date('d/m/Y H:i', strtotime($a['data'])) ?></td>
+                                <td class="aval-acoes" data-label="Ações">
                                     <form method="POST" style="display:inline;">
                                         <?= csrf_input() ?>
                                         <input type="hidden" name="id" value="<?= (int)$a['id'] ?>">
@@ -250,8 +310,8 @@ function estrelas_html(int $n): string
                     <tbody>
                         <?php foreach ($aprovadas as $a): ?>
                             <tr>
-                                <td><strong><?= htmlspecialchars($a['cliente']) ?></strong></td>
-                                <td>
+                                <td data-label="Cliente"><strong><?= htmlspecialchars($a['cliente']) ?></strong></td>
+                                <td data-label="Produto">
                                     <?php if ($a['produto']): ?>
                                         <a href="../../produto.php?id=<?= (int)$a['produto_id'] ?>" target="_blank">
                                             <?= htmlspecialchars($a['produto']) ?>
@@ -260,12 +320,12 @@ function estrelas_html(int $n): string
                                         <em style="color:#999;">Loja em geral</em>
                                     <?php endif; ?>
                                 </td>
-                                <td><?= estrelas_html((int)$a['estrelas']) ?></td>
-                                <td class="aval-comentario">
+                                <td data-label="Estrelas"><?= estrelas_html((int)$a['estrelas']) ?></td>
+                                <td class="aval-comentario" data-label="Comentário">
                                     <?= !empty($a['comentario']) ? nl2br(htmlspecialchars($a['comentario'])) : '<em style="color:#999;">(sem comentário)</em>' ?>
                                 </td>
-                                <td><?= date('d/m/Y', strtotime($a['data'])) ?></td>
-                                <td>
+                                <td data-label="Data"><?= date('d/m/Y', strtotime($a['data'])) ?></td>
+                                <td class="aval-acoes" data-label="Ações">
                                     <form method="POST" style="display:inline;" onsubmit="return confirm('Esconder esta avaliação?');">
                                         <?= csrf_input() ?>
                                         <input type="hidden" name="id" value="<?= (int)$a['id'] ?>">
