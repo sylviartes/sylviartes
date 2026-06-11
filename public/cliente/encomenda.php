@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ----- AÇÃO: Cancelar pedido -----
     if ($accao === 'cancelar') {
+        csrf_validate();   // protege contra pedidos forjados (CSRF)
         // Só permite cancelar enquanto o estado ainda for inicial
         if (in_array($pedido['estado'], ['em_analise', 'aguarda_pagamento'], true)) {
             try {
@@ -97,6 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     // ----- AÇÃO: Upload de comprovativo de transferência -----
     elseif ($accao === 'comprovativo') {
+        csrf_validate();   // protege contra pedidos forjados (CSRF)
         // Validação básica do upload (variável $_FILES é populada pelo PHP no upload)
         if (!isset($_FILES['comprovativo']) || $_FILES['comprovativo']['error'] !== UPLOAD_ERR_OK) {
             $mensagem = "Selecione um ficheiro válido.";
@@ -246,7 +248,7 @@ function metodoLabel($m) {
     <link rel="icon" type="image/png" href="../imagens/logo_sylviartes.png">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="cliente_style.css">
+    <link rel="stylesheet" href="cliente_style.css?v=<?= @filemtime(__DIR__ . '/cliente_style.css') ?: 1 ?>">
     <style>
         /* Formulário de avaliação da encomenda */
         .aval-encomenda {
@@ -428,6 +430,7 @@ function metodoLabel($m) {
                 <?php endif; ?>
 
                 <form method="POST" enctype="multipart/form-data">
+                    <?= csrf_input() ?>
                     <input type="hidden" name="accao" value="comprovativo">
                     <input type="file" name="comprovativo" accept="image/*,application/pdf" required style="margin:14px 0;">
                     <br>
@@ -441,6 +444,7 @@ function metodoLabel($m) {
                 <h2>Cancelar encomenda</h2>
                 <p>Pode cancelar enquanto o estado for <em>Em análise</em> ou <em>Aguarda pagamento</em>.</p>
                 <form method="POST" onsubmit="return confirm('Tem a certeza que quer cancelar este pedido?');">
+                    <?= csrf_input() ?>
                     <input type="hidden" name="accao" value="cancelar">
                     <button type="submit" class="cli-btn cli-btn-danger">Cancelar pedido</button>
                 </form>

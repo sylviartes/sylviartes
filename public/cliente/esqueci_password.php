@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="icon" type="image/png" href="../imagens/logo_sylviartes.png">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="cliente_style.css">
+    <link rel="stylesheet" href="cliente_style.css?v=<?= @filemtime(__DIR__ . '/cliente_style.css') ?: 1 ?>">
 </head>
 <body>
     <div class="auth-container">

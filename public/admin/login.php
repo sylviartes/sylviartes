@@ -16,6 +16,7 @@
 
 require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../src/login_throttle.php';  // proteção contra brute force
 
 // Já logado → vai direto para o dashboard
 if (isset($_SESSION['admin_id'])) {
@@ -26,10 +27,15 @@ if (isset($_SESSION['admin_id'])) {
 $erro = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $throttle = login_throttle_estado('admin');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if ($email !== '' && $password !== '') {
+    if ($throttle['bloqueado']) {
+        // Demasiadas tentativas falhadas → bloqueia temporariamente
+        $erro = "Demasiadas tentativas falhadas. Aguarde "
+              . ceil($throttle['restante'] / 60) . " minuto(s) e tente novamente.";
+    } elseif ($email !== '' && $password !== '') {
         // Procura utilizador APENAS com nível admin
         // (clientes nunca entram por aqui, mesmo com email/password corretos)
         $stmt = $conn->prepare("
@@ -47,15 +53,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($row) {
             // Verifica com hash bcrypt (única forma aceite)
             if (password_verify($password, $row['password'])) {
+                login_throttle_limpar('admin');   // login OK → limpa o contador
                 session_regenerate_id(true);
                 $_SESSION['admin_id'] = $row['id'];
                 $_SESSION['admin_nome'] = $row['nome'];
                 header("Location: index.php");
                 exit;
             } else {
+                login_registar_falha('admin');
                 $erro = "Email ou password incorretos.";
             }
         } else {
+            login_registar_falha('admin');
             // Mensagem deliberadamente vaga: não dizemos se foi o email ou a
             // password que está errado - protege contra enumeração de emails.
             $erro = "Email ou password incorretos.";

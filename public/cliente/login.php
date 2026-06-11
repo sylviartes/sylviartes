@@ -17,6 +17,7 @@
 
 require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../src/login_throttle.php';  // proteção contra brute force
 
 // Se já está autenticado, não faz sentido mostrar o form de login → dashboard
 if (isset($_SESSION['cliente_id'])) {
@@ -29,11 +30,15 @@ $emailPosto = ""; // mantém o email no form se a tentativa falhar
 
 // Form submetido?
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $throttle = login_throttle_estado('cliente');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $emailPosto = $email;
 
-    if ($email !== '' && $password !== '') {
+    if ($throttle['bloqueado']) {
+        $erro = "Demasiadas tentativas falhadas. Aguarde "
+              . ceil($throttle['restante'] / 60) . " minuto(s) e tente novamente.";
+    } elseif ($email !== '' && $password !== '') {
         // Procura o utilizador (apenas com nível 'cliente' - admins entram noutro lado)
         $stmt = $conn->prepare("
             SELECT id, nome, password
@@ -47,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($row) {
             // Verifica com hash bcrypt (única forma aceite)
             if (password_verify($password, $row['password'])) {
+                login_throttle_limpar('cliente');   // login OK → limpa o contador
                 // ✓ Login bem-sucedido - regenera sessão e grava na sessão
                 session_regenerate_id(true);
                 $_SESSION['cliente_id'] = $row['id'];
@@ -65,9 +71,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 header("Location: " . $redirect);
                 exit;
             } else {
+                login_registar_falha('cliente');
                 $erro = "Email ou password incorretos.";
             }
         } else {
+            login_registar_falha('cliente');
             $erro = "Email ou password incorretos.";
         }
     } else {
@@ -85,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link rel="icon" type="image/png" href="../imagens/logo_sylviartes.png">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="cliente_style.css">
+    <link rel="stylesheet" href="cliente_style.css?v=<?= @filemtime(__DIR__ . '/cliente_style.css') ?: 1 ?>">
 </head>
 <body>
     <div class="auth-container">
