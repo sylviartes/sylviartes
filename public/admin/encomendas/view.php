@@ -19,6 +19,7 @@
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../auth.php';   // Exige login admin
 require_once __DIR__ . '/../../../config/csrf.php';
+require_once __DIR__ . '/../../../src/email.php';   // notificações de estado ao cliente
 
 // Sem ID → volta à lista
 if (!isset($_GET['id'])) {
@@ -69,6 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accao_pagamento'])) {
             WHERE id=? AND estado IN ('em_analise', 'aguarda_pagamento')
         ");
         $stmt->execute([$pedido_id]);
+
+        // Se o pedido avançou mesmo para produção, notifica a cliente por email
+        if ($stmt->rowCount() > 0) {
+            enviar_email_estado_pedido($conn, $pedido_id, 'em_producao');
+        }
     }
 
     // Redirect (Post-Redirect-Get) com mensagem na URL

@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../auth.php';
 require_once __DIR__ . '/../../../config/csrf.php';
+require_once __DIR__ . '/../../../src/email.php';   // notificações de estado ao cliente
 
 // --- CONFIGURAÇÕES ---
 $estadosValidos = ['aguarda_orcamento', 'em_analise', 'aguarda_pagamento', 'em_producao', 'concluido', 'entregue', 'cancelado'];
@@ -24,11 +25,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atualizar_estado'])) 
     $pedido_id = (int)($_POST['pedido_id'] ?? 0);
 
     if ($pedido_id > 0 && in_array($novo_estado, $estadosValidos, true)) {
+        // Lê o estado atual ANTES de mudar, para só notificar se houver mesmo alteração
+        $stmtAtual = $conn->prepare("SELECT estado FROM pedido WHERE id = ?");
+        $stmtAtual->execute([$pedido_id]);
+        $estadoAtual = $stmtAtual->fetchColumn();
+
         $stmt = $conn->prepare("UPDATE pedido SET estado = :estado WHERE id = :id");
         $stmt->execute([
             ':estado' => $novo_estado,
             ':id' => $pedido_id
         ]);
+
+        // Se o estado mudou mesmo, envia email a notificar a cliente
+        if ($estadoAtual !== false && $estadoAtual !== $novo_estado) {
+            enviar_email_estado_pedido($conn, $pedido_id, $novo_estado);
+        }
+
         header("Location: index.php?status=" . ($_GET['status'] ?? 'todos'));
         exit;
     }

@@ -345,3 +345,98 @@ function enviar_email_nova_encomenda(
         $emailCliente
     );
 }
+
+
+/**
+ * Notifica a cliente por email quando o estado da sua encomenda muda.
+ * Chamado pelo admin ao mudar o estado (admin/encomendas) e na validação de pagamento.
+ *
+ * Vai buscar o nome e email da cliente a partir do próprio pedido, por isso basta
+ * passar o id do pedido e o novo estado.
+ *
+ * Só envia para estados relevantes para a cliente (definidos em $mapa). Estados
+ * internos como 'em_analise' não geram email (o aviso de pedido novo já cobre isso).
+ *
+ * @param PDO    $conn       Ligação à base de dados
+ * @param int    $pedidoId   ID do pedido
+ * @param string $novoEstado Novo estado do pedido
+ * @return bool  true se enviou/guardou; false se não havia email a enviar
+ */
+function enviar_email_estado_pedido(PDO $conn, int $pedidoId, string $novoEstado): bool
+{
+    // Texto amigável por estado: [título, mensagem]. Estados fora deste mapa não enviam.
+    $mapa = [
+        'aguarda_pagamento' => ['O seu orçamento está pronto 💌', 'Já preparámos o orçamento da sua encomenda. Veja o email com o link de pagamento (ou a sua área de cliente) para confirmar e iniciarmos a produção.'],
+        'em_producao'       => ['Mãos à obra! 🧵',                'Boas notícias: já começámos a produzir a sua encomenda, feita à medida e com todo o carinho.'],
+        'concluido'         => ['A sua encomenda está pronta! ✨', 'Terminámos a sua encomenda. Entraremos em contacto para combinar a entrega ou o levantamento.'],
+        'entregue'          => ['Encomenda entregue 💝',          'A sua encomenda foi entregue. Esperamos que adore o resultado! Se puder, deixe-nos uma avaliação na sua área de cliente.'],
+        'cancelado'         => ['Encomenda cancelada',            'A sua encomenda foi cancelada. Se tiver alguma dúvida, basta responder a este email.'],
+    ];
+
+    // Estado sem mensagem definida → não há nada a enviar
+    if (!isset($mapa[$novoEstado])) {
+        return false;
+    }
+
+    // Vai buscar a cliente dona do pedido
+    $stmt = $conn->prepare("
+        SELECT u.nome, u.email
+        FROM pedido p
+        JOIN utilizador u ON u.id = p.utilizador_id
+        WHERE p.id = ?
+    ");
+    $stmt->execute([$pedidoId]);
+    $cli = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Sem destinatário válido → não envia
+    if (!$cli || empty($cli['email'])) {
+        return false;
+    }
+
+    [$titulo, $mensagem] = $mapa[$novoEstado];
+    $primeiroNome = htmlspecialchars(explode(' ', $cli['nome'])[0] ?? 'Cliente');
+
+    // Link para a cliente ver a encomenda na sua área pessoal
+    $baseUrl   = getenv('SITE_BASE_URL') ?: 'http://localhost:8080';
+    $linkConta = rtrim($baseUrl, '/') . '/cliente/encomenda.php?id=' . $pedidoId;
+
+    $corpo = '
+    <div style="font-family:Arial,sans-serif; max-width:600px; margin:0 auto; padding:30px; background:#fff;">
+        <div style="text-align:center; margin-bottom:24px;">
+            <h1 style="color:#d66d7f; font-family:Georgia,serif; margin:0;">SylviArtes</h1>
+            <p style="color:#888; margin:4px 0 0; font-size:13px;">Costura Criativa &middot; Bordados Personalizados</p>
+        </div>
+
+        <h2 style="color:#2d3436;">Olá, ' . $primeiroNome . '!</h2>
+
+        <div style="background:#fff8fa; border-left:4px solid #d66d7f; padding:18px 20px; margin:20px 0; border-radius:6px;">
+            <h3 style="margin:0 0 6px; color:#d66d7f;">' . $titulo . '</h3>
+            <p style="margin:0; color:#555; line-height:1.6;">' . $mensagem . '</p>
+        </div>
+
+        <p style="color:#555; line-height:1.6;">Encomenda <strong>#' . $pedidoId . '</strong>.</p>
+
+        <p style="text-align:center; margin:30px 0;">
+            <a href="' . htmlspecialchars($linkConta) . '"
+               style="background:#d66d7f; color:#fff; padding:14px 36px; border-radius:999px;
+                      text-decoration:none; font-weight:bold; font-size:15px; display:inline-block;">
+                Ver a minha encomenda
+            </a>
+        </p>
+
+        <hr style="border:none; border-top:1px solid #eee; margin:30px 0;">
+        <p style="color:#999; font-size:12px; text-align:center;">
+            SylviArtes &middot; Este email foi gerado automaticamente para a encomenda #' . $pedidoId . '
+        </p>
+    </div>';
+
+    // Reply-To = Gmail da Sylvia, para a cliente poder responder diretamente
+    $replyTo = ADMIN_EMAIL ?: '';
+
+    return enviar_email(
+        $cli['email'],
+        'Atualização da sua encomenda #' . $pedidoId . ' - SylviArtes',
+        $corpo,
+        $replyTo
+    );
+}
