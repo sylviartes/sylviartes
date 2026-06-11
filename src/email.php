@@ -396,8 +396,17 @@ function enviar_email_estado_pedido(PDO $conn, int $pedidoId, string $novoEstado
     [$titulo, $mensagem] = $mapa[$novoEstado];
     $primeiroNome = htmlspecialchars(explode(' ', $cli['nome'])[0] ?? 'Cliente');
 
-    // Link para a cliente ver a encomenda na sua área pessoal
-    $baseUrl   = getenv('SITE_BASE_URL') ?: 'http://localhost:8080';
+    // Link para a cliente ver a encomenda na sua área pessoal.
+    // Usa o host do pedido HTTP atual (em produção é sylviartes.pt), por ser sempre
+    // o domínio real onde o email está a ser gerado. Só cai para SITE_BASE_URL /
+    // localhost se, por algum motivo, não estivermos dentro de um pedido web.
+    if (!empty($_SERVER['HTTP_HOST'])) {
+        $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                   || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+        $baseUrl = ($isHttps ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
+    } else {
+        $baseUrl = getenv('SITE_BASE_URL') ?: 'http://localhost:8080';
+    }
     $linkConta = rtrim($baseUrl, '/') . '/cliente/encomenda.php?id=' . $pedidoId;
 
     $corpo = '
@@ -414,8 +423,6 @@ function enviar_email_estado_pedido(PDO $conn, int $pedidoId, string $novoEstado
             <p style="margin:0; color:#555; line-height:1.6;">' . $mensagem . '</p>
         </div>
 
-        <p style="color:#555; line-height:1.6;">Encomenda <strong>#' . $pedidoId . '</strong>.</p>
-
         <p style="text-align:center; margin:30px 0;">
             <a href="' . htmlspecialchars($linkConta) . '"
                style="background:#d66d7f; color:#fff; padding:14px 36px; border-radius:999px;
@@ -426,7 +433,7 @@ function enviar_email_estado_pedido(PDO $conn, int $pedidoId, string $novoEstado
 
         <hr style="border:none; border-top:1px solid #eee; margin:30px 0;">
         <p style="color:#999; font-size:12px; text-align:center;">
-            SylviArtes &middot; Este email foi gerado automaticamente para a encomenda #' . $pedidoId . '
+            SylviArtes &middot; Este email foi gerado automaticamente.
         </p>
     </div>';
 
@@ -435,7 +442,7 @@ function enviar_email_estado_pedido(PDO $conn, int $pedidoId, string $novoEstado
 
     return enviar_email(
         $cli['email'],
-        'Atualização da sua encomenda #' . $pedidoId . ' - SylviArtes',
+        'Atualização da sua encomenda - SylviArtes',
         $corpo,
         $replyTo
     );
