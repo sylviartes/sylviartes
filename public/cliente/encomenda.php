@@ -11,11 +11,7 @@
  *       Permitido enquanto o estado for "em_analise" ou "aguarda_pagamento".
  *       Regista a alteração em log_alteracoes_pedido.
  *
- *    2. UPLOAD DE COMPROVATIVO (transferência bancária)
- *       Sobe um JPG/PNG/PDF para a coluna BLOB `pagamento.comprovativo`.
- *       Limite de 5MB. Volta a pôr o pagamento em "analise_pagamento".
- *
- *    3. PAGAR AGORA (cartão / MB Way)
+ *    2. PAGAR AGORA (cartão / MB Way)
  *       Reabre a sessão Stripe se o cliente fechou a janela sem pagar.
  *       Ver stripe_retomar.php.
  *
@@ -96,46 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tipoMsg = "erro";
         }
     }
-    // ----- AÇÃO: Upload de comprovativo de transferência -----
-    elseif ($accao === 'comprovativo') {
-        csrf_validate();   // protege contra pedidos forjados (CSRF)
-        // Validação básica do upload (variável $_FILES é populada pelo PHP no upload)
-        if (!isset($_FILES['comprovativo']) || $_FILES['comprovativo']['error'] !== UPLOAD_ERR_OK) {
-            $mensagem = "Selecione um ficheiro válido.";
-            $tipoMsg = "erro";
-        } else {
-            $tamanho = $_FILES['comprovativo']['size'];
-            // mime_content_type lê os "magic bytes" do ficheiro - mais seguro
-            // do que confiar na extensão (que pode ser falsificada)
-            $tipo = mime_content_type($_FILES['comprovativo']['tmp_name']);
-            $tiposOk = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
-
-            if ($tamanho > 5 * 1024 * 1024) {  // 5 MB em bytes
-                $mensagem = "Ficheiro demasiado grande (máx 5MB).";
-                $tipoMsg = "erro";
-            } elseif (!in_array($tipo, $tiposOk, true)) {
-                $mensagem = "Apenas JPG, PNG, GIF ou PDF são permitidos.";
-                $tipoMsg = "erro";
-            } else {
-                // Lê o ficheiro inteiro para variável e guarda na BD como BLOB.
-                // Para ficheiros grandes seria melhor guardar em pasta + caminho na BD,
-                // mas para a PAP guardar em BLOB simplifica a estrutura.
-                $blob = file_get_contents($_FILES['comprovativo']['tmp_name']);
-                $stmt = $conn->prepare("
-                    UPDATE pagamento
-                    SET comprovativo = ?, estado_pagamento = 'analise_pagamento'
-                    WHERE pedido_id = ?
-                ");
-                // bindValue com PARAM_LOB é a forma correcta de passar binários ao PDO
-                $stmt->bindValue(1, $blob, PDO::PARAM_LOB);
-                $stmt->bindValue(2, $pedidoId, PDO::PARAM_INT);
-                $stmt->execute();
-
-                header("Location: encomenda.php?id=" . $pedidoId . "&msg=comprovativo");
-                exit;
-            }
-        }
-    }
     // ----- AÇÃO: Avaliar a encomenda (estrelas + comentário) -----
     elseif ($accao === 'avaliar') {
         csrf_validate();
@@ -170,7 +126,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // (Pattern Post-Redirect-Get: evita re-submissão se o utilizador atualizar página)
 if (isset($_GET['msg'])) {
     if ($_GET['msg'] === 'cancelado') { $mensagem = "Pedido cancelado."; $tipoMsg = "ok"; }
-    if ($_GET['msg'] === 'comprovativo') { $mensagem = "Comprovativo enviado. Estamos a validar o pagamento."; $tipoMsg = "ok"; }
     if ($_GET['msg'] === 'avaliacao') { $mensagem = "Avaliação enviada! Obrigado. Vai aparecer no site assim que for aprovada."; $tipoMsg = "ok"; }
 }
 
@@ -205,11 +160,6 @@ $podeCancelar = in_array($pedido['estado'], ['em_analise', 'aguarda_pagamento'],
 $pagInline = $pagamento && in_array($pagamento['metodo'], ['cartao', 'mbway'], true)
              && $pagamento['estado_pagamento'] !== 'validado'
              && $pedido['estado'] !== 'cancelado';
-
-// Mostrar zona de upload de comprovativo (só para transferência não validada)
-$podeUpload = $pagamento && $pagamento['metodo'] === 'transferencia'
-              && $pagamento['estado_pagamento'] !== 'validado'
-              && $pedido['estado'] !== 'cancelado';
 
 function estadoLabel2($e) {
     return [
@@ -415,29 +365,6 @@ function metodoLabel($m) {
             </div>
         <?php endif; ?>
 
-        <?php if ($podeUpload): ?>
-            <div class="cli-section">
-                <h2>Comprovativo de transferência</h2>
-                <p>Faça a transferência para o IBAN abaixo e envie aqui o comprovativo (JPG, PNG ou PDF, máx 5MB).</p>
-                <p style="background:#fff8fa; padding:12px 14px; border-radius:10px; border:1px dashed #e8a4b0;">
-                    <strong>IBAN:</strong> PT50 0000 0000 0000 0000 0000 0<br>
-                    <strong>Beneficiário:</strong> SylviArtes<br>
-                    <strong>Referência:</strong> Pedido #<?php echo (int)$pedido['id']; ?>
-                </p>
-
-                <?php if (!empty($pagamento['comprovativo'])): ?>
-                    <p style="color:#1f6b35;">✓ Já enviou um comprovativo. Pode enviar outro para substituir.</p>
-                <?php endif; ?>
-
-                <form method="POST" enctype="multipart/form-data">
-                    <?= csrf_input() ?>
-                    <input type="hidden" name="accao" value="comprovativo">
-                    <input type="file" name="comprovativo" accept="image/*,application/pdf" required style="margin:14px 0;">
-                    <br>
-                    <button type="submit" class="cli-btn">Enviar comprovativo</button>
-                </form>
-            </div>
-        <?php endif; ?>
 
         <?php if ($podeCancelar): ?>
             <div class="cli-section">
