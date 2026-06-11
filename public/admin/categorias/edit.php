@@ -55,7 +55,7 @@ if ($_POST && isset($_POST['guardar'])) {
     <title>Editar Categoria - SylviArtes</title>
     <!-- Favicon: logotipo no separador do browser -->
     <link rel="icon" type="image/png" href="../../imagens/logo_sylviartes.png">
-    <link rel="stylesheet" href="../admin_style.css?v=3">
+    <link rel="stylesheet" href="../admin_style.css?v=4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- Estilos do formulário centralizados em admin_style.css (.form-card, .form-field, etc.) -->

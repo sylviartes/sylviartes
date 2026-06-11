@@ -68,7 +68,7 @@ $produtos = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
     <title>Portfólio - SylviArtes Admin</title>
     <!-- Favicon: logotipo no separador do browser -->
     <link rel="icon" type="image/png" href="../../imagens/logo_sylviartes.png">
-    <link rel="stylesheet" href="../admin_style.css?v=3">
+    <link rel="stylesheet" href="../admin_style.css?v=4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -84,7 +84,7 @@ $produtos = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
             font-size: 28px; color: #2d3436; margin: 0;
             font-weight: 600;
         }
-        .pagina-header .total { color: #888; font-size: 14px; margin-top: 4px; }
+        .pagina-header .total { color: #888; font-size: 14px; margin-top: 16px; }
 
         .btn-add {
             background: linear-gradient(135deg, #d66d7f, #bf5b6d);

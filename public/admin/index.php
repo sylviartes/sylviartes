@@ -234,7 +234,7 @@ function tempo_decorrido(int $minutos): string {
     <title>Dashboard - SylviArtes Admin</title>
     <!-- Favicon: logotipo no separador do browser -->
     <link rel="icon" type="image/png" href="../imagens/logo_sylviartes.png">
-    <link rel="stylesheet" href="admin_style.css?v=3">
+    <link rel="stylesheet" href="admin_style.css?v=4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -254,6 +254,7 @@ function tempo_decorrido(int $minutos): string {
             color: #888;
             font-size: 15px;
             text-transform: capitalize;
+            margin-top: 16px;
         }
 
         /* HERO de pedidos por tratar */

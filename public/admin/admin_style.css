@@ -627,6 +627,7 @@ form label {
 .admin-page-header .subtitulo {
     color: var(--texto-secundario);
     font-size: 13px;
+    margin-top: 16px;
 }
 
 /* --- Botões de moderação de avaliações ---
