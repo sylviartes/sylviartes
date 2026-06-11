@@ -66,6 +66,41 @@ function pagamentoLabel($estado) {
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="cliente_style.css">
+    <style>
+        /* ===== TELEMOVEL: cada encomenda vira um cartao empilhado =====
+           Ate 640px a tabela larga obrigava a scroll lateral. Escondemos o
+           cabecalho e mostramos cada linha como um cartao, com o nome da coluna
+           (data-label) a esquerda e o valor a direita. Assim aparece tudo no ecra. */
+        @media (max-width: 640px) {
+            .cli-orders-table thead { display: none; }
+            .cli-orders-table,
+            .cli-orders-table tbody,
+            .cli-orders-table tr,
+            .cli-orders-table td { display: block; width: 100%; box-sizing: border-box; }
+
+            .cli-orders-table tr {
+                border: 1px solid #f0e3e7; border-radius: 12px;
+                padding: 10px 14px; margin-bottom: 14px; background: #fff;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            }
+            .cli-orders-table td {
+                display: flex; justify-content: space-between; align-items: center;
+                gap: 12px; padding: 8px 0; border: none;
+                border-bottom: 1px solid #f5f0f2; text-align: right;
+            }
+            .cli-orders-table td:last-child { border-bottom: none; }
+            .cli-orders-table td::before {
+                content: attr(data-label);
+                font-weight: 600; color: #d66d7f; font-size: 11.5px;
+                text-transform: uppercase; letter-spacing: 0.4px;
+                text-align: left; flex-shrink: 0;
+            }
+            /* Botao "Ver" em largura total, sem etiqueta */
+            .cli-orders-table td.cli-cell-ver { padding-top: 10px; }
+            .cli-orders-table td.cli-cell-ver::before { content: none; }
+            .cli-orders-table td.cli-cell-ver .cli-btn { width: 100%; text-align: center; }
+        }
+    </style>
 </head>
 <body>
     <div class="cli-wrapper">
@@ -84,7 +119,7 @@ function pagamentoLabel($estado) {
                     <a href="../catalogo.php" class="cli-btn">🛍️ Explorar catálogo</a>
                 </div>
             <?php else: ?>
-                <table class="cli-table">
+                <table class="cli-table cli-orders-table">
                     <thead>
                         <tr>
                             <th>Nº</th>
@@ -98,22 +133,22 @@ function pagamentoLabel($estado) {
                     <tbody>
                         <?php foreach ($pedidos as $p): ?>
                             <tr>
-                                <td><strong>#<?php echo (int)$p['id']; ?></strong></td>
-                                <td><?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($p['data']))); ?></td>
-                                <td><?php echo number_format($p['valor_total'], 2, ',', '.'); ?> €</td>
-                                <td>
+                                <td data-label="Nº"><strong>#<?php echo (int)$p['id']; ?></strong></td>
+                                <td data-label="Data"><?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($p['data']))); ?></td>
+                                <td data-label="Total"><?php echo number_format($p['valor_total'], 2, ',', '.'); ?> €</td>
+                                <td data-label="Pagamento">
                                     <?php if ($p['estado_pagamento']): ?>
                                         <span class="cli-badge b-<?php echo htmlspecialchars($p['estado_pagamento']); ?>">
                                             <?php echo htmlspecialchars(pagamentoLabel($p['estado_pagamento'])); ?>
                                         </span>
                                     <?php else: ?>-<?php endif; ?>
                                 </td>
-                                <td>
+                                <td data-label="Estado">
                                     <span class="cli-badge b-<?php echo htmlspecialchars($p['estado']); ?>">
                                         <?php echo htmlspecialchars(estadoLabel($p['estado'])); ?>
                                     </span>
                                 </td>
-                                <td>
+                                <td class="cli-cell-ver">
                                     <a href="encomenda.php?id=<?php echo (int)$p['id']; ?>" class="cli-btn cli-btn-ghost">Ver</a>
                                 </td>
                             </tr>
