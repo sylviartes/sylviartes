@@ -104,42 +104,38 @@ foreach ($itens as $it) {
 $descricao = implode(', ', $descricaoItens);
 
 try {
-    // === 4. Emite a FATURA dinâmica no Stripe (Billing / Invoices) ===
-    // Recolhe morada de faturação e de envio a partir dos dados do cliente.
-    $fatura = criar_fatura_stripe(
+    // === 4. Cria uma CHECKOUT SESSION no Stripe (Cartão + MB Way + Multibanco) ===
+    // Usamos Checkout (em vez de Fatura) porque só assim o MB Way fica disponível.
+    $sessao = criar_checkout_session(
         $pedidoId,
         (float)$row['valor_total'],
-        [
-            'nome'          => $row['cliente_nome'],
-            'email'         => $row['cliente_email'],
-            'morada'        => $row['cliente_morada'] ?? '',
-            'codigo_postal' => $row['cliente_cp'] ?? '',
-            'localidade'    => $row['cliente_localidade'] ?? '',
-            'telefone'      => $row['cliente_telefone'] ?? '',
-        ],
+        'cartao',
+        $row['cliente_email'],
         $descricao
     );
 
-    // URL da fatura alojada pela Stripe (onde o cliente paga com cartão ou MB Way)
-    $linkUrl = $fatura->hosted_invoice_url;
+    // URL da página de pagamento alojada pela Stripe e ID da sessão (para o webhook)
+    $linkUrl   = $sessao->url;
+    $sessionId = $sessao->id;
 
-    // === 5. Guarda URL na BD (atualiza pagamento existente, ou cria novo) ===
+    // === 5. Guarda URL + session_id na BD (atualiza pagamento existente, ou cria novo) ===
     if ($row['pagamento_id']) {
         $stmt = $conn->prepare("
             UPDATE pagamento
             SET stripe_payment_link_url = ?,
+                stripe_session_id = ?,
                 valor = ?,
                 estado_pagamento = 'analise_pagamento'
             WHERE id = ?
         ");
-        $stmt->execute([$linkUrl, $row['valor_total'], $row['pagamento_id']]);
+        $stmt->execute([$linkUrl, $sessionId, $row['valor_total'], $row['pagamento_id']]);
     } else {
         // Sem pagamento criado ainda - cria com método 'cartao'
         $stmt = $conn->prepare("
-            INSERT INTO pagamento (pedido_id, metodo, valor, estado_pagamento, stripe_payment_link_url)
-            VALUES (?, 'cartao', ?, 'analise_pagamento', ?)
+            INSERT INTO pagamento (pedido_id, metodo, valor, estado_pagamento, stripe_payment_link_url, stripe_session_id)
+            VALUES (?, 'cartao', ?, 'analise_pagamento', ?, ?)
         ");
-        $stmt->execute([$pedidoId, $row['valor_total'], $linkUrl]);
+        $stmt->execute([$pedidoId, $row['valor_total'], $linkUrl, $sessionId]);
     }
 
     // === 6. Atualiza estado do pedido + log ===

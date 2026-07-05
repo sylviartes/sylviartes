@@ -156,12 +156,14 @@ CREATE TABLE detalhe_pedido (
 CREATE TABLE pagamento (
   id                      INT AUTO_INCREMENT PRIMARY KEY,
   pedido_id               INT NOT NULL,
-  metodo                  ENUM('mbway','transferencia','dinheiro') NOT NULL,
+  metodo                  ENUM('cartao','mbway','transferencia','dinheiro') NOT NULL,
   data                    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   valor                   DECIMAL(10,2) NOT NULL,
   estado_pagamento        ENUM('validado','recusado','analise_pagamento')
                           NOT NULL DEFAULT 'analise_pagamento',
   stripe_payment_link_url VARCHAR(500) NULL,
+  stripe_session_id        VARCHAR(255) NULL,
+  stripe_payment_intent_id VARCHAR(255) NULL,
   CONSTRAINT fk_pagamento_pedido FOREIGN KEY (pedido_id) REFERENCES pedido(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

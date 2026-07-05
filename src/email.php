@@ -214,7 +214,7 @@ function enviar_email_orcamento(
 
         <p style="color:#555; line-height:1.6;">
             Para confirmar a encomenda e iniciarmos a produção, pague através do link
-            seguro abaixo. Aceitamos <strong>cartão</strong> e <strong>MB Way</strong>.
+            seguro abaixo. Aceitamos <strong>cartão</strong>, <strong>MB Way</strong> e <strong>Multibanco</strong>.
         </p>
 
         <p style="text-align:center; margin:35px 0;">
@@ -264,9 +264,12 @@ function enviar_email_nova_encomenda(
     string $telefone,
     string $descricao
 ): bool {
-    // Lê a URL base do site para o link do admin (funciona em localhost e em produção)
-    $baseUrl = getenv('SITE_BASE_URL') ?: 'http://localhost:8080';
-    $linkAdmin = $baseUrl . '/public/admin/encomendas/view.php?id=' . $pedidoId;
+    // URL base de CONFIANÇA, vinda da configuração do servidor (SITE_BASE_URL).
+    // Não é derivada de cabeçalhos do pedido (Host / X-Forwarded-Proto), porque este
+    // email é despoletado por um visitante; usar o Host permitiria injeção de domínio
+    // de phishing no link enviado ao admin.
+    $baseUrl = getenv('SITE_BASE_URL') ?: 'https://sylviartes.pt';
+    $linkAdmin = rtrim($baseUrl, '/') . '/admin/encomendas/view.php?id=' . $pedidoId;
 
     $corpo = '
     <div style="font-family:Arial,sans-serif; max-width:600px; margin:0 auto; padding:30px; background:#fff;">
@@ -397,16 +400,10 @@ function enviar_email_estado_pedido(PDO $conn, int $pedidoId, string $novoEstado
     $primeiroNome = htmlspecialchars(explode(' ', $cli['nome'])[0] ?? 'Cliente');
 
     // Link para a cliente ver a encomenda na sua área pessoal.
-    // Usa o host do pedido HTTP atual (em produção é sylviartes.pt), por ser sempre
-    // o domínio real onde o email está a ser gerado. Só cai para SITE_BASE_URL /
-    // localhost se, por algum motivo, não estivermos dentro de um pedido web.
-    if (!empty($_SERVER['HTTP_HOST'])) {
-        $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-                   || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
-        $baseUrl = ($isHttps ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
-    } else {
-        $baseUrl = getenv('SITE_BASE_URL') ?: 'http://localhost:8080';
-    }
+    // URL base de CONFIANÇA, vinda da configuração do servidor (SITE_BASE_URL), e não
+    // derivada de cabeçalhos do pedido (Host / X-Forwarded-Proto), para evitar injeção
+    // de um domínio de phishing no link enviado por email.
+    $baseUrl = getenv('SITE_BASE_URL') ?: 'https://sylviartes.pt';
     $linkConta = rtrim($baseUrl, '/') . '/cliente/encomenda.php?id=' . $pedidoId;
 
     $corpo = '

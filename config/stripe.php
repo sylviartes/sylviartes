@@ -62,12 +62,13 @@ function criar_checkout_session(int $pedidoId, float $valorTotal, string $metodo
 {
     stripe_init();
 
-    // Métodos de pagamento aceites
-    $paymentMethodTypes = ['card'];
-    if ($metodo === 'mbway') {
-        // Stripe expõe MB Way para Portugal
-        $paymentMethodTypes = ['mb_way'];
-    }
+    // Métodos de pagamento aceites em Portugal: Cartão, MB Way e Multibanco.
+    // (O parâmetro $metodo é mantido por compatibilidade, mas oferecemos os três.)
+    $paymentMethodTypes = ['card', 'mb_way', 'multibanco'];
+
+    // URL base de CONFIANÇA (SITE_BASE_URL, sem o prefixo /public, que não existe no
+    // URL de produção). Em produção é https://sylviartes.pt.
+    $baseUrl = rtrim(SITE_BASE_URL, '/');
 
     $session = \Stripe\Checkout\Session::create([
         'mode' => 'payment',
@@ -87,8 +88,12 @@ function criar_checkout_session(int $pedidoId, float $valorTotal, string $metodo
         'metadata' => [
             'pedido_id' => (string) $pedidoId,
         ],
-        'success_url' => SITE_BASE_URL . '/public/stripe_success.php?session_id={CHECKOUT_SESSION_ID}',
-        'cancel_url'  => SITE_BASE_URL . '/public/stripe_cancel.php?pedido_id=' . $pedidoId,
+        // Repete o pedido_id no PaymentIntent, útil para reconciliação/webhooks.
+        'payment_intent_data' => [
+            'metadata' => ['pedido_id' => (string) $pedidoId],
+        ],
+        'success_url' => $baseUrl . '/stripe_success.php?session_id={CHECKOUT_SESSION_ID}',
+        'cancel_url'  => $baseUrl . '/stripe_cancel.php?pedido_id=' . $pedidoId,
     ]);
 
     return $session;
@@ -204,21 +209,38 @@ function criar_fatura_stripe(
 
     $customer = \Stripe\Customer::create($dadosCliente);
 
-    // --- 2. Linha da fatura: valor dinâmico do orçamento (em cêntimos) ---
-    \Stripe\InvoiceItem::create([
-        'customer'    => $customer->id,
-        'amount'      => (int) round($valorTotal * 100),
-        'currency'    => STRIPE_CURRENCY,
-        'description' => $descricao ?: ('Bordado personalizado - Pedido #' . $pedidoId),
-    ]);
-
-    // --- 3. Criar a fatura (envio por email, com prazo de vencimento) ---
-    $invoice = \Stripe\Invoice::create([
+    // --- 2. Criar a fatura PRIMEIRO (vazia), com envio por email e prazo de vencimento ---
+    // É criada antes da linha para podermos ligar o item a ESTA fatura de forma explícita.
+    // (Se criássemos o item antes da fatura, o item ficava "pendente" e podia não ser
+    //  anexado, resultando numa fatura de 0 EUR marcada como paga.)
+    //
+    // Métodos de pagamento mostrados: Cartão + MB Way (Portugal). Se o MB Way não
+    // estiver ativado na conta Stripe, o pedido é rejeitado; nesse caso repetimos só
+    // com cartão, para o link de pagamento nunca falhar.
+    $dadosFatura = [
         'customer'          => $customer->id,
         'collection_method' => 'send_invoice',
         'days_until_due'    => $diasVencimento,
         'description'       => 'SylviArtes - Pedido #' . $pedidoId,
         'metadata'          => ['pedido_id' => (string) $pedidoId],
+        'auto_advance'      => false,
+        'payment_settings'  => ['payment_method_types' => ['card', 'mb_way']],
+    ];
+    try {
+        $invoice = \Stripe\Invoice::create($dadosFatura);
+    } catch (\Stripe\Exception\InvalidRequestException $e) {
+        // Provavelmente o MB Way não está ativado na conta -> usa apenas cartão
+        $dadosFatura['payment_settings']['payment_method_types'] = ['card'];
+        $invoice = \Stripe\Invoice::create($dadosFatura);
+    }
+
+    // --- 3. Linha da fatura: valor do orçamento (em cêntimos), ligada a ESTA fatura ---
+    \Stripe\InvoiceItem::create([
+        'customer'    => $customer->id,
+        'invoice'     => $invoice->id,
+        'amount'      => (int) round($valorTotal * 100),
+        'currency'    => STRIPE_CURRENCY,
+        'description' => $descricao ?: ('Bordado personalizado - Pedido #' . $pedidoId),
     ]);
 
     // --- 4. Finalizar -> gera número de fatura, PDF e URL de pagamento alojada ---
