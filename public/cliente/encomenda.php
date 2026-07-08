@@ -336,10 +336,14 @@ function metodoLabel($m) {
                 </thead>
                 <tbody>
                     <?php foreach ($itens as $it):
-                        // Imagem do produto (BLOB → data URI), tal como no painel de admin
-                        $imgDados = is_resource($it['produto_imagem']) ? stream_get_contents($it['produto_imagem']) : $it['produto_imagem'];
-                        $imgMime  = !empty($imgDados) ? (new finfo(FILEINFO_MIME_TYPE))->buffer($imgDados) : '';
-                        $imgSrc   = !empty($imgDados) ? "data:{$imgMime};base64," . base64_encode($imgDados) : '';
+                        // A imagem do produto é um NOME DE FICHEIRO (produto_imagem.imagem);
+                        // o ficheiro está em public/imagens/produtos/. Construímos o caminho
+                        // e só a mostramos se o ficheiro existir mesmo (senão fica o ícone).
+                        $imgFicheiro = $it['produto_imagem'] ?? '';
+                        $imgSrc = '';
+                        if (!empty($imgFicheiro) && file_exists(__DIR__ . '/../imagens/produtos/' . $imgFicheiro)) {
+                            $imgSrc = '../imagens/produtos/' . rawurlencode($imgFicheiro);
+                        }
                     ?>
                         <tr>
                             <td>
