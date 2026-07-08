@@ -130,7 +130,7 @@ CREATE TABLE pedido (
   prazo_entrega_desejado  DATE NOT NULL,
   estado                  ENUM('aguarda_orcamento','em_analise','aguarda_pagamento',
                                'em_producao','concluido','entregue','cancelado')
-                          NOT NULL DEFAULT 'aguarda_orcamento',
+                          NOT NULL DEFAULT 'em_analise',
   valor_total             DECIMAL(10,2) NOT NULL DEFAULT 0,
   observacoes             TEXT NULL,
   tipo_entrega            ENUM('levantamento_atelier','domicilio') NOT NULL,
@@ -495,7 +495,12 @@ END$$
 CREATE TRIGGER trg_pedido_antes_update
 BEFORE UPDATE ON pedido FOR EACH ROW
 BEGIN
-    IF NEW.prazo_entrega_desejado <= CURDATE() THEN
+    -- So valida a data quando o prazo esta MESMO a ser alterado. Assim, mudar
+    -- apenas o estado (cancelar, concluir, entregar) de um pedido cujo prazo ja
+    -- passou deixa de ser bloqueado. A regra continua a impedir definir um prazo
+    -- novo no passado.
+    IF NEW.prazo_entrega_desejado <> OLD.prazo_entrega_desejado
+       AND NEW.prazo_entrega_desejado <= CURDATE() THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'O prazo de entrega desejado deve ser uma data futura.';
     END IF;
 END$$

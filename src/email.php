@@ -191,7 +191,7 @@ function enviar_email_orcamento(
 
         <p style="color:#555; line-height:1.6;">
             Obrigada pelo seu interesse no nosso trabalho. Já analisámos o seu pedido
-            <strong>#' . $pedidoId . '</strong> e enviamos-lhe agora o orçamento final.
+            e enviamos-lhe agora o orçamento final.
         </p>
 
         <div style="background:#fff8fa; border-left:4px solid #d66d7f; padding:20px; margin:25px 0; border-radius:6px;">
@@ -234,7 +234,7 @@ function enviar_email_orcamento(
 
         <p style="color:#999; font-size:12px; text-align:center;">
             SylviArtes &middot; Costura Criativa<br>
-            Este email foi gerado automaticamente para o pedido #' . $pedidoId . '
+            Este email foi gerado automaticamente.
         </p>
     </div>';
 

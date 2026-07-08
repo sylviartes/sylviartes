@@ -47,7 +47,7 @@ if (avaliacoes_disponiveis($conn)) {
         LEFT JOIN produto p ON p.id = a.produto_id
         WHERE a.aprovado = 1 AND a.comentario IS NOT NULL AND a.comentario != ''
         ORDER BY a.estrelas DESC, a.data DESC
-        LIMIT 3
+        LIMIT 12
     ");
     $depoimentos = $stmtDepoimentos->fetchAll(PDO::FETCH_ASSOC);
 
@@ -344,6 +344,39 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
 .depoimento-rodape .meta { font-size: 12.5px; color: var(--texto-suave); margin-top: 2px; }
 .depoimento-rodape .meta a { color: var(--rosa); text-decoration: none; }
 
+/* ===== CARROSSEL DE DEPOIMENTOS (roda sozinho) =====
+   Os cartoes deslizam continuamente da direita para a esquerda. A lista e
+   duplicada em duas metades iguais e a animacao move exatamente meia largura,
+   por isso o ciclo repete sem saltos. Pausa quando se passa o rato por cima. */
+.depoimentos-carousel {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.depoimentos-track {
+    display: flex;
+    width: max-content;
+    animation: depoimentos-scroll var(--dur, 40s) linear infinite;
+}
+.depoimentos-carousel:hover .depoimentos-track { animation-play-state: paused; }
+.depoimentos-track .depoimento-card {
+    flex: 0 0 340px;
+    width: 340px;
+    margin-right: 24px;   /* margem (nao gap) para o -50% ser exato */
+    box-sizing: border-box;
+}
+@keyframes depoimentos-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+@media (max-width: 640px) {
+    .depoimentos-track .depoimento-card { flex-basis: 80vw; width: 80vw; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .depoimentos-track { animation: none; }
+    .depoimentos-carousel { overflow-x: auto; }
+}
+
 /* ===== PORQUÊ ===== */
 .porque-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
 .porque-item { text-align: center; padding: 0 8px; }
@@ -628,21 +661,32 @@ main { padding: 0 !important; max-width: 100% !important; background: var(--neut
             <h2>O que dizem as nossas clientes</h2>
             <p>Avaliações reais de quem já comprou.</p>
         </div>
-        <div class="depoimentos-grid">
-            <?php foreach ($depoimentos as $d): ?>
-                <div class="depoimento-card">
-                    <div class="estrelas"><?= render_estrelas((float)$d['estrelas']) ?></div>
-                    <p>"<?= htmlspecialchars($d['comentario']) ?>"</p>
-                    <div class="depoimento-rodape">
-                        <strong><?= htmlspecialchars($d['cliente']) ?></strong>
-                        <?php if (!empty($d['produto'])): ?>
-                            <div class="meta">
-                                sobre <a href="produto.php?id=<?= (int)$d['produto_id'] ?>"><?= htmlspecialchars($d['produto']) ?></a>
-                            </div>
-                        <?php endif; ?>
+        <?php
+            // Garante largura suficiente por metade (repete a base ate ter >= 5 cartoes)
+            // e depois duplica em duas metades iguais para o carrossel dar a volta sem saltos.
+            $metade = $depoimentos;
+            while (count($metade) < 5) { $metade = array_merge($metade, $depoimentos); }
+            $carrossel = array_merge($metade, $metade);
+            $nMetade   = count($metade);
+            $duracao   = max(24, $nMetade * 7); // segundos: mais cartoes -> mais lento
+        ?>
+        <div class="depoimentos-carousel">
+            <div class="depoimentos-track" style="--dur: <?= $duracao ?>s;">
+                <?php foreach ($carrossel as $i => $d): ?>
+                    <div class="depoimento-card" <?= $i >= $nMetade ? 'aria-hidden="true"' : '' ?>>
+                        <div class="estrelas"><?= render_estrelas((float)$d['estrelas']) ?></div>
+                        <p>"<?= htmlspecialchars($d['comentario']) ?>"</p>
+                        <div class="depoimento-rodape">
+                            <strong><?= htmlspecialchars($d['cliente']) ?></strong>
+                            <?php if (!empty($d['produto'])): ?>
+                                <div class="meta">
+                                    sobre <a href="produto.php?id=<?= (int)$d['produto_id'] ?>"><?= htmlspecialchars($d['produto']) ?></a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
 </section>
