@@ -55,24 +55,34 @@ clear_cart();
 $pageTitle = 'Pagamento Confirmado';
 require_once __DIR__ . '/header.php';
 ?>
-<div class="checkout-wrapper" style="text-align:center;">
+<div class="checkout-wrapper" style="text-align:center; padding:60px 20px;">
     <h1 style="color:#2d7a44;">✓ Pagamento recebido</h1>
     <?php if ($pedidoId): ?>
         <?php $numCliente = numero_pedido_cliente($conn, (int)$pedidoId); ?>
-        <p>O seu pedido <strong>#<?php echo (int)$numCliente; ?></strong> foi registado com sucesso.</p>
+        <p style="font-size:17px; color:#555; margin-top:10px;">O seu pedido <strong>#<?php echo (int)$numCliente; ?></strong> foi registado com sucesso.</p>
     <?php endif; ?>
-    <p>
+    <p style="max-width:560px; margin:8px auto 0; color:#555; font-size:16px; line-height:1.6;">
         <?php if ($estadoPagamento === 'validado'): ?>
             Recebemos a confirmação do Stripe. Vamos começar a produção em breve.
         <?php else: ?>
             Estamos a confirmar o pagamento. Receberá atualizações por email.
         <?php endif; ?>
     </p>
-    <p style="margin-top:30px;">
+    <p style="margin-top:32px;">
+        <?php
+        // Botão principal em rosa da marca (estilo inline para não depender do CSS).
+        $btnRosa = 'display:inline-flex; align-items:center; gap:9px; padding:15px 32px;'
+                 . 'background:linear-gradient(135deg,#d66d7f,#bf5b6d); color:#fff; text-decoration:none;'
+                 . 'border-radius:999px; font-weight:700; font-size:16px; box-shadow:0 8px 20px rgba(214,109,127,0.25);';
+        ?>
         <?php if (isset($_SESSION['cliente_id'])): ?>
-            <a href="cliente/encomendas.php" class="checkout-btn" style="width:auto; padding:14px 28px; display:inline-block;">Ver as minhas encomendas</a>
+            <a href="cliente/encomendas.php" style="<?php echo $btnRosa; ?>">
+                <i class="fas fa-box"></i> Ver as minhas encomendas
+            </a>
         <?php else: ?>
-            <a href="catalogo.php" class="checkout-btn" style="width:auto; padding:14px 28px; display:inline-block;">Continuar a comprar</a>
+            <a href="catalogo.php" style="<?php echo $btnRosa; ?>">
+                <i class="fas fa-images"></i> Ver o catálogo
+            </a>
         <?php endif; ?>
     </p>
 </div>
