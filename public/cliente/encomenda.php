@@ -146,7 +146,8 @@ $pagamento = $stmt->fetch(PDO::FETCH_ASSOC);
 // Itens (detalhe do pedido) - JOIN com produto para ir buscar o nome
 // (LEFT JOIN porque o produto pode ter sido eliminado entretanto)
 $stmt = $conn->prepare("
-    SELECT dp.*, pr.nome AS produto_nome
+    SELECT dp.*, pr.nome AS produto_nome,
+           (SELECT imagem FROM produto_imagem WHERE produto_id = pr.id ORDER BY ordem ASC LIMIT 1) AS produto_imagem
     FROM detalhe_pedido dp
     LEFT JOIN produto pr ON pr.id = dp.produto_id
     WHERE dp.pedido_id = ?
@@ -330,13 +331,30 @@ function metodoLabel($m) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($itens as $it): ?>
+                    <?php foreach ($itens as $it):
+                        // Imagem do produto (BLOB → data URI), tal como no painel de admin
+                        $imgDados = is_resource($it['produto_imagem']) ? stream_get_contents($it['produto_imagem']) : $it['produto_imagem'];
+                        $imgMime  = !empty($imgDados) ? (new finfo(FILEINFO_MIME_TYPE))->buffer($imgDados) : '';
+                        $imgSrc   = !empty($imgDados) ? "data:{$imgMime};base64," . base64_encode($imgDados) : '';
+                    ?>
                         <tr>
                             <td>
-                                <strong><?php echo htmlspecialchars($it['produto_nome'] ?? 'Produto removido'); ?></strong>
-                                <?php if (!empty($it['descricao'])): ?>
-                                    <br><small style="color:#636e72;"><?php echo htmlspecialchars($it['descricao']); ?></small>
-                                <?php endif; ?>
+                                <div style="display:flex; gap:12px; align-items:center;">
+                                    <?php if ($imgSrc): ?>
+                                        <img src="<?php echo $imgSrc; ?>" alt=""
+                                             style="width:52px; height:52px; object-fit:cover; border-radius:8px; border:1px solid #f0e3e7; flex-shrink:0;">
+                                    <?php else: ?>
+                                        <div style="width:52px; height:52px; border-radius:8px; border:1px solid #f0e3e7; background:#fdf6f8; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                            <i class="fas fa-palette" style="color:#d66d7f; font-size:16px;"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div>
+                                        <strong><?php echo htmlspecialchars($it['produto_nome'] ?? 'Produto removido'); ?></strong>
+                                        <?php if (!empty($it['descricao'])): ?>
+                                            <br><small style="color:#636e72;"><?php echo htmlspecialchars($it['descricao']); ?></small>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             </td>
                             <td><?php echo (int)$it['quantidade']; ?></td>
                             <td><?php echo number_format($it['preco_unitario'] ?? 0, 2, ',', '.'); ?> €</td>

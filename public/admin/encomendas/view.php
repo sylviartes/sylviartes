@@ -444,10 +444,60 @@ $estadoCores = [
             $imagensInspiracao = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     } catch (Exception $e) { /* ignora */ }
+
+    // Carrega o item do portfólio que a cliente indicou como referência
+    // (botão "Quero algo parecido" → pedir-orcamento.php?inspiracao=ID).
+    // Fica guardado em pedido.portfolio_inspiracao_id. Assim a Sylvia vê logo
+    // qual foi o trabalho já feito em que a cliente se inspirou.
+    $refPortfolio = null;
+    $refPortfolioId = (int)($pedido['portfolio_inspiracao_id'] ?? 0);
+    if ($refPortfolioId > 0) {
+        try {
+            $stmt = $conn->prepare("
+                SELECT p.id, p.nome, c.nome AS categoria,
+                       (SELECT imagem FROM produto_imagem WHERE produto_id = p.id ORDER BY ordem ASC LIMIT 1) AS imagem
+                FROM produto p
+                LEFT JOIN categoria c ON c.id = p.categoria_id
+                WHERE p.id = ?
+            ");
+            $stmt->execute([$refPortfolioId]);
+            $refPortfolio = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        } catch (Exception $e) { /* coluna/tabela pode não existir ainda */ }
+    }
     ?>
 
     <div class="secao">
         <div class="secao-titulo"><i class="fas fa-images"></i> Imagens de Inspiração da Cliente</div>
+
+        <?php if ($refPortfolio): ?>
+            <?php
+                // Prepara a imagem do trabalho de referência (BLOB → data URI)
+                $refImg = is_resource($refPortfolio['imagem']) ? stream_get_contents($refPortfolio['imagem']) : $refPortfolio['imagem'];
+                $refMime = !empty($refImg) ? (new finfo(FILEINFO_MIME_TYPE))->buffer($refImg) : '';
+                $refSrc  = !empty($refImg) ? "data:{$refMime};base64," . base64_encode($refImg) : '';
+            ?>
+            <div style="background:#fff8fa; border:1px solid #f4cdd5; border-radius:12px; padding:16px; margin-bottom:18px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+                <?php if ($refSrc): ?>
+                    <img src="<?= $refSrc ?>" alt="<?= htmlspecialchars($refPortfolio['nome']) ?>"
+                         style="width:90px; height:90px; object-fit:cover; border-radius:10px; border:1px solid #f0e3e7; flex-shrink:0;">
+                <?php else: ?>
+                    <div style="width:90px; height:90px; border-radius:10px; border:1px solid #f0e3e7; background:#fdf6f8; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <i class="fas fa-palette" style="color:#d66d7f; font-size:24px;"></i>
+                    </div>
+                <?php endif; ?>
+                <div style="flex:1; min-width:180px;">
+                    <div class="info-label">Quer algo parecido a este trabalho</div>
+                    <div class="info-valor" style="margin:2px 0;"><?= htmlspecialchars($refPortfolio['nome']) ?></div>
+                    <?php if (!empty($refPortfolio['categoria'])): ?>
+                        <div style="color:#888; font-size:13px;"><?= htmlspecialchars($refPortfolio['categoria']) ?></div>
+                    <?php endif; ?>
+                    <a href="../../produto.php?id=<?= (int)$refPortfolio['id'] ?>" target="_blank" rel="noopener"
+                       style="display:inline-block; margin-top:8px; font-size:13px; color:#d66d7f; font-weight:600; text-decoration:none;">
+                        <i class="fas fa-up-right-from-square"></i> Ver no portfólio
+                    </a>
+                </div>
+            </div>
+        <?php endif; ?>
 
         <?php if (!$tabelaInspiracaoExiste): ?>
             <div class="aviso-migracao">
