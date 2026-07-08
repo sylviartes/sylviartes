@@ -24,6 +24,7 @@ require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../config/csrf.php';
 require_once __DIR__ . '/../../src/avaliacoes.php';
+require_once __DIR__ . '/../../src/pedidos.php';   // numero_pedido_cliente()
 
 $clienteId = $_SESSION['cliente_id'];
 $pedidoId = (int)($_GET['id'] ?? 0);
@@ -155,6 +156,9 @@ $stmt = $conn->prepare("
 $stmt->execute([$pedidoId]);
 $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Número deste pedido para o cliente (1, 2, 3...), em vez do id global da BD
+$numCliente = numero_pedido_cliente($conn, $pedidoId, (int)$clienteId);
+
 // === Flags de UI: que botões/secções mostrar? ===
 $podeCancelar = in_array($pedido['estado'], ['em_analise', 'aguarda_pagamento'], true);
 // Mostrar botão "Pagar agora" (só faz sentido para Stripe não validado)
@@ -194,7 +198,7 @@ function metodoLabel($m) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encomenda #<?php echo (int)$pedido['id']; ?> - SylviArtes</title>
+    <title>Encomenda #<?php echo (int)$numCliente; ?> - SylviArtes</title>
     <!-- Favicon: logotipo no separador do browser -->
     <link rel="icon" type="image/png" href="../imagens/logo_sylviartes.png">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -236,7 +240,7 @@ function metodoLabel($m) {
         <?php endif; ?>
 
         <div class="cli-section">
-            <h2>Encomenda #<?php echo (int)$pedido['id']; ?></h2>
+            <h2>Encomenda #<?php echo (int)$numCliente; ?></h2>
             <p style="color:#636e72; margin-bottom:18px;">
                 Feita em <?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($pedido['data']))); ?>
             </p>

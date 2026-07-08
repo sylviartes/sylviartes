@@ -22,6 +22,7 @@ require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/stripe.php';
 require_once __DIR__ . '/../src/cart.php';
+require_once __DIR__ . '/../src/pedidos.php'; // numero_pedido_cliente()
 
 $sessionId = $_GET['session_id'] ?? '';
 $pedidoId = null;
@@ -57,7 +58,8 @@ require_once __DIR__ . '/header.php';
 <div class="checkout-wrapper" style="text-align:center;">
     <h1 style="color:#2d7a44;">✓ Pagamento recebido</h1>
     <?php if ($pedidoId): ?>
-        <p>O seu pedido <strong>#<?php echo (int)$pedidoId; ?></strong> foi registado com sucesso.</p>
+        <?php $numCliente = numero_pedido_cliente($conn, (int)$pedidoId); ?>
+        <p>O seu pedido <strong>#<?php echo (int)$numCliente; ?></strong> foi registado com sucesso.</p>
     <?php endif; ?>
     <p>
         <?php if ($estadoPagamento === 'validado'): ?>

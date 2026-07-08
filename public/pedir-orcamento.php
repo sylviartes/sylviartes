@@ -22,6 +22,7 @@ require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/csrf.php';
 require_once __DIR__ . '/../src/email.php'; // para enviar aviso à Sylvia quando chega pedido novo
+require_once __DIR__ . '/../src/pedidos.php'; // numero_pedido_cliente()
 
 // === REGEX (mesmas do projeto, fornecidas pelo professor) ===
 $regexPostal   = "/^[1-9]\d{3}(-\d{3})?$/";
@@ -226,7 +227,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            $mensagem = "Pedido #{$pedidoId} recebido com sucesso! Vamos contactá-la(o) em breve para confirmar os detalhes e enviar o orçamento final.";
+            $numCliente = numero_pedido_cliente($conn, $pedidoId, (int)$utilizadorId);
+            $mensagem = "Pedido #{$numCliente} recebido com sucesso! Vamos contactá-la(o) em breve para confirmar os detalhes e enviar o orçamento final.";
             $tipo_mensagem = "success";
             $pedidoConcluido = true;
 

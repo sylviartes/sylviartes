@@ -16,6 +16,7 @@
 
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../src/pedidos.php';   // numero_pedido_cliente()
 
 $clienteId = $_SESSION['cliente_id'];
 
@@ -133,7 +134,7 @@ function pagamentoLabel($estado) {
                     <tbody>
                         <?php foreach ($pedidos as $p): ?>
                             <tr>
-                                <td data-label="Nº"><strong>#<?php echo (int)$p['id']; ?></strong></td>
+                                <td data-label="Nº"><strong>#<?php echo numero_pedido_cliente($conn, (int)$p['id'], (int)$clienteId); ?></strong></td>
                                 <td data-label="Data"><?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($p['data']))); ?></td>
                                 <td data-label="Total"><?php echo number_format($p['valor_total'], 2, ',', '.'); ?> €</td>
                                 <td data-label="Pagamento">
