@@ -148,20 +148,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $pedidoId = (int)$conn->lastInsertId();
 
-            // === 4. Inserir uma linha em detalhe_pedido se houver categoria escolhida ===
-            // (genérica - sem produto_id real, descrição contém o pedido completo)
-            if ($categoriaId > 0) {
-                // Vai buscar o "produto-tipo" da categoria - primeiro item visível
+            // === 4. Inserir uma linha em detalhe_pedido ===
+            // Como item mostramos a peça que o cliente escolheu como referência
+            // ("quero algo parecido a este"); só se não houver é que usamos o
+            // primeiro produto da categoria. A descrição guarda o pedido completo.
+            $produtoTipo = null;
+
+            // 4a. Peça de referência (portfolio_inspiracao_id). Confirmamos que
+            //     existe mesmo, para nunca falhar a chave estrangeira do detalhe_pedido.
+            if ($portfolioRef > 0) {
+                $stmt = $conn->prepare("SELECT id FROM produto WHERE id = ?");
+                $stmt->execute([$portfolioRef]);
+                $produtoTipo = $stmt->fetchColumn() ?: null;
+            }
+
+            // 4b. Em alternativa, o primeiro produto visível da categoria escolhida
+            if (!$produtoTipo && $categoriaId > 0) {
                 $stmt = $conn->prepare("SELECT id FROM produto WHERE categoria_id = ? AND visivel_catalogo = 1 LIMIT 1");
                 $stmt->execute([$categoriaId]);
-                $produtoTipo = $stmt->fetchColumn();
-                if ($produtoTipo) {
-                    $stmt = $conn->prepare("
-                        INSERT INTO detalhe_pedido (pedido_id, produto_id, quantidade, preco_unitario, descricao)
-                        VALUES (?, ?, 1, 0, ?)
-                    ");
-                    $stmt->execute([$pedidoId, $produtoTipo, $descricao]);
-                }
+                $produtoTipo = $stmt->fetchColumn() ?: null;
+            }
+
+            if ($produtoTipo) {
+                $stmt = $conn->prepare("
+                    INSERT INTO detalhe_pedido (pedido_id, produto_id, quantidade, preco_unitario, descricao)
+                    VALUES (?, ?, 1, 0, ?)
+                ");
+                $stmt->execute([$pedidoId, $produtoTipo, $descricao]);
             }
 
             // === 5. Linha de pagamento NÃO é criada agora ===
